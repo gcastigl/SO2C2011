@@ -1,0 +1,45 @@
+Actores:					Procesos o Threads?
+  -> Aerolineas			*
+  -> Avion				*
+	  Ciudades				Ninugno (Lo ELIMINAMOS, esta embebido dentro de mapa)
+Cosas a tener en cuenta:
+  -> I/O 					Al menos 1.
+  -> Mapa					1
+  -> Parser de archivos	\
+	  Main					/  1        
+	  (Main: parser + crear thread, inicializarlos, conectar todos los IPC, procesos, encargarse de que cuando muere un thread o proceso, limpie todas las conecciones)
+	  
+> Nota:
+  - IMPORTANTE: printf NOOO es thread safe!
+  - Thread = Se tienen cosas que que comunicar en todo momento + son todas las entidades iguales.
+  - Proceso = Se separa informacion y no toda la info es visible para la otra =.
+  - Los aviones no cambian de runbo durante el vuelo.
+  - Todos los IPC crean archivos en el sistema operativo (pueden verse con IPCs ?). Cuadno el programa termina, NO deve quedar nignun registro abierto, todos los recursos deben ser liberados.
+  - Hay que capturar Ctrl + C para que termine la ejecucion y elimine todos los archivos que puedan haber creados!
+  - Numeros:
+	  * 10 aerolineas y 10 aviones por aerolinea.
+	  * 50 ciudades.
+  - No todos los archivos de configuracion tienen un nombre fijo. Hay que recorrer todo un directorio.
+-------------------------------------------------------------------------------
+
+> Proceso (circulo)
++ Thread (Cuadrado)
+
+> Main
+> Aerolinea
++ Avion
+> o + Mapa (a discutir)
+> o + IO (a discutir)
+
+(ahora ver foto de diseño)
+
+Posibles pasos a seguir a grandes rasgos:
+  > Parsear archivos (creas las estructuras).
+  > Crear aerolineas + aviones + conecciones.
+  > Crear mapa.
+  > Levantar I/O (Inicializacion de ncurses (opcional)).
+  > Inicia Simulacion
+	- Mostrar mapa.
+	- Buscar necesidades.
+	- Mover aviones.
+	- Verificar fin de simulacion.
