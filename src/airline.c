@@ -39,7 +39,7 @@ void airlineProcess(Airline* airline) {
 	// Call to select with no timeout, it will block until an event occurs
 	fd_set readCpy = masterRdFd;
 	fd_set writeCpy = masterWrFd;
-	while (select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, &writeCpy, NULL, NULL) > 0) {
+	while (select(airline->planeCount + 1, &readCpy, &writeCpy, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planeCount; i++) {
 			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
 				if (read(rdPipes[i][READ], buf, MSJ_SIZE) > 0) {
@@ -54,6 +54,7 @@ void airlineProcess(Airline* airline) {
 		}
 		readCpy = masterRdFd;
 	}
+	exit(0);
 }
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes) {
