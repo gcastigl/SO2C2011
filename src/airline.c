@@ -1,6 +1,6 @@
 #include "../include/airline.h"
 
-#define	MSJ_SIZE	20		// FIXME: To be removed...
+#define MSJ_SIZE 20
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes);
 
@@ -17,12 +17,13 @@ Airline* createAirline(long id, int numberOfPlanes) {
 }
 
 void airlineProcess(Airline* airline) {
-	char ch, buf[MSJ_SIZE];
+	int i;
+	char buf[MSJ_SIZE];
+	fd_set masterRdFd, masterWrFd;
 	int** rdPipes = createIntMatrix(airline->planeCount, 2);
 	int** wrPipes = createIntMatrix(airline->planeCount, 2);
+	
 	initPlanes(airline->planeCount, rdPipes, wrPipes);
-	fd_set masterRdFd, masterWrFd;
-	int i;
 	// closes all unwanted write file descriptors
 	for (i = 0; i < airline->planeCount; i++) {
 		close(rdPipes[i][WRITE]);
@@ -68,6 +69,14 @@ void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 				planeProcess(createPlane(i), rdPipes[i], wrPipes[i]);
 		}
 	}
+}
+
+int parsePlaneResponse(int response) {
+	printf("Mensaje: %d", response);
+	if (response == PLANE_IS_CITY_BUSY) {
+		return AIRLINE_YES;
+	}
+	return ERROR;
 }
 
 
