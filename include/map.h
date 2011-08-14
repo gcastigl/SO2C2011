@@ -6,13 +6,14 @@
 
 typedef struct {
 	int id;
-	char* name;
+	int needsCount;
 	Item* needs;
 } City;
 
 typedef struct {
 	City* cities;
-	float** distances;
+	int citiesCount;
+	int** distances;
 	int planeCount;
 	int turnCount;
 } Map;
