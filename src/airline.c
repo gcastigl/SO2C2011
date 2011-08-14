@@ -2,7 +2,7 @@
 
 #define	MSJ_SIZE	20		// FIXME: To be removed...
 
-int** initPlanes(int planes);
+void initPlanes(int planes, int** rdPipes, int** wrPipes);
 
 Airline* createAirline(char* name, int numberOfPlanes) {
 	Airline* airline = (Airline*) malloc(sizeof(Airline));
@@ -17,25 +17,28 @@ Airline* createAirline(char* name, int numberOfPlanes) {
 }
 
 void airlineProcess(Airline* airline) {
-	int** pipes = initPlanes(airline->planesCount);
+	int** rdPipes = createIntMatrix(airline->planesCount, 2);
+	int** wrPipes = createIntMatrix(airline->planesCount, 2);
+	initPlanes(airline->planesCount, rdPipes, wrPipes);
 	char ch, buf[MSJ_SIZE];
 	fd_set masterFD, setFD;
 	int i;
 	// closes all unwanted write file descriptors
 	for (i = 0; i < airline->planesCount; i++) {
-		close(pipes[i][1]);
+		close(rdPipes[i][WRITE]);
+		close(wrPipes[i][READ]);
 	}
 	// Sets all the bit masks for the select system call
 	FD_ZERO(&masterFD);
 	FD_SET(0, &masterFD);
 	for (i = 0; i < airline->planesCount; i++) {
-		FD_SET(pipes[i][0], &masterFD);
+		FD_SET(rdPipes[i][READ], &masterFD);
 	}
 	// Call to select with no timeout, it will block until an event occurs
-	while (setFD = masterFD, select(pipes[airline->planesCount - 1][0] + 1, &setFD, NULL, NULL, NULL) > 0) {
+	while (setFD = masterFD, select(rdPipes[airline->planesCount - 1][READ] + 1, &setFD, NULL, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planesCount; i++) {
-			if (FD_ISSET(pipes[i][0], &setFD)) {
-				if (read(pipes[i][0], buf, MSJ_SIZE) > 0) {
+			if (FD_ISSET(rdPipes[i][READ], &setFD)) {
+				if (read(rdPipes[i][READ], buf, MSJ_SIZE) > 0) {
 					printf("Message from child %d -- %s\n", i, buf);
 				}
 			}
@@ -47,21 +50,19 @@ void airlineProcess(Airline* airline) {
 	}
 }
 
-int** initPlanes(int planes) {
+void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 	int i;
-	int** pipes = createIntMatrix(planes, 2);
 	for (i = 0; i < planes; i++) {
-		if (pipe(pipes[i]) == -1) {
+		if (pipe(rdPipes[i]) == -1 || pipe(wrPipes[i]) == -1) {
 			fatal("Pipe call error");
 		}
 		switch (fork()) {
 			case -1:
 				fatal("Fork call error");
 			case 0:
-				planeProcess(createPlane(i), pipes[i]);
+				planeProcess(createPlane(i), rdPipes[i], wrPipes[i]);
 		}
 	}
-	return pipes;
 }
 
 
