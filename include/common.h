@@ -19,4 +19,6 @@ int** createIntMatrix(int rows, int columns);
 
 float** createFloatMatrix(int rows, int columns);
 
+void printMatrix(float** matrix, int rows, int columns);
+
 #endif
