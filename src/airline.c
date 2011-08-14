@@ -17,11 +17,11 @@ Airline* createAirline(char* name, int numberOfPlanes) {
 }
 
 void airlineProcess(Airline* airline) {
+	char ch, buf[MSJ_SIZE];
 	int** rdPipes = createIntMatrix(airline->planesCount, 2);
 	int** wrPipes = createIntMatrix(airline->planesCount, 2);
 	initPlanes(airline->planesCount, rdPipes, wrPipes);
-	char ch, buf[MSJ_SIZE];
-	fd_set masterFD, setFD;
+	fd_set masterRdFd, masterWrFd;
 	int i;
 	// closes all unwanted write file descriptors
 	for (i = 0; i < airline->planesCount; i++) {
@@ -29,17 +29,21 @@ void airlineProcess(Airline* airline) {
 		close(wrPipes[i][READ]);
 	}
 	// Sets all the bit masks for the select system call
-	FD_ZERO(&masterFD);
-	FD_SET(0, &masterFD);
+	FD_ZERO(&masterRdFd);
+	FD_SET(0, &masterRdFd);
 	for (i = 0; i < airline->planesCount; i++) {
-		FD_SET(rdPipes[i][READ], &masterFD);
+		FD_SET(rdPipes[i][READ], &masterRdFd);
+		FD_SET(wrPipes[i][WRITE], &masterWrFd);
 	}
 	// Call to select with no timeout, it will block until an event occurs
-	while (setFD = masterFD, select(rdPipes[airline->planesCount - 1][READ] + 1, &setFD, NULL, NULL, NULL) > 0) {
+	fd_set readCpy = masterRdFd;
+	fd_set writeCpy = masterWrFd;
+	while (select(rdPipes[airline->planesCount - 1][READ] + 1, &readCpy, &writeCpy, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planesCount; i++) {
-			if (FD_ISSET(rdPipes[i][READ], &setFD)) {
+			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
 				if (read(rdPipes[i][READ], buf, MSJ_SIZE) > 0) {
 					printf("Message from child %d -- %s\n", i, buf);
+					write(wrPipes[i][WRITE], "Response from airline\n", 25);
 				}
 			}
 		}
@@ -47,6 +51,7 @@ void airlineProcess(Airline* airline) {
 		if (waitpid(-1, NULL, WNOHANG) == -1) {
 			return;
 		}
+		readCpy = masterRdFd;
 	}
 }
 
