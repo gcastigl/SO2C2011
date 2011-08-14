@@ -1,7 +1,5 @@
 #include "../include/airline.h"
 
-#define MSJ_SIZE 2
-
 void initPlanes(int planes, int** rdPipes, int** wrPipes);
 char* parsePlaneResponse(char response);
 void closeUnusedFds(Airline* airline, int **fds, int pipe);
@@ -20,8 +18,8 @@ Airline* createAirline(long id, int numberOfPlanes) {
 
 void airlineProcess(Airline* airline) {
 	int i;
-	char buf[MSJ_SIZE];
 	fd_set masterRdFd, masterWrFd, readCpy;
+	ipcMessage *data = malloc(sizeof(ipcMessage));
 	int** rdPipes = createIntMatrix(airline->planeCount, 2);
 	int** wrPipes = createIntMatrix(airline->planeCount, 2);
 	

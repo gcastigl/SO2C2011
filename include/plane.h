@@ -3,8 +3,6 @@
 
 #include "common.h"
 #include "map.h"
-#include <string.h>
-#include <unistd.h>
 
 #define NO_TARGET	-1
 

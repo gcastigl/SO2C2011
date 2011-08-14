@@ -15,9 +15,9 @@ Plane* createPlane(int id) {
 
 void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 	int count;
-	char buf[2];
 	close(wrPipe[READ]);
 	close(rdPipe[WRITE]);
+	ipcMessage *data = malloc(sizeof(ipcMessage));
 	for (count = 0; count < 2; count++) {
 		char * msj = "9";
 		write(wrPipe[WRITE], msj, 1);

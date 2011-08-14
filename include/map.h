@@ -2,7 +2,6 @@
 #define _MAP_
 
 #include "common.h"
-#include <string.h>
 
 typedef struct {
 	int id;

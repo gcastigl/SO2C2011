@@ -3,6 +3,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <unistd.h>
+#include <errno.h>
+extern int errno;
 
 #define FALSE	0
 #define TRUE	!FALSE
@@ -25,10 +32,18 @@ typedef struct {
 } Item;
 
 typedef struct {
+	int id;
+	char message[1024];
+} ipcMessage;
+
+#define PACKAGE_SIZE sizeof(ipcMessage)
+
+typedef struct {
 	char** supplyName;
 	char** companyName;
 	char** cityName;
 } Names;
+
 void fatal(char* err);
 
 int** createIntMatrix(int rows, int columns);
