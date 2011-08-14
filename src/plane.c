@@ -11,19 +11,20 @@ Plane* createPlane(int id) {
 
 void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 	int count;
-	char buf[25];
 	close(wrPipe[READ]);
 	close(rdPipe[WRITE]);
+	ipcMessage *data = malloc(sizeof(ipcMessage));
 	for (count = 0; count < 2; count++) {
-		char * msj = "This is plane xx... over!\n";
-		write(wrPipe[WRITE], msj, 20);
+		data->id = 3;
+		strcpy(data->message, "Buenas!");
+		write(wrPipe[WRITE], data, PACKAGE_SIZE);
 		sleep(getpid() % 4); // random sleep...
-		
-		if (read(rdPipe[READ], buf, 24) > 0) {
-			printf("Message from airline -- %s\n", buf);
+		if (read(rdPipe[READ], data, PACKAGE_SIZE) > 0) {
+			printf("Message from airline -- %s\n", data->message);
 		}
 	}
-	write(wrPipe[WRITE], "I'm out!!", 10);
+	strcpy(data->message, "I'm out!!\n");
+	write(wrPipe[WRITE], data, PACKAGE_SIZE);
 	exit(0);	
 }
 

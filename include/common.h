@@ -3,6 +3,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <unistd.h>
+#include <errno.h>
+extern int errno;
 
 #define FALSE	0
 #define TRUE	!FALSE
@@ -22,6 +29,13 @@ typedef struct {
 	int id;
 	int amount;
 } Item;
+
+typedef struct {
+	int id;
+	char message[1024];
+} ipcMessage;
+
+#define PACKAGE_SIZE sizeof(ipcMessage)
 
 void fatal(char* err);
 

@@ -1,5 +1,4 @@
 #include "../include/airline.h"
-
 #define MSJ_SIZE 20
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes);
@@ -19,8 +18,8 @@ Airline* createAirline(long id, int numberOfPlanes) {
 
 void airlineProcess(Airline* airline) {
 	int i;
-	char buf[MSJ_SIZE];
 	fd_set masterRdFd, masterWrFd, readCpy;
+	ipcMessage *data = malloc(sizeof(ipcMessage));
 	int** rdPipes = createIntMatrix(airline->planeCount, 2);
 	int** wrPipes = createIntMatrix(airline->planeCount, 2);
 	
@@ -39,9 +38,10 @@ void airlineProcess(Airline* airline) {
 	while (readCpy = masterRdFd, select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, NULL, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planeCount; i++) {
 			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
-				if (read(rdPipes[i][READ], buf, MSJ_SIZE) > 0) {
-					printf("Message from child %d -- %s\n", i, buf);
-					write(wrPipes[i][WRITE], "Response from airline\n", 25);
+				if (read(rdPipes[i][READ], data, PACKAGE_SIZE) > 0) {
+					printf("Message from child %d -- %s\n", i, data->message);
+					strcpy(data->message, "Response from Airline\n");
+					write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
 				}
 			}
 		}

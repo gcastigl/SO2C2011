@@ -2,8 +2,6 @@
 #define _PLANE_
 
 #include "common.h"
-#include <string.h>
-#include <unistd.h>
 
 typedef struct {
 	int id;
