@@ -38,10 +38,10 @@ void airlineProcess(Airline* airline) {
 	while (readCpy = masterRdFd, select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, NULL, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planeCount; i++) {
 			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
-				if (read(rdPipes[i][READ], buf, 1) > 0) {
-					char* response = parsePlaneResponse(buf[0]);
-					printf("Message from child %d -- %c\n", i, buf[0]);
-					write(wrPipes[i][WRITE], response, 1);
+				if (read(rdPipes[i][READ], data, PACKAGE_SIZE) > 0) {
+					printf("Message from child %d -- %s\n", i, data->message);
+					strcpy(data->message, "Response from Airline\n");
+					write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
 				}
 			}
 		}
