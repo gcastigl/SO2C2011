@@ -54,13 +54,14 @@ int findBestCity(Map* map, Plane* plane) {
 }
 
 int hasEnoughItems(Plane* plane, City* city) {
-	return TRUE;
 	int i;
-
 	for (i = 0; i < city->needsCount; i++) {
-		//Item * item = &(city->needs[i]);
-		//TODO: verificar cantidad de recursos
+		int itemId = city->needs[i].id;
+		if (city->needs[i].amount > plane->supplies[itemId].amount) {
+			return FALSE;
+		}
 	}
+	return TRUE;
 }
 
 
