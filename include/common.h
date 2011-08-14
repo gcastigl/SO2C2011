@@ -7,6 +7,10 @@
 #define FALSE	0
 #define TRUE	!FALSE
 
+// Do NOT change this values!
+#define READ	0
+#define WRITE	1
+
 typedef struct {
 	char* name;
 	int amount;
