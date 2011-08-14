@@ -2,9 +2,7 @@
 
 #define	MSJ_SIZE	20		// FIXME: To be removed...
 
-void fatal(char* err);
 int** initPlanes(int planes);
-int** createNPipes(int n);
 
 Airline* createAirline(char* name, int numberOfPlanes) {
 	Airline* airline = (Airline*) malloc(sizeof(Airline));
@@ -51,7 +49,7 @@ void airlineProcess(Airline* airline) {
 
 int** initPlanes(int planes) {
 	int i;
-	int** pipes = createNPipes(planes);
+	int** pipes = createIntMatrix(planes, 2);
 	for (i = 0; i < planes; i++) {
 		if (pipe(pipes[i]) == -1) {
 			fatal("Pipe call error");
@@ -66,17 +64,5 @@ int** initPlanes(int planes) {
 	return pipes;
 }
 
-int** createNPipes(int n) {
-	int i;
-	int** pipes = (int**) malloc(sizeof(int**) * n);
-	for (i = 0; i < n; i++) {
-		pipes[i] = malloc(sizeof(int) * 2); 
-	}
-	return pipes;
-}
 
-void fatal(char* err) {
-	perror(err);
-	exit(1);
-}
 
