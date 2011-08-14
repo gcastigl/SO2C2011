@@ -12,9 +12,8 @@
 #define WRITE	1
 
 typedef struct {
-	char* name;
+	long id
 	int amount;
-	int id;
 } Item;
 
 void fatal(char* err);

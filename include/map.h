@@ -5,14 +5,19 @@
 #include <string.h>
 
 typedef struct {
-	char* name;
 	int id;
+	char* name;
 	Item* needs;
 } City;
 
 typedef struct {
+	char *supplyName[];
+	char *cityName[];
+	char *companyName[];
 	City* cities;
 	float** distances;
+	int planeCount;
+	int turnCount;
 } Map;
 
 Map* createMap();

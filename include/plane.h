@@ -5,9 +5,9 @@
 #include <string.h>
 
 typedef struct {
+	long id;
 	int targetId;
 	int distanceLeft;
-	int id;
 	Item* supplies;
 } Plane;
 

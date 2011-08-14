@@ -5,8 +5,8 @@
 #include <string.h>
 
 typedef struct {
-	char* name;
-	int planesCount;
+	long id;
+	int planeCount;
 	int* targetedCities;
 } Airline;
 
