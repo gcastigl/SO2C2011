@@ -9,7 +9,7 @@ Plane* createPlane(int id) {
 	return plane;
 }
 
-void planeProcess(Plane* plane, int* wrPipe) {
+void planeProcess(Plane* plane, int* wrPipe, int** rdPipe) {
 	int count;
 	close(wrPipe[READ]);
 	for (count = 0; count < 2; count++) {
