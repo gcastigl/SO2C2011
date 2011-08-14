@@ -9,15 +9,15 @@ Plane* createPlane(int id) {
 	return plane;
 }
 
-void planeProcess(Plane* plane, int* pipe) {
+void planeProcess(Plane* plane, int* wrPipe) {
 	int count;
-	close(pipe[0]);
+	close(wrPipe[READ]);
 	for (count = 0; count < 2; count++) {
 		char * msj = "This is plane xx... over!\n";
-		write(pipe[1], msj, 20);
+		write(wrPipe[WRITE], msj, 20);
 		sleep(getpid() % 4); // random sleep...
 	}
-	write(pipe[1], "I'm out!!", 10);
+	write(wrPipe[WRITE], "I'm out!!", 10);
 	exit(0);	
 }
 
