@@ -17,4 +17,6 @@ void fatal(char* err);
 
 int** createIntMatrix(int rows, int columns);
 
+float** createFloatMatrix(int rows, int columns);
+
 #endif
