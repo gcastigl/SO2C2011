@@ -19,7 +19,7 @@
 #define AIRLINE_NO			0
 
 typedef struct {
-	long id;
+	int id;
 	int amount;
 } Item;
 
