@@ -27,7 +27,9 @@ void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 		}
 	}
 	write(wrPipe[WRITE], "0", 1);
-	exit(0);	
+	exit(0);
+}
+
 void updateState(Map* map, Plane* plane) {
 	plane->distanceLeft--;
 	if (plane->distanceLeft == 0) {
