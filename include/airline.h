@@ -1,10 +1,8 @@
 #ifndef _AIRLINE_
 #define _AIRLINE_
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "common.h"
 #include <string.h>
-#include "struct.h"
 
 typedef struct {
 	char* name;

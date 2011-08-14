@@ -2,8 +2,7 @@
 #define _MAIN_
 
 #include "airline.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "map.h"
 
 
 #endif

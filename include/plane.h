@@ -1,10 +1,8 @@
 #ifndef _PLANE_
 #define _PLANE_
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "common.h"
 #include <string.h>
-#include "struct.h"
 
 typedef struct {
 	int targetId;
