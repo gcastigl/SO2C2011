@@ -20,6 +20,8 @@ Cosas a tener en cuenta:
 	  * 10 aerolineas y 10 aviones por aerolinea.
 	  * 50 ciudades.
   - No todos los archivos de configuracion tienen un nombre fijo. Hay que recorrer todo un directorio.
+  
+  Una pagina para referencias: http://www.steve.org.uk/Reference/Unix/faq_3.html
 -------------------------------------------------------------------------------
 
 + Proceso (circulo)
