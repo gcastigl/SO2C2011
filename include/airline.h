@@ -10,7 +10,8 @@ typedef struct {
 	int* targetedCities;
 } Airline;
 
-Airline* createAirline(char* name, int numberOfPlanes);
+Airline* createAirline(long id, int numberOfPlanes);
+
 void airlineProcess(Airline* airline);
 
 #endif

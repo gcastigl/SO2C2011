@@ -1,9 +1,9 @@
 #include "../include/main.h"
 
 int main() {
-	Airline* airline = createAirline("Air France", 3);
+	Airline* airline = createAirline(12345678, 3);
 	airlineProcess(airline);
-	printf("%s\n", airline->name);
+	printf("%ld\n", airline->id);
 }
 
 
