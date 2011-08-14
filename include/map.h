@@ -11,9 +11,6 @@ typedef struct {
 } City;
 
 typedef struct {
-	char** supplyName;
-	char** cityName;
-	char** companyName;
 	City* cities;
 	float** distances;
 	int planeCount;

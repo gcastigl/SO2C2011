@@ -24,6 +24,11 @@ typedef struct {
 	int amount;
 } Item;
 
+typedef struct {
+	char** supplyName;
+	char** companyName;
+	char** cityName;
+} Names;
 void fatal(char* err);
 
 int** createIntMatrix(int rows, int columns);
