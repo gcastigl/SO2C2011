@@ -3,7 +3,9 @@
 int main() {
 	Airline* airline = createAirline(12345678, 3);
 	airlineProcess(airline);
-	printf("%ld\n", airline->id);
+	printf("%d\n", airline->id);
+	
+	return 0;
 }
 
 

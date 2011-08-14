@@ -17,7 +17,7 @@ Airline* createAirline(long id, int numberOfPlanes) {
 }
 
 void airlineProcess(Airline* airline) {
-	char ch, buf[MSJ_SIZE];
+	char buf[MSJ_SIZE];
 	int** rdPipes = createIntMatrix(airline->planeCount, 2);
 	int** wrPipes = createIntMatrix(airline->planeCount, 2);
 	initPlanes(airline->planeCount, rdPipes, wrPipes);

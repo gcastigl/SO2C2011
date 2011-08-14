@@ -12,7 +12,7 @@
 #define WRITE	1
 
 typedef struct {
-	long id;
+	int id;
 	int amount;
 } Item;
 

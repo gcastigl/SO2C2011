@@ -3,9 +3,10 @@
 
 #include "common.h"
 #include <string.h>
+#include <unistd.h>
 
 typedef struct {
-	long id;
+	int id;
 	int targetId;
 	int distanceLeft;
 	Item* supplies;
@@ -13,6 +14,6 @@ typedef struct {
 
 Plane* createPlane(int id);
 
-void planeProcess(Plane* plane, int* wrPipe, int** rdPipe);
+void planeProcess(Plane* plane, int* wrPipe, int* rdPipe);
 
 #endif
