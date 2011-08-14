@@ -1,8 +1,9 @@
 #include "../include/airline.h"
 
-#define MSJ_SIZE 20
+#define MSJ_SIZE 2
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes);
+char* parsePlaneResponse(char response);
 
 Airline* createAirline(long id, int numberOfPlanes) {
 	Airline* airline = (Airline*) malloc(sizeof(Airline));
@@ -42,9 +43,10 @@ void airlineProcess(Airline* airline) {
 	while (select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, &writeCpy, NULL, NULL) > 0) {
 		for (i = 0; i < airline->planeCount; i++) {
 			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
-				if (read(rdPipes[i][READ], buf, MSJ_SIZE) > 0) {
-					printf("Message from child %d -- %s\n", i, buf);
-					write(wrPipes[i][WRITE], "Response from airline\n", 25);
+				if (read(rdPipes[i][READ], buf, 1) > 0) {
+					char* response = parsePlaneResponse(buf[0]);
+					printf("Message from child %d -- %c\n", i, buf[0]);
+					write(wrPipes[i][WRITE], response, 1);
 				}
 			}
 		}
@@ -54,6 +56,7 @@ void airlineProcess(Airline* airline) {
 		}
 		readCpy = masterRdFd;
 	}
+	exit(0);
 }
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes) {
@@ -71,12 +74,12 @@ void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 	}
 }
 
-int parsePlaneResponse(int response) {
-	printf("Mensaje: %d", response);
+char* parsePlaneResponse(char response) {
+	//printf("Mensaje: %c\n", response);
 	if (response == PLANE_IS_CITY_BUSY) {
 		return AIRLINE_YES;
 	}
-	return ERROR;
+	return "7";
 }
 
 
