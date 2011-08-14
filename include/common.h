@@ -14,6 +14,7 @@ extern int errno;
 #define FALSE	0
 #define TRUE	!FALSE
 #define ERROR	-1;
+
 // Do NOT change this values!
 #define READ	0
 #define WRITE	1
@@ -22,8 +23,8 @@ extern int errno;
 #define PLANE_IS_CITY_BUSY	1
 
 // Airline Messages
-#define AIRLINE_YES			1
-#define AIRLINE_NO			0
+#define AIRLINE_YES			"1"
+#define AIRLINE_NO			"0"
 
 typedef struct {
 	int id;
@@ -36,6 +37,12 @@ typedef struct {
 } ipcMessage;
 
 #define PACKAGE_SIZE sizeof(ipcMessage)
+
+typedef struct {
+	char** supplyName;
+	char** companyName;
+	char** cityName;
+} Names;
 
 void fatal(char* err);
 

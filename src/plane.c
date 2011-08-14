@@ -15,16 +15,14 @@ void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 	close(rdPipe[WRITE]);
 	ipcMessage *data = malloc(sizeof(ipcMessage));
 	for (count = 0; count < 2; count++) {
-		data->id = 3;
-		strcpy(data->message, "Buenas!");
-		write(wrPipe[WRITE], data, PACKAGE_SIZE);
+		char * msj = "9";
+		write(wrPipe[WRITE], msj, 1);
 		sleep(getpid() % 4); // random sleep...
-		if (read(rdPipe[READ], data, PACKAGE_SIZE) > 0) {
-			printf("Message from airline -- %s\n", data->message);
+		if (read(rdPipe[READ], buf, 1) > 0) {
+			printf("Message from airline -- %c\n", buf[0]);
 		}
 	}
-	strcpy(data->message, "I'm out!!\n");
-	write(wrPipe[WRITE], data, PACKAGE_SIZE);
+	write(wrPipe[WRITE], "0", 1);
 	exit(0);	
 }
 
