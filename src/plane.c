@@ -17,7 +17,7 @@ void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 	int count;
 	close(wrPipe[READ]);
 	close(rdPipe[WRITE]);
-	ipcMessage *data = malloc(sizeof(ipcMessage));
+	ipcPackage *data = malloc(sizeof(ipcPackage));
 	for (count = 0; count < 2; count++) {
 		data->id = 1; //define with plane
 		strcpy(data->message, "Buenas!\n");

@@ -18,7 +18,7 @@ Airline* createAirline(long id, int numberOfPlanes) {
 void airlineProcess(Airline* airline) {
 	int i;
 	fd_set masterRdFd, masterWrFd, readCpy;
-	ipcMessage *data = malloc(sizeof(ipcMessage));
+	ipcPackage *data = malloc(sizeof(ipcPackage));
 	int** rdPipes = createIntMatrix(airline->planeCount, 2);
 	int** wrPipes = createIntMatrix(airline->planeCount, 2);
 	
