@@ -3,13 +3,15 @@
 
 #include "common.h"
 
+#define ERROR -1
+
 typedef enum {
     CREATE,
 	DESTROY,
 	MESSAGE
 } packageType;
 
-int ipcSetup();
+int ipcSetup(int childs);
 int ipcClean();
 ipcPackage getData(int childIndex);
 void sendData(int childIndex, ipcPackage data);
