@@ -27,7 +27,6 @@ void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 			printf("Message from airline -- %s\n", data->message);
 		}
 	}
-	write(wrPipe[WRITE], "0", 1);
 	exit(0);
 }
 
