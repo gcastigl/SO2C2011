@@ -1,7 +1,6 @@
 #include "../include/airline.h"
 
 void initPlanes(int planes, int** rdPipes, int** wrPipes);
-char* parsePlaneResponse(char response);
 void closeUnusedFds(Airline* airline, int **fds, int pipe);
 
 Airline* createAirline(long id, int numberOfPlanes) {
@@ -72,14 +71,5 @@ void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 		}
 	}
 }
-
-char* parsePlaneResponse(char response) {
-	//printf("Mensaje: %c\n", response);
-	if (response == PLANE_IS_CITY_BUSY) {
-		return AIRLINE_YES;
-	}
-	return "7";
-}
-
 
 
