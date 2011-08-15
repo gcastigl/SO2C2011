@@ -34,9 +34,9 @@ typedef struct {
 typedef struct {
 	int id;
 	char message[1024];
-} ipcMessage;
+} ipcPackage;
 
-#define PACKAGE_SIZE sizeof(ipcMessage)
+#define PACKAGE_SIZE sizeof(ipcPackage)
 
 typedef struct {
 	char** supplyName;
