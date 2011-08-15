@@ -2,20 +2,17 @@
 #define _MAP_
 
 #include "common.h"
-#include <string.h>
 
 typedef struct {
 	int id;
-	char* name;
+	int needsCount;
 	Item* needs;
 } City;
 
 typedef struct {
-	char** supplyName;
-	char** cityName;
-	char** companyName;
 	City* cities;
-	float** distances;
+	int citiesCount;
+	int** distances;
 	int planeCount;
 	int turnCount;
 } Map;

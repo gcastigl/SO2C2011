@@ -4,7 +4,7 @@
 
 Map* createMap() {
 	Map * map = (Map*) malloc(sizeof(Map));
-	map->distances = createFloatMatrix(CITIES, CITIES);
+	map->distances = createIntMatrix(CITIES, CITIES);
 	int i, j;
 	for (i = 0; i < CITIES; i++) {
 		for (j = 0; j < CITIES; j++) {

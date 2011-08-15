@@ -3,11 +3,6 @@
 
 #include "common.h"
 #include "plane.h"
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
-
 
 typedef struct {
 	int id;
