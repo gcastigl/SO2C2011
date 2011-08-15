@@ -11,15 +11,18 @@ CSRCS := $(shell find -L $(PROJDIRS) -type f -name "*.c")
 # All header files of the project
 CHDRS := $(shell find -L $(PROJDIRS) -type f -name "*.h")
 
+# Binary Directorys
+BINDIR := bin
+
 .PHONY: all clean
 
-all: $(OBJDIR) $(BINARY)
+all: $(BINDIR) $(BINARY)
 
-$(OBJDIR):
-	mkdir -p bin
+$(BINDIR):
+	mkdir -p $(BINDIR)
 
 clean:
-	-@$(RM) -rf $(OBJDIRS)
+	-@$(RM) -rf $(BINDIR)
 
 $(BINARY):
 	gcc $(CFLAGS) -MMD -MP $(CSRCS) -o $(BINARY)
