@@ -14,3 +14,13 @@ int initPipes(int ammount) {
         }
     }
 }
+
+void sendData(int childIndex, ipcPackage data) {
+    write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
+}
+
+ipcPackage getData(int childIndex) {
+   ipcPackage data;
+   read(rdPipes[i][READ], &data, PACKAGE_SIZE);
+   return data;
+}
