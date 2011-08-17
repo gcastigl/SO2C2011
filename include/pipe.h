@@ -8,6 +8,4 @@
 
 int **rdPipes, **wrPipes;
 
-int initPipes(int ammount);
-
 #endif

@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "plane.h"
+#include "ipc.h"
 
 typedef struct {
 	int id;

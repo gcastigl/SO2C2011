@@ -3,8 +3,6 @@
 
 #include "common.h"
 
-#define ERROR -1
-
 typedef enum {
     CREATE,
 	DESTROY,

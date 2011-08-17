@@ -13,7 +13,10 @@ extern int errno;
 
 #define FALSE	0
 #define TRUE	!FALSE
-#define ERROR	-1;
+#define ERROR	-1
+#define NO_ERROR 0
+#define READ	0
+#define WRITE	1
 
 // Plane Messages
 #define PLANE_IS_CITY_BUSY	1
