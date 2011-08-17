@@ -9,14 +9,13 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <errno.h>
+#include "ipc.h"
 extern int errno;
 
 #define FALSE	0
 #define TRUE	!FALSE
 #define ERROR	-1
 #define NO_ERROR 0
-#define READ	0
-#define WRITE	1
 
 // Plane Messages
 #define PLANE_IS_CITY_BUSY	1
@@ -29,13 +28,6 @@ typedef struct {
 	int id;
 	int amount;
 } Item;
-
-typedef struct {
-	int id;
-	char message[1024];
-} ipcPackage;
-
-#define PACKAGE_SIZE sizeof(ipcPackage)
 
 typedef struct {
 	char** supplyName;
