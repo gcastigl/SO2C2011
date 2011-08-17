@@ -20,11 +20,11 @@ void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
 	ipcPackage *data = malloc(sizeof(ipcPackage));
 	for (count = 0; count < 2; count++) {
 		data->id = 1; //define with plane
-		strcpy(data->message, "Buenas!\n");
+		strcpy(data->data, "Buenas!\n");
 		write(wrPipe[WRITE], data, PACKAGE_SIZE);
 		sleep(getpid() % 4); // random sleep...
 		if (read(rdPipe[READ], data, PACKAGE_SIZE) > 0) {
-			printf("Message from airline -- %s\n", data->message);
+			printf("Message from airline -- %s\n", data->data);
 		}
 	}
 	exit(0);
