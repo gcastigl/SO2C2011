@@ -15,7 +15,7 @@ Airline* createAirline(long id, int numberOfPlanes) {
 	return airline;
 }
 
-void airlineProcess(Airline* airline) {
+void airlineStart(Airline* airline) {
 	int i;
 	fd_set masterRdFd, masterWrFd, readCpy;
 	ipcPackage *data = malloc(sizeof(ipcPackage));
@@ -38,8 +38,8 @@ void airlineProcess(Airline* airline) {
 		for (i = 0; i < airline->planeCount; i++) {
 			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
 				if (read(rdPipes[i][READ], data, PACKAGE_SIZE) > 0) {
-					printf("Message from child %d -- %s\n", i, data->message);
-					strcpy(data->message, "Response from Airline\n");
+					printf("Message from child %d -- %s\n", i, data->data);
+					strcpy(data->data, "Response from Airline\n");
 					write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
 				}
 			}
