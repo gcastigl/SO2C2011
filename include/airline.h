@@ -13,6 +13,6 @@ typedef struct {
 
 Airline* createAirline(long id, int numberOfPlanes);
 
-void airlineProcess(Airline* airline);
+void airlineStart(Airline* airline);
 
 #endif
