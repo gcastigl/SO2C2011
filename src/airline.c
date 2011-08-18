@@ -42,7 +42,7 @@ void initPlanes(int planes) {
                 break;
 			case 0:
                 ipcSetupChild(i);
-				planeStart(createPlane(i));
+				planeStart(createPlane(NULL, i, 0, NULL, 0));
                 break;
 		}
 	}
