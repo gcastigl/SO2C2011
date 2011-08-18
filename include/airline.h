@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "plane.h"
+#include "ipc.h"
 
 typedef struct {
 	int id;
@@ -13,7 +14,7 @@ typedef struct {
 
 Airline* createAirline(long id, int numberOfPlanes);
 
-void airlineProcess(Airline* airline);
+void airlineStart(Airline* airline);
 
 #endif
 

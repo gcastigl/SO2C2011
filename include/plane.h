@@ -19,7 +19,7 @@ typedef struct {
 
 Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int suppliesSize);
 
-void planeProcess(Plane* plane, int* wrPipe, int* rdPipe);
+void planeStart(Plane* plane);
 
 #endif
 

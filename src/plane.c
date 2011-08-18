@@ -20,23 +20,11 @@ Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int s
 	return plane;
 }
 
-// FIXME: malloc without frees...
-void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
-	close(wrPipe[READ]);
-	close(rdPipe[WRITE]);
-	
-	ipcMessage* data = malloc(sizeof(ipcMessage));	
-	data->id = plane->id;
-	strcpy(data->message, "Buenas!\n");
-
-	updateState(plane);
-	write(wrPipe[WRITE], data, PACKAGE_SIZE);
-	while (read(rdPipe[READ], data, PACKAGE_SIZE) <= 0) {
-		// while there is no respose from the airline... wait!
-		sleep(SLEEP_TIME);
-	}
-	printf("Message from airline -- %s\n", data->message);
-	
+void planeStart(Plane* plane) {
+    printf("Plane %d created\nWaiting for data...\n", plane->id);
+    ipcPackage data;
+    data = getData(plane->id);
+    printf("Data for plane %d: %s\n",plane->id, data.data);
 	exit(0);
 }
 
