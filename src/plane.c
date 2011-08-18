@@ -1,68 +1,83 @@
-#include "../include/plane.h"
+#include "../include/airline.h"
 
-void updateState(Map* map, Plane* plane);
-int findBestCity(Map* map, Plane* plane);
-int hasEnoughItems(Plane* plane, City* city);
+void initPlanes(int planes, int** rdPipes, int** wrPipes);
+char* parsePlaneResponse(char response);
+void closeUnusedFds(Airline* airline, int **fds, int pipe);
 
-Plane* createPlane(int id) {
-	Plane* plane = (Plane*) malloc(sizeof(Plane));
-	plane->id = id;
-	plane->distanceLeft = -1;
-	plane->targetId = NO_TARGET;
-	plane->supplies = NULL;
-	return plane;
+Airline* createAirline(long id, int numberOfPlanes) {
+	Airline* airline = (Airline*) malloc(sizeof(Airline));
+	airline->id = id;
+	airline->planeCount = numberOfPlanes;
+	airline->targetedCities = malloc(sizeof(int) * numberOfPlanes);
+	int i;
+	for (i = 0; i < numberOfPlanes; i++) {
+		airline->targetedCities[i] = FALSE;
+	}
+	return airline;
 }
 
-void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
-	int count;
-	close(wrPipe[READ]);
-	close(rdPipe[WRITE]);
+void airlineProcess(Airline* airline) {
+	int i;
+	fd_set masterRdFd, masterWrFd, readCpy;
 	ipcMessage *data = malloc(sizeof(ipcMessage));
-	for (count = 0; count < 2; count++) {
-		data->id = 1; //define with plane
-		strcpy(data->message, "Buenas!\n");
-		write(wrPipe[WRITE], data, PACKAGE_SIZE);
-		sleep(getpid() % 4); // random sleep...
-		if (read(rdPipe[READ], data, PACKAGE_SIZE) > 0) {
-			printf("Message from airline -- %s\n", data->message);
+	int** rdPipes = createIntMatrix(airline->planeCount, 2);
+	int** wrPipes = createIntMatrix(airline->planeCount, 2);
+	
+	initPlanes(airline->planeCount, rdPipes, wrPipes);
+	// closes all unwanted write file descriptors
+	closeUnusedFds(airline, rdPipes, WRITE);
+	closeUnusedFds(airline, wrPipes, READ);
+	// Sets all the bit masks for the select system call
+	FD_ZERO(&masterRdFd);
+	FD_SET(0, &masterRdFd);
+	for (i = 0; i < airline->planeCount; i++) {
+		FD_SET(rdPipes[i][READ], &masterRdFd);
+		FD_SET(wrPipes[i][WRITE], &masterWrFd);
+	}
+	// Call to select with no timeout, it will block until an event occurs
+	while (readCpy = masterRdFd, select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, NULL, NULL, NULL) > 0) {
+		for (i = 0; i < airline->planeCount; i++) {
+			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
+				if (read(rdPipes[i][READ], data, PACKAGE_SIZE) > 0) {
+					printf("Message from child %d -- %s\n", i, data->message);
+					strcpy(data->message, "Response from Airline\n");
+					write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
+				}
+			}
+		}
+		// if all sub-processes are dead, return to the main program.
+		if (waitpid(-1, NULL, WNOHANG) == -1) {
+			return;
 		}
 	}
-	write(wrPipe[WRITE], "0", 1);
-	exit(0);
 }
 
-void updateState(Map* map, Plane* plane) {
-	plane->distanceLeft--;
-	if (plane->distanceLeft == 0) {
-		int newTarget = findBestCity(map, plane);
-		if (newTarget != NO_TARGET) {
-			plane->distanceLeft = map->distances[plane->targetId][newTarget]; 	
-			// Distance from currentTargetId to newTaget
-			plane->targetId = newTarget;
-		}
-	}
-}
-
-int findBestCity(Map* map, Plane* plane) {
+void closeUnusedFds(Airline* airline, int **fds, int pipe) {
 	int i;
-	for (i = 0; i < map->citiesCount; i++) {
-		City * currCity = &(map->cities[i]);
-		if (hasEnoughItems(plane, currCity)) {
-			return 	currCity->id;
-		}
-	}
-	return NO_TARGET;
+	for (i = 0; i < airline->planeCount; i++)
+		close(fds[i][pipe]);
 }
 
-int hasEnoughItems(Plane* plane, City* city) {
+void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 	int i;
-	for (i = 0; i < city->needsCount; i++) {
-		int itemId = city->needs[i].id;
-		if (city->needs[i].amount > plane->supplies[itemId].amount) {
-			return FALSE;
+	for (i = 0; i < planes; i++) {
+		if (pipe(rdPipes[i]) == -1 || pipe(wrPipes[i]) == -1) {
+			fatal("Pipe call error");
+		}
+		switch (fork()) {
+			case -1:
+				fatal("Fork call error");
+			case 0:
+				//FIXME: this will NULL will make te program to FAIL!				
+				planeProcess(createPlane(NULL, i, 0, NULL), rdPipes[i], wrPipes[i]);
 		}
 	}
-	return TRUE;
 }
+
+char* parsePlaneResponse(char response) {
+	return "7";
+}
+
+
 
 
