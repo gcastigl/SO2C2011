@@ -24,7 +24,9 @@ int childIndex;
 
 int ipcSetup(int ammount);
 int ipcSetupChild(int index);
+int ipcPostChildSetup(int ammount);
 int ipcClean();
+int ipcIsReady(int index, int channel);
 ipcPackage getData(int childIndex);
 void sendData(int childIndex, ipcPackage data);
 

@@ -5,6 +5,7 @@ int findBestCity(Map* map, Plane* plane);
 int hasEnoughItems(Plane* plane, City* city);
 
 Plane* createPlane(int id) {
+    printf("Creating plane %d...\n", id);
 	Plane* plane = (Plane*) malloc(sizeof(Plane));
 	plane->id = id;
 	plane->distanceLeft = -1;
@@ -13,20 +14,11 @@ Plane* createPlane(int id) {
 	return plane;
 }
 
-void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
-	int count;
-	close(wrPipe[READ]);
-	close(rdPipe[WRITE]);
-	ipcPackage *data = malloc(sizeof(ipcPackage));
-	for (count = 0; count < 2; count++) {
-		data->id = 1; //define with plane
-		strcpy(data->data, "Buenas!\n");
-		write(wrPipe[WRITE], data, PACKAGE_SIZE);
-		sleep(getpid() % 4); // random sleep...
-		if (read(rdPipe[READ], data, PACKAGE_SIZE) > 0) {
-			printf("Message from airline -- %s\n", data->data);
-		}
-	}
+void planeStart(Plane* plane) {
+    printf("Plane %d created\nWaiting for data...\n", plane->id);
+    ipcPackage data;
+    data = getData(plane->id);
+    printf("Data for plane %d: %s\n",plane->id, data.data);
 	exit(0);
 }
 

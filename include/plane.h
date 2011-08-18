@@ -15,6 +15,6 @@ typedef struct {
 
 Plane* createPlane(int id);
 
-void planeProcess(Plane* plane, int* wrPipe, int* rdPipe);
+void planeStart(Plane* plane);
 
 #endif
