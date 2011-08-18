@@ -67,8 +67,8 @@ void setNewTarget(Plane* plane) {
 			continue;
 		}
 		newCity = map->cities[i];
-		if (canSupplyCity(plane, newCity)) {
-			newTargetScore = getScore(plane, plane->originCityIndex, newCity);
+		if (canSupplyCity(plane, &newCity)) {
+			newTargetScore = getScore(plane, plane->originCityIndex, &newCity);
 			if (newTargetScore == -1 && bestCityScore < newTargetScore) {
 				bestCityScore = newTargetScore;
 				bestCityindex = i;
@@ -104,7 +104,7 @@ int getScore(Plane* plane, int originCityIndex, City* destination) {
 		for (j = 0; j < destination->needsSize; j++) {
 			Item cityNeed = destination->needs[j];
 			if (planeSupply.id == cityNeed.id ) {
-				score += min(planeSupply->amount, cityNeed->amount);
+				score += min(planeSupply.amount, cityNeed.amount);
 			}
 		}
 	}
