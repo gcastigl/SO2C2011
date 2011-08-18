@@ -69,7 +69,7 @@ void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 				fatal("Fork call error");
 			case 0:
 				//FIXME: this will NULL will make te program to FAIL!				
-				planeProcess(createPlane(NULL, i, 0, NULL), rdPipes[i], wrPipes[i]);
+				planeProcess(createPlane(NULL, i, 0, NULL, 0), rdPipes[i], wrPipes[i]);
 		}
 	}
 }
