@@ -5,9 +5,6 @@ void setNewTarget(Plane* plane);
 int canSupplyCity(Plane* plane, City* city);
 int getScore(Plane* plane, int originCityIndex, City* destination);
 
-//FIXME: move to mathUtils
-int min(int n1, int n2);
-
 Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int suppliesSize) {
 	Plane* plane = (Plane*) malloc(sizeof(Plane));
 	plane->id = id;
@@ -28,14 +25,6 @@ void planeStart(Plane* plane) {
 	exit(0);
 }
 
-/*
-	int id;
-	int originCityIndex;
-	int destinationCityIndex;
-	int distanceToDestination;
-	Array supplyArray;
-	Map* map;
-*/
 void updateState(Plane* plane) {
 	plane->distanceToDestination--;
 	if (plane->distanceToDestination <= 0) {
@@ -97,10 +86,5 @@ int getScore(Plane* plane, int originCityIndex, City* destination) {
 		}
 	}
 	return score;
-}
-
-
-int min(int n1, int n2) {
-	return n1 < n2 ? n1 : n2;
 }
 

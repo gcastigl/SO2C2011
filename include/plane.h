@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "map.h"
+#include "mathUtil.h"
 
 #define NO_TARGET	-1
 #define SLEEP_TIME	1
