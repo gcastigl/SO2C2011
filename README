@@ -15,7 +15,7 @@ Cosas a tener en cuenta:
   - Proceso = Se separa informacion y no toda la info es visible para la otra =.
   - Los aviones no cambian de rumbo durante el vuelo.
   - Todos los IPC crean archivos en el sistema operativo (pueden verse con el comando IPCs o algo asi). Cuando el programa termina, NO deve quedar nignun registro abierto, todos los recursos deben ser liberados.
-  - Hay que capturar Ctrl + C para que capure la señal de fin de ejecucion y elimine todos los archivos que puedan haber creados!
+  - Hay que capturar Ctrl + C para que capure la seÃ±al de fin de ejecucion y elimine todos los archivos que puedan haber creados!
   - Numeros maximos:
 	  * 10 aerolineas y 10 aviones por aerolinea.
 	  * 50 ciudades.
@@ -33,7 +33,7 @@ Cosas a tener en cuenta:
 > o + Mapa (a discutir)
 > o + IO (a discutir)
 
-(ver foto de diseño)
+(ver foto de diseÃ±o)
 
 Posibles pasos a seguir a grandes rasgos:
   > Parsear archivos (creas las estructuras).

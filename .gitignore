@@ -1,5 +1,4 @@
 *~
 bin/*
 src/a.out
-.cproject
-.project
+.*
