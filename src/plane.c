@@ -1,16 +1,22 @@
 #include "../include/plane.h"
 
-void updateState(Map* map, Plane* plane);
-int findBestCity(Map* map, Plane* plane);
-int hasEnoughItems(Plane* plane, City* city);
+void updateState(Plane* plane);
+void setNewTarget(Plane* plane);
+int canSupplyCity(Plane* plane, City* city);
+int getScore(Plane* plane, int originCityIndex, City* destination);
 
-Plane* createPlane(int id) {
-    printf("Creating plane %d...\n", id);
+//FIXME: move to mathUtils
+int min(int n1, int n2);
+
+Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int suppliesSize) {
 	Plane* plane = (Plane*) malloc(sizeof(Plane));
 	plane->id = id;
-	plane->distanceLeft = -1;
-	plane->targetId = NO_TARGET;
-	plane->supplies = NULL;
+	plane->map = map;
+	plane->distanceToDestination = 0;
+	plane->originCityIndex = initialCityIndex;
+	plane->destinationCityIndex = -1;
+	plane->supplies = supplies;
+	plane->suppliesSize = suppliesSize;
 	return plane;
 }
 
@@ -22,38 +28,79 @@ void planeStart(Plane* plane) {
 	exit(0);
 }
 
-void updateState(Map* map, Plane* plane) {
-	plane->distanceLeft--;
-	if (plane->distanceLeft == 0) {
-		int newTarget = findBestCity(map, plane);
-		if (newTarget != NO_TARGET) {
-			plane->distanceLeft = map->distances[plane->targetId][newTarget]; 	
-			// Distance from currentTargetId to newTaget
-			plane->targetId = newTarget;
-		}
+/*
+	int id;
+	int originCityIndex;
+	int destinationCityIndex;
+	int distanceToDestination;
+	Array supplyArray;
+	Map* map;
+*/
+void updateState(Plane* plane) {
+	plane->distanceToDestination--;
+	if (plane->distanceToDestination <= 0) {
+		plane->originCityIndex = plane->destinationCityIndex;
+		plane->destinationCityIndex = NO_TARGET;
+		setNewTarget(plane);
 	}
 }
 
-int findBestCity(Map* map, Plane* plane) {
-	int i;
-	for (i = 0; i < map->citiesCount; i++) {
-		City * currCity = &(map->cities[i]);
-		if (hasEnoughItems(plane, currCity)) {
-			return 	currCity->id;
+void setNewTarget(Plane* plane) {
+	int i, bestCityScore = -1, bestCityindex = NO_TARGET, newTargetScore;
+	Map* map = plane->map;
+	City newCity;
+	for (i = 0; i < map->citiesSize; i++) {
+		if (i == plane->originCityIndex) {
+			// Skip current city...
+			continue;
+		}
+		newCity = map->cities[i];
+		if (canSupplyCity(plane, &newCity)) {
+			newTargetScore = getScore(plane, plane->originCityIndex, &newCity);
+			if (newTargetScore == -1 && bestCityScore < newTargetScore) {
+				bestCityScore = newTargetScore;
+				bestCityindex = i;
+			}
 		}
 	}
-	return NO_TARGET;
+	if (bestCityindex != NO_TARGET) {
+		// Set new distance from currentTargetId to newTaget
+		plane->distanceToDestination = plane->map->distances[plane->originCityIndex][bestCityindex]; 	
+		plane->destinationCityIndex = bestCityindex;
+	}
+	// TODO: else exit(0) ?
 }
 
-int hasEnoughItems(Plane* plane, City* city) {
-	int i;
-	for (i = 0; i < city->needsCount; i++) {
-		int itemId = city->needs[i].id;
-		if (city->needs[i].amount > plane->supplies[itemId].amount) {
-			return FALSE;
+int canSupplyCity(Plane* plane, City* city) {
+	int i, j;
+	for (i = 0; i < plane->suppliesSize; i++) {
+		Item planeSupply = plane->supplies[i];
+		for (j = 0; j < city->needsSize; j++) {
+			Item cityNeed = city->needs[j];
+			if (planeSupply.id == cityNeed.id && planeSupply.amount > 0) {
+				return TRUE;
+			}
 		}
 	}
-	return TRUE;
+	return FALSE;
 }
 
+int getScore(Plane* plane, int originCityIndex, City* destination) {
+	int i, j, score = 0;
+	for (i = 0; i < plane->suppliesSize; i++) {
+		Item planeSupply = plane->supplies[i];
+		for (j = 0; j < destination->needsSize; j++) {
+			Item cityNeed = destination->needs[j];
+			if (planeSupply.id == cityNeed.id ) {
+				score += min(planeSupply.amount, cityNeed.amount);
+			}
+		}
+	}
+	return score;
+}
+
+
+int min(int n1, int n2) {
+	return n1 < n2 ? n1 : n2;
+}
 

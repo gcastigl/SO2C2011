@@ -5,13 +5,13 @@
 
 typedef struct {
 	int id;
-	int needsCount;
 	Item* needs;
+	int needsSize;
 } City;
 
 typedef struct {
 	City* cities;
-	int citiesCount;
+	int citiesSize;
 	int** distances;
 	int planeCount;
 	int turnCount;
@@ -20,3 +20,4 @@ typedef struct {
 Map* createMap();
 
 #endif
+

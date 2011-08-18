@@ -9,6 +9,7 @@ typedef struct {
 	int id;
 	int planeCount;
 	int* targetedCities;
+	int targetedCitiesSize;
 } Airline;
 
 Airline* createAirline(long id, int numberOfPlanes);
@@ -16,3 +17,4 @@ Airline* createAirline(long id, int numberOfPlanes);
 void airlineStart(Airline* airline);
 
 #endif
+

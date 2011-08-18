@@ -1,7 +1,6 @@
 #include "../include/airline.h"
 
 void initPlanes(int planes);
-void closeUnusedFds(Airline* airline, int **fds, int pipe);
 
 Airline* createAirline(long id, int numberOfPlanes) {
 	Airline* airline = (Airline*) malloc(sizeof(Airline));
@@ -43,7 +42,7 @@ void initPlanes(int planes) {
                 break;
 			case 0:
                 ipcSetupChild(i);
-				planeStart(createPlane(i));
+				planeStart(createPlane(NULL, i, 0, NULL, 0));
                 break;
 		}
 	}
