@@ -68,18 +68,16 @@ void initPlanes(int planes, int** rdPipes, int** wrPipes) {
 			case -1:
 				fatal("Fork call error");
 			case 0:
-				planeProcess(createPlane(i), rdPipes[i], wrPipes[i]);
+				//FIXME: this will NULL will make te program to FAIL!				
+				planeProcess(createPlane(NULL, i, 0, NULL), rdPipes[i], wrPipes[i]);
 		}
 	}
 }
 
 char* parsePlaneResponse(char response) {
-	//printf("Mensaje: %c\n", response);
-	if (response == PLANE_IS_CITY_BUSY) {
-		return AIRLINE_YES;
-	}
 	return "7";
 }
+
 
 
 
