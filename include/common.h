@@ -15,14 +15,7 @@ extern int errno;
 #define FALSE	0
 #define TRUE	!FALSE
 #define ERROR	-1
-#define NO_ERROR 0
-
-// Plane Messages
-#define PLANE_IS_CITY_BUSY	1
-
-// Airline Messages
-#define AIRLINE_YES			"1"
-#define AIRLINE_NO			"0"
+#define NO_ERROR 0	//FIXME: NO_ERROR shouldn't be OK?
 
 typedef struct {
 	int id;
