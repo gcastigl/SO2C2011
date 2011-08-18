@@ -1,83 +1,120 @@
-#include "../include/airline.h"
+#include "../include/plane.h"
 
-void initPlanes(int planes, int** rdPipes, int** wrPipes);
-char* parsePlaneResponse(char response);
-void closeUnusedFds(Airline* airline, int **fds, int pipe);
+void updateState(Plane* plane);
+void setNewTarget(Plane* plane);
+int canSupplyCity(Plane* plane, City* city);
+int getScore(Plane* plane, int originCityIndex, City* destination);
 
-Airline* createAirline(long id, int numberOfPlanes) {
-	Airline* airline = (Airline*) malloc(sizeof(Airline));
-	airline->id = id;
-	airline->planeCount = numberOfPlanes;
-	airline->targetedCities = malloc(sizeof(int) * numberOfPlanes);
-	int i;
-	for (i = 0; i < numberOfPlanes; i++) {
-		airline->targetedCities[i] = FALSE;
-	}
-	return airline;
+//FIXME: move to mathUtils
+int min(int n1, int n2);
+
+Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int suppliesSize) {
+	Plane* plane = (Plane*) malloc(sizeof(Plane));
+	plane->id = id;
+	plane->map = map;
+	plane->distanceToDestination = 0;
+	plane->originCityIndex = initialCityIndex;
+	plane->destinationCityIndex = -1;
+	plane->supplies = supplies;
+	plane->suppliesSize = suppliesSize;
+	return plane;
 }
 
-void airlineProcess(Airline* airline) {
-	int i;
-	fd_set masterRdFd, masterWrFd, readCpy;
-	ipcMessage *data = malloc(sizeof(ipcMessage));
-	int** rdPipes = createIntMatrix(airline->planeCount, 2);
-	int** wrPipes = createIntMatrix(airline->planeCount, 2);
+// FIXME: malloc without frees...
+void planeProcess(Plane* plane, int* wrPipe, int* rdPipe) {
+	close(wrPipe[READ]);
+	close(rdPipe[WRITE]);
 	
-	initPlanes(airline->planeCount, rdPipes, wrPipes);
-	// closes all unwanted write file descriptors
-	closeUnusedFds(airline, rdPipes, WRITE);
-	closeUnusedFds(airline, wrPipes, READ);
-	// Sets all the bit masks for the select system call
-	FD_ZERO(&masterRdFd);
-	FD_SET(0, &masterRdFd);
-	for (i = 0; i < airline->planeCount; i++) {
-		FD_SET(rdPipes[i][READ], &masterRdFd);
-		FD_SET(wrPipes[i][WRITE], &masterWrFd);
+	ipcMessage* data = malloc(sizeof(ipcMessage));	
+	data->id = plane->id;
+	strcpy(data->message, "Buenas!\n");
+
+	updateState(plane);
+	write(wrPipe[WRITE], data, PACKAGE_SIZE);
+	while (read(rdPipe[READ], data, PACKAGE_SIZE) <= 0) {
+		// while there is no respose from the airline... wait!
+		sleep(SLEEP_TIME);
 	}
-	// Call to select with no timeout, it will block until an event occurs
-	while (readCpy = masterRdFd, select(rdPipes[airline->planeCount - 1][READ] + 1, &readCpy, NULL, NULL, NULL) > 0) {
-		for (i = 0; i < airline->planeCount; i++) {
-			if (FD_ISSET(rdPipes[i][READ], &readCpy)) {
-				if (read(rdPipes[i][READ], data, PACKAGE_SIZE) > 0) {
-					printf("Message from child %d -- %s\n", i, data->message);
-					strcpy(data->message, "Response from Airline\n");
-					write(wrPipes[i][WRITE], data, PACKAGE_SIZE);
-				}
+	printf("Message from airline -- %s\n", data->message);
+	
+	exit(0);
+}
+
+/*
+	int id;
+	int originCityIndex;
+	int destinationCityIndex;
+	int distanceToDestination;
+	Array supplyArray;
+	Map* map;
+*/
+void updateState(Plane* plane) {
+	plane->distanceToDestination--;
+	if (plane->distanceToDestination <= 0) {
+		plane->originCityIndex = plane->destinationCityIndex;
+		plane->destinationCityIndex = NO_TARGET;
+		setNewTarget(plane);
+	}
+}
+
+void setNewTarget(Plane* plane) {
+	int i, bestCityScore = -1, bestCityindex = NO_TARGET, newTargetScore;
+	Map* map = plane->map;
+	City newCity;
+	for (i = 0; i < map->citiesSize; i++) {
+		if (i == plane->originCityIndex) {
+			// Skip current city...
+			continue;
+		}
+		newCity = map->cities[i];
+		if (canSupplyCity(plane, newCity)) {
+			newTargetScore = getScore(plane, plane->originCityIndex, newCity);
+			if (newTargetScore == -1 && bestCityScore < newTargetScore) {
+				bestCityScore = newTargetScore;
+				bestCityindex = i;
 			}
 		}
-		// if all sub-processes are dead, return to the main program.
-		if (waitpid(-1, NULL, WNOHANG) == -1) {
-			return;
+	}
+	if (bestCityindex != NO_TARGET) {
+		// Set new distance from currentTargetId to newTaget
+		plane->distanceToDestination = plane->map->distances[plane->originCityIndex][bestCityindex]; 	
+		plane->destinationCityIndex = bestCityindex;
+	}
+	// TODO: else exit(0) ?
+}
+
+int canSupplyCity(Plane* plane, City* city) {
+	int i, j;
+	for (i = 0; i < plane->suppliesSize; i++) {
+		Item planeSupply = plane->supplies[i];
+		for (j = 0; j < city->needsSize; j++) {
+			Item cityNeed = city->needs[j];
+			if (planeSupply.id == cityNeed.id && planeSupply.amount > 0) {
+				return TRUE;
+			}
 		}
 	}
+	return FALSE;
 }
 
-void closeUnusedFds(Airline* airline, int **fds, int pipe) {
-	int i;
-	for (i = 0; i < airline->planeCount; i++)
-		close(fds[i][pipe]);
-}
-
-void initPlanes(int planes, int** rdPipes, int** wrPipes) {
-	int i;
-	for (i = 0; i < planes; i++) {
-		if (pipe(rdPipes[i]) == -1 || pipe(wrPipes[i]) == -1) {
-			fatal("Pipe call error");
-		}
-		switch (fork()) {
-			case -1:
-				fatal("Fork call error");
-			case 0:
-				//FIXME: this will NULL will make te program to FAIL!				
-				planeProcess(createPlane(NULL, i, 0, NULL), rdPipes[i], wrPipes[i]);
+int getScore(Plane* plane, int originCityIndex, City* destination) {
+	int i, j, score = 0;
+	for (i = 0; i < plane->suppliesSize; i++) {
+		Item planeSupply = plane->supplies[i];
+		for (j = 0; j < destination->needsSize; j++) {
+			Item cityNeed = destination->needs[j];
+			if (planeSupply.id == cityNeed.id ) {
+				score += min(planeSupply->amount, cityNeed->amount);
+			}
 		}
 	}
+	return score;
 }
 
-char* parsePlaneResponse(char response) {
-	return "7";
-}
 
+int min(int n1, int n2) {
+	return n1 < n2 ? n1 : n2;
+}
 
 
 
