@@ -46,28 +46,35 @@ void setNewTarget(Plane* plane) {
 		newCity = map->cities[i];
 		if (canSupplyCity(plane, &newCity)) {
 			newTargetScore = getScore(plane, plane->originCityIndex, &newCity);
-			if (newTargetScore == -1 && bestCityScore < newTargetScore) {
+			if (bestCityScore < newTargetScore) {
 				bestCityScore = newTargetScore;
 				bestCityindex = i;
 			}
 		}
 	}
-	if (bestCityindex != NO_TARGET) {
-		// Set new distance from currentTargetId to newTaget
-		plane->distanceToDestination = plane->map->distances[plane->originCityIndex][bestCityindex]; 	
-		plane->destinationCityIndex = bestCityindex;
+	
+	if (bestCityindex == NO_TARGET) {
+		// No more cities can be supplied
+		exit(0);
 	}
-	// TODO: else exit(0) ?
+	// Set new distance from currentTargetId to newTaget
+	plane->destinationCityIndex = bestCityindex;
+	plane->distanceToDestination = plane->map->distances[plane->originCityIndex][bestCityindex]; 	
 }
 
 int canSupplyCity(Plane* plane, City* city) {
 	int i, j;
+	int itemIdFound;
 	for (i = 0; i < plane->suppliesSize; i++) {
 		Item planeSupply = plane->supplies[i];
-		for (j = 0; j < city->needsSize; j++) {
+		itemIdFound = FALSE;
+		for (j = 0; j < city->needsSize && !itemIdFound; j++) {
 			Item cityNeed = city->needs[j];
-			if (planeSupply.id == cityNeed.id && planeSupply.amount > 0) {
-				return TRUE;
+			if (planeSupply.id == cityNeed.id) {
+				itemIdFound = TRUE;	// Stop iterations when item id was found
+				if (planeSupply.amount > 0) {
+					return TRUE;
+				}
 			}
 		}
 	}
@@ -76,11 +83,14 @@ int canSupplyCity(Plane* plane, City* city) {
 
 int getScore(Plane* plane, int originCityIndex, City* destination) {
 	int i, j, score = 0;
+	int itemIdFound;
 	for (i = 0; i < plane->suppliesSize; i++) {
 		Item planeSupply = plane->supplies[i];
-		for (j = 0; j < destination->needsSize; j++) {
+		itemIdFound = FALSE;
+		for (j = 0; j < destination->needsSize && !itemIdFound; j++) {
 			Item cityNeed = destination->needs[j];
-			if (planeSupply.id == cityNeed.id ) {
+			if (planeSupply.id == cityNeed.id) {
+				itemIdFound = TRUE;
 				score += min(planeSupply.amount, cityNeed.amount);
 			}
 		}
