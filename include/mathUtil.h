@@ -1,5 +1,5 @@
-#ifndef _MATHUTIL_
-#define _MATHUTIL_
+#ifndef MATHUTIL_H_
+#define MATHUTIL_H_
 
 #include "common.h"
 

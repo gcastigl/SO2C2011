@@ -1,5 +1,5 @@
-#ifndef __SEMAPHORE_H__
-#define __SEMAPHORE_H__
+#ifndef SEMAPHORE_H_
+#define SEMAPHORE_H_
 
 #include <sys/sem.h>
 

@@ -1,5 +1,5 @@
-#ifndef _COMMON_
-#define _COMMON_
+#ifndef COMMON_H_
+#define COMMON_H_
 
 #include <stdlib.h>
 #include <stdio.h>
