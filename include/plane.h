@@ -6,7 +6,6 @@
 #include "mathUtil.h"
 
 #define NO_TARGET	-1
-#define SLEEP_TIME	1
 
 typedef struct {
 	int id;
