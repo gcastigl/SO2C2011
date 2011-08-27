@@ -5,9 +5,8 @@
 #include "plane.h"
 #include "ipc.h"
 
-Company* createAirline(long id, Map* map, int numberOfPlanes);
-
-void airlineStart(Company* company, Plane plane);
+void companyStart(Company *company);
+Company *newCompany(char* name, int maxPlaneCount);
 
 #endif
 

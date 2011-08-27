@@ -7,6 +7,12 @@ Map *newMap(int maxCityCount) {
 	return map;
 }
 
+City *newCity(char* name) {
+	City* city = malloc(sizeof(City));
+	city->name = name;
+	return city;
+}
+
 void addCity(Map* map, City city) {
 	map->city[map->cityCount++] = city;
 }

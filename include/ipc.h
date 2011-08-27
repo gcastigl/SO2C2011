@@ -2,7 +2,6 @@
 #define _IPC_H_
 
 #include "common.h"
-#include <sys/ipc.h>
 
 #define DATA_SIZE 2048
 #define READ 0
