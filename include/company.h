@@ -7,7 +7,7 @@
 
 Company* createAirline(long id, Map* map, int numberOfPlanes);
 
-void airlineStart(Company* company);
+void airlineStart(Company* company, Plane plane);
 
 #endif
 

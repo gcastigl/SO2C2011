@@ -2,6 +2,7 @@
 #define MAP_H_
 
 #include "common.h"
+#include <pthread.h>
 
 typedef struct {
 	pthread_t thread;
@@ -13,20 +14,20 @@ typedef struct {
 
 typedef struct {
 	char* name;
-	Plane plane[];
+	Plane* plane;
 	int planeCount;
 } Company;
 
 typedef struct {
 	char* name;
-	int itemStock[];
+	int* itemStock;
 	int cityDistance[];
 } City;
 
 typedef struct {
 	int turn;
 	int cityCount;
-	City city[];
+	City* city;
 	int itemCount;
 	char* itemName[];
 } Map;
