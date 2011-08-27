@@ -31,5 +31,7 @@ typedef struct {
 	char* itemName[];
 } Map;
 
+Map map;
+
 #endif
 
