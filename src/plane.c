@@ -20,6 +20,12 @@ Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int s
 	plane->destinationCityIndex = -1;
 	plane->supplies = supplies;
 	plane->suppliesSize = suppliesSize;
+	int i;
+	printf("------------ Avion %d ------------\n", id);
+	for (i = 0; i < suppliesSize; i++) {
+		printf("Supply %d -> id: %d - amt: %d\n", i, supplies[i].id, supplies[i].amount);
+	}
+	printf("-------------------------------------\n");
 	return plane;
 }
 
@@ -28,12 +34,11 @@ void* planeStart(void* param) {
 	int j=0;
 	int semId = semaphore_create(33, 1, 0);	// FIXME: can this 1 cause any problems?
 	if (semId == -1) {
-		printf("Error getting semaphore");
-		exit (0);
+		fatal("Error getting semaphore");
 	}
 	while (1) {
 		semaphore_decrement(semId, me->id);
-		printf ("Hijo %d -> %d\n", me->id, j);
+		printf("Hijo %d -> %d\n", me->id, j);
 		j++;
 	}
 	exit(0);
@@ -96,7 +101,7 @@ void setNewTarget(Plane* plane) {
 	
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		exit(0);
+		pthread_exit(NULL);
 	}
 	// Set new distance from currentTargetId to newTaget
 	plane->destinationCityIndex = bestCityindex;
