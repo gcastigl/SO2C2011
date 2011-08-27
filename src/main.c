@@ -1,6 +1,7 @@
 #include "../include/main.h"
 
 int main() {
+	loadExampleCities();
     int numAirlines = 1;
     int i;
     Map* map = createRandomMap();

@@ -1,28 +1,30 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-CFLAGS := -Wall
-LDFLAGS := 
+CFLAGS := -Wall -g -lpthread -lm
 
 # Directories belonging to the project
 PROJDIRS := src include
 # All source files of the project
 CSRCS := $(shell find -L $(PROJDIRS) -type f -name "*.c")
-# All header files of the project
-CHDRS := $(shell find -L $(PROJDIRS) -type f -name "*.h")
 
-# Binary Directorys
-BINDIR := bin
+# All object files in the library
+OBJS := $(patsubst src/%.c,bin/%.o,$(CSRCS))
+
+OBJDIRS := $(sort $(dir $(OBJS)))
 
 .PHONY: all clean
 
-all: $(BINDIR) $(BINARY)
+all: $(OBJDIRS) $(BINARY)
 
-$(BINDIR):
-	mkdir -p $(BINDIR)
+$(OBJDIRS):
+	mkdir -p $@
+
+$(BINARY): $(OBJS)
+	gcc $(CFLAGS) $(OBJS) -o $@
 
 clean:
-	-@$(RM) -rf $(BINDIR)
+	-@$(RM) -rf $(OBJDIRS)
 
-$(BINARY):
-	gcc $(CFLAGS) -MMD -MP $(CSRCS) -o $(BINARY) -lpthread -lm
+$(OBJS): bin/%.o : src/%.c
+	gcc $(CFLAGS) -MMD -MP -c $< -o $@

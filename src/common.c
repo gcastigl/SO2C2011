@@ -49,4 +49,3 @@ void printMatrix(int** matrix, int rows, int columns) {
 		printf("\n");
 	}
 }
-
