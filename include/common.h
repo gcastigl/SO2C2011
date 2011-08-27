@@ -15,30 +15,10 @@
 #include "mathUtil.h"
 extern int errno;
 
-#define FALSE	0
-#define TRUE	!FALSE
+#define OK		0
 #define ERROR	-1
-#define NO_ERROR 0	//FIXME: NO_ERROR shouldn't be OK?
 
-typedef struct {
-	int id;
-	int amount;
-} Item;
-
-typedef struct {
-	char** supplyName;
-	char** companyName;
-	char** cityName;
-} Names;
-
- //TODO: this is for testing while the IPC are being programmed
-typedef struct {
-	int counter;
-	pthread_mutex_t mutexCounter;
-	pthread_mutex_t finished_thinking_mutex;
-	int bufferSize;
-	int* buffer;
-} FakeIPC;
+typedef enum {FALSE = 0, TRUE = 1} bool;
 
 void fatal(char* err);
 

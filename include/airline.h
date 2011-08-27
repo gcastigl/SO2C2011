@@ -5,19 +5,9 @@
 #include "plane.h"
 #include "ipc.h"
 
-typedef struct {
-	int id;
-	Map* map;
-	int* targetedCities;
-	int targetedCitiesSize;
-	pthread_t* planesThreads;
-	Plane* planes;
-	int planesSize;
-} Airline;
+Company* createAirline(long id, Map* map, int numberOfPlanes);
 
-Airline* createAirline(long id, Map* map, int numberOfPlanes);
-
-void airlineStart(Airline* airline);
+void airlineStart(Company* company);
 
 #endif
 
