@@ -20,12 +20,43 @@ char *fgetstr(char *string, int n, FILE *stream) {
 	return (string);
 }
 
+void parseItem(FILE *stream) {
+
+}
+
+void parseCity(FILE *stream, Map *map) {
+
+}
+
+void parseDistance(FILE *stream, Map *map) {
+
+}
+
+int parseInt(FILE *stream) {
+	char line[BUFSIZ];
+	int integer;
+	while (fgetstr(line, sizeof line, stream)) {
+		if (sscanf(line, "%d", &integer) == 1) {
+			return integer;
+		}
+	}
+	fatal("integer not found");
+	return 0;
+}
+
 void parseMap(char *fileName) {
-	Map* map = malloc(sizeof(Map));
+	int maxCityCount = 0;
+	Map *map;
+	City *city;
 	FILE *file = fopen(fileName, "r");
 	if (file) {
-		map->cityCount(parseCount(file));
-
+		map = newMap(parseInt(file));
+		for(int i = 0; i < map->cityCount; i++) {
+			addCity(map, parseCity(file));
+		}
+		for(int i = 0; i < map->cityCount; i++) {
+			parseDistance(file, map);
+		}
 		loadCities(file);
 		fclose(file);
 	} else {
@@ -46,18 +77,6 @@ void loadExampleCompanies() {
 
 int isNewLine(char *line) {
 	return !strcmp("", line);
-}
-
-int parseCount(FILE *stream) {
-	char line[BUFSIZ];
-	int cityCount;
-	while (fgetstr(line, sizeof line, stream)) {
-		if (sscanf(line, "%d", &cityCount) == 1) {
-			return cityCount;
-		}
-	}
-	fatal("integer not found");
-	return 0;
 }
 
 void loadCities(FILE *stream) {

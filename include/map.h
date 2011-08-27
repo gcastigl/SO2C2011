@@ -32,7 +32,8 @@ typedef struct {
 	char* itemName[];
 } Map;
 
-Map map;
+Map * newMap(int maxCityCount);
+void addCity(Map* map, City city);
 
 #endif
 
