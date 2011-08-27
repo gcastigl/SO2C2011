@@ -9,7 +9,7 @@ int semaphore_create(int key, int semSize, int flags) {
 	if (semKey == (key_t)-1) {
 		return -1;
 	}
-	semId = semget(semKey, 10, flags | 0600 | IPC_CREAT);
+	semId = semget(semKey, semSize, flags | 0600 | IPC_CREAT);
 	if (semId == -1) {
 		return -1;
 	}
