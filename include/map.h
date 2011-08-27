@@ -13,11 +13,16 @@ typedef struct {
 	City* cities;
 	int citiesSize;
 	int** distances;
-	int planeCount;
 	int turnCount;
 } Map;
 
-Map* createMap();
+Map* createRandomMap();
+
+City* createRandomCity(int id);
+
+Item* crateRandomItemArray(int* dim);
+
+Item* createRandomItem(int id);
 
 #endif
 
