@@ -7,9 +7,12 @@
 
 typedef struct {
 	int id;
-	int planeCount;
+	Map* map;
 	int* targetedCities;
 	int targetedCitiesSize;
+	pthread_t* planesThreads;
+	Plane* planes;
+	int planesSize;
 } Airline;
 
 Airline* createAirline(long id, int numberOfPlanes);
