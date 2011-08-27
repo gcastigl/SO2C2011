@@ -7,7 +7,9 @@
 
 #define NO_TARGET	-1
 
-void* planeStart(void* param);
+Plane *newPlane();
+
+void *planeStart(void* param);
 
 #endif
 

@@ -8,7 +8,7 @@ int main() {
         switch(fork()) {
             case 0:
                 printf("Creating airline...\n");
-                Company* company = newCompany('pepe', 2);
+                Company* company = newCompany("pepe", 2);
                 companyStart(company);
                 break;
             case ERROR:

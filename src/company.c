@@ -1,16 +1,17 @@
 #include "../include/company.h"
-#include <pthread.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 void wakeUpPlanes(Company* airline, int semId);
 
 Company *newCompany(char* name, int maxPlaneCount) {
 	Company* company = malloc(sizeof(Company));
 	company->name = name;
-	company->planeCount = 0;
+	company->planeCount = maxPlaneCount;
 	company->plane = malloc(maxPlaneCount * sizeof(Company));
+	int i;
+	for (i = 0; i < maxPlaneCount; ++i) {
+		Plane* p = newPlane();
+		company->plane[i] = *p;
+	}
 	return company;
 }
 

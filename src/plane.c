@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-Plane * newPlane(char* name, int maxPlaneCount) {
+Plane *newPlane() {
 	Plane* plane = malloc(sizeof(Plane));
 	plane->destinationCityIndex = 0;
 	plane->distanceToDestination = 0;
@@ -33,8 +33,8 @@ void* planeStart(void* param) {
 		fatal("Error getting semaphore");
 	}
 	while (1) {
-		semaphore_decrement(semId, me);
-		printf("Hijo %d -> %d\n", me->thread, j);
+		semaphore_decrement(semId, (int) me->thread);
+		printf("Hijo %d -> %d\n", (int) me->thread, j);
 		j++;
 	}
 	exit(0);
@@ -104,8 +104,7 @@ void setNewTarget(Plane* plane) {
 }
 
 int canSupplyCity(Plane* plane, City* city) {
-	int i, j;
-	int itemIdFound;
+	int i;
 	for (i = 0; i < map->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && city->itemStock[i] < 0) {
 			return TRUE;
