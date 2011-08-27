@@ -41,4 +41,3 @@ void printMatrix(float** matrix, int rows, int columns) {
 		printf("\n");
 	}
 }
-
