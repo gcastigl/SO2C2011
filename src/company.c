@@ -1,19 +1,29 @@
-#include "../include/airline.h"
+#include "../include/company.h"
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include <sys/sem.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-void createPlanes(Airline* airline);
-void wakeUpPlanes(Airline* airline, int semId);
+Company * newCompany(char* name, int maxPlaneCount) {
+	Company* company = malloc(sizeof(Company));
+	company->name = name;
+	company->planeCount = 0;
+	company->plane = malloc(maxPlaneCount * sizeof(Company));
+	return company;
+}
 
-Airline* createAirline(long id, Map* map, int numberOfPlanes) {
-	Airline* airline = (Airline*) malloc(sizeof(Airline));
+void addPlane(Company *company, Company plane) {
+	company->plane[company->planeCount++] = plane;
+}
+
+void wakeUpPlanes(Company* airline, int semId);
+
+Company* createAirline(long id, Map* map, int numberOfPlanes) {
+	Company* airline = (Company*) malloc(sizeof(Company));
 	airline->id = id;
 	airline->map = map;
-	airline->planes = malloc(sizeof(Plane) * numberOfPlanes);
+	airline->planes = malloc(sizeof(Company) * numberOfPlanes);
 	airline->planesThreads = malloc(sizeof(pthread_t) * numberOfPlanes);
 	airline->planesSize = numberOfPlanes;
 	createPlanes(airline);
@@ -23,19 +33,7 @@ Airline* createAirline(long id, Map* map, int numberOfPlanes) {
 //  ipcPostChildSetup(numberOfPlanes);
 }
 
-//TODO: agregar items a los aviones recien creados
-void createPlanes(Airline* airline) {
-	Item* supplies;
-	Plane* newPlane;
-	int dim, i;
-	for (i = 0; i < airline->planesSize; i++) {
-		supplies = crateRandomItemArray(&dim);
-		newPlane = createPlane(airline->map, i, 0, supplies, dim);
-		airline->planes[i] = *newPlane;
-	}
-}
-
-void airlineStart(Airline* airline) {
+void airlineStart(Company* airline) {
 	int i;
 	int semId = semaphore_create(33, airline->planesSize, 0);
 	if (semId == -1) {
@@ -85,7 +83,7 @@ void airlineStart(Airline* airline) {
     exit(0);
 }
 
-void wakeUpPlanes(Airline* airline, int semId) {
+void wakeUpPlanes(Company* airline, int semId) {
 	int i;
 	for(i = 0; i < airline->planesSize; i++) {
 		semaphore_increment(semId, i);

@@ -6,6 +6,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+Plane * newPlane(char* name, int maxPlaneCount) {
+	Plane* plane = malloc(sizeof(Plane));
+	plane->destinationCityIndex = 0;
+	plane->distanceToDestination = 0;
+	plane->originCityIndex = 0;
+	plane->thread = 0;
+	plane->itemStock = malloc(20*sizeof(int));
+	return plane;
+}
+
+void diffStock(Plane *plane, int itemId, int itemStockDiff) {
+	plane->itemStock[itemId] += itemStockDiff;
+}
+
 void updateState(Plane* plane);
 void setNewTarget(Plane* plane);
 int canSupplyCity(Plane* plane, City* city);
