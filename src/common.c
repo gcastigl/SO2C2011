@@ -23,20 +23,20 @@ void fatal(char* err) {
 	exit(1);
 }
 
-void printMatrix(float** matrix, int rows, int columns) {
+void printMatrix(int** matrix, int rows, int columns) {
 	int i, j;
 	printf("\t");
 	for (j = 0; j < columns; j++) {
-		printf("%d       ", j + 1);
+		printf("%d    ", j + 1);
 	}
 	printf("\n");
 	for (i = 0; i < rows; i++) {
 		printf("%d\t", i + 1);
 		for (j = 0; j < columns; j++) {
 			if (matrix[i][j] < 10) 
-				printf("%.3f   ", matrix[i][j]);
+				printf("%d    ", matrix[i][j]);
 			else if (matrix[i][j] < 100)
-				printf("%.3f  ", matrix[i][j]);
+				printf("%d   ", matrix[i][j]);
 		}
 		printf("\n");
 	}
