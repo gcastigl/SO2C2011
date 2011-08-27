@@ -44,7 +44,7 @@ void airlineStart(Airline* airline) {
 	for(i = 0; i < airline->planesSize; i++) {
 		semctl(semId, i, SETVAL, 0);
 		pthread_create(airline->planesThreads + i, NULL, planeStart, airline->planes + i);
-		//TODO: instaed of NULL, a void* can be called to see the exit status...
+		//int pthread_key_create(pthread_key_t *key, void (*destructor) (void *));
 	}
 	for (i = 0; i < 10; i++) {
 		printf("Semaphore increment\n");
