@@ -1,7 +1,7 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-CFLAGS := -Wall -g -lpthread -lm
+CFLAGS := -Wall -g -lpthread -lm -std=c99
 
 # Directories belonging to the project
 PROJDIRS := src include
