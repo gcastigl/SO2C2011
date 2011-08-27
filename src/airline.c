@@ -17,6 +17,7 @@ Airline* createAirline(long id, Map* map, int numberOfPlanes) {
 	airline->planesThreads = malloc(sizeof(pthread_t) * numberOfPlanes);
 	airline->planesSize = numberOfPlanes;
 	createPlanes(airline);
+	printMatrix(map->distances, map->citiesSize, map->citiesSize);
 	return airline;
 //  ipcSetup(numberOfPlanes);
 //  ipcPostChildSetup(numberOfPlanes);
@@ -24,10 +25,12 @@ Airline* createAirline(long id, Map* map, int numberOfPlanes) {
 
 //TODO: agregar items a los aviones recien creados
 void createPlanes(Airline* airline) {
-	int i;
+	Item* supplies;
 	Plane* newPlane;
+	int dim, i;
 	for (i = 0; i < airline->planesSize; i++) {
-		newPlane = createPlane(airline->map, i, 0, NULL, 0);
+		supplies = crateRandomItemArray(&dim);
+		newPlane = createPlane(airline->map, i, 0, supplies, dim);
 		airline->planes[i] = *newPlane;
 	}
 }
@@ -41,6 +44,7 @@ void airlineStart(Airline* airline) {
 	for(i = 0; i < airline->planesSize; i++) {
 		semctl(semId, i, SETVAL, 0);
 		pthread_create(airline->planesThreads + i, NULL, planeStart, airline->planes + i);
+		//TODO: instaed of NULL, a void* can be called to see the exit status...
 	}
 	for (i = 0; i < 10; i++) {
 		printf("Semaphore increment\n");
