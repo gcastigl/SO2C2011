@@ -4,15 +4,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/select.h>
 #include <unistd.h>
 #include <errno.h>
 #include <math.h>
-#include "ipc.h"
 #include "semaphore.h"
 #include "mathUtil.h"
+/*#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/select.h>*/
 
 extern int errno;
 
