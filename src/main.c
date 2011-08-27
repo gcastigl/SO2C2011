@@ -1,6 +1,7 @@
 #include "../include/main.h"
 
 int main() {
+    initSignalHandling();
 	loadExampleCities();
     int numAirlines = 1;
     int i;
@@ -23,6 +24,3 @@ int main() {
     printf("Simulation Done!\n");
 	return 0;
 }
-
-
-

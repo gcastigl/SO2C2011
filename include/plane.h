@@ -1,5 +1,5 @@
-#ifndef _PLANE_
-#define _PLANE_
+#ifndef PLANE_H_
+#define PLANE_H_
 
 #include "common.h"
 #include "map.h"

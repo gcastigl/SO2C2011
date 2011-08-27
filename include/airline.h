@@ -1,5 +1,5 @@
-#ifndef _AIRLINE_
-#define _AIRLINE_
+#ifndef AIRLINE_H_
+#define AIRLINE_H_
 
 #include "common.h"
 #include "plane.h"

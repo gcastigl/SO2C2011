@@ -1,5 +1,5 @@
-#ifndef _PIPE_
-#define _PIPE_
+#ifndef PIPE_H_
+#define PIPE_H_
 
 #include "ipc.h"
 
