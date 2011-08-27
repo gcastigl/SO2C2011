@@ -9,30 +9,34 @@ typedef struct {
 	int originCityIndex;
 	int destinationCityIndex;
 	int distanceToDestination;
-	int itemStock[];
+	int *itemStock;
 } Plane;
 
 typedef struct {
-	char* name;
-	Plane* plane;
+	char *name;
+	Plane *plane;
 	int planeCount;
 } Company;
 
 typedef struct {
-	char* name;
-	int* itemStock;
-	int cityDistance[];
+	char *name;
+	int *itemStock;
+	int *cityDistance;
 } City;
 
 typedef struct {
 	int turn;
 	int cityCount;
-	City* city;
+	City *city;
 	int itemCount;
-	char* itemName[];
+	char **itemName;
 } Map;
 
-Map map;
+Map *newMap(int maxCityCount);
+City *newCity(char* name);
+void addCity(Map* map, City city);
+
+Map *map;
 
 #endif
 

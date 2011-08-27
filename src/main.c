@@ -1,16 +1,15 @@
 #include "../include/main.h"
 
 int main() {
-	loadExampleCities();
     int numAirlines = 1;
     int i;
-    Map* map = createRandomMap();
+    map = newMap(1);
     for (i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:
                 printf("Creating airline...\n");
-                Airline* airline = createAirline(12345678, map, 2);
-                airlineStart(airline);
+                Company* company = newCompany('pepe', 2);
+                companyStart(company);
                 break;
             case ERROR:
                 fatal("Fork Error");

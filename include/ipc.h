@@ -5,10 +5,6 @@
 #include <sys/ipc.h>
 #include <sys/wait.h>
 #include <sys/select.h>
-/*
-#include <sys/types.h>
-
-*/
 #define DATA_SIZE 2048
 #define READ 0
 #define WRITE 1

@@ -97,6 +97,7 @@ int getFd(int index, int channel) {
         
         default:
             fd = ERROR;
+            break;
     }
     return fd;
 }

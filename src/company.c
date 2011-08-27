@@ -1,11 +1,12 @@
 #include "../include/company.h"
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/sem.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 void wakeUpPlanes(Company* airline, int semId);
 
-Company * newCompany(char* name, int maxPlaneCount) {
+Company *newCompany(char* name, int maxPlaneCount) {
 	Company* company = malloc(sizeof(Company));
 	company->name = name;
 	company->planeCount = 0;
@@ -17,7 +18,7 @@ void addPlane(Company *company, Plane plane) {
 	company->plane[company->planeCount++] = plane;
 }
 
-void CompanyStart(Company* Company) {
+void companyStart(Company* Company) {
 	int i;
 	int semId = semaphore_create(33, Company->planeCount, 0);
 	if (semId == -1) {

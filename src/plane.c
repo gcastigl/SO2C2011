@@ -100,7 +100,7 @@ void setNewTarget(Plane* plane) {
 	}
 	// Set new distance from currentTargetId to newTaget
 	plane->destinationCityIndex = bestCityindex;
-	plane->distanceToDestination = map->city[plane->originCityIndex]->cityDistance[bestCityindex];
+	plane->distanceToDestination = map->city[plane->originCityIndex].cityDistance[bestCityindex];
 }
 
 int canSupplyCity(Plane* plane, City* city) {
