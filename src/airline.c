@@ -1,54 +1,26 @@
 #include "../include/airline.h"
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include <sys/sem.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-void createPlanes(Airline* airline);
-void wakeUpPlanes(Airline* airline, int semId);
+void wakeUpPlanes(Company* Company, int semId);
 
-Airline* createAirline(long id, Map* map, int numberOfPlanes) {
-	Airline* airline = (Airline*) malloc(sizeof(Airline));
-	airline->id = id;
-	airline->map = map;
-	airline->planes = malloc(sizeof(Plane) * numberOfPlanes);
-	airline->planesThreads = malloc(sizeof(pthread_t) * numberOfPlanes);
-	airline->planesSize = numberOfPlanes;
-	createPlanes(airline);
-	printMatrix(map->distances, map->citiesSize, map->citiesSize);
-	return airline;
-//  ipcSetup(numberOfPlanes);
-//  ipcPostChildSetup(numberOfPlanes);
-}
-
-//TODO: agregar items a los aviones recien creados
-void createPlanes(Airline* airline) {
-	Item* supplies;
-	Plane* newPlane;
-	int dim, i;
-	for (i = 0; i < airline->planesSize; i++) {
-		supplies = crateRandomItemArray(&dim);
-		newPlane = createPlane(airline->map, i, 0, supplies, dim);
-		airline->planes[i] = *newPlane;
-	}
-}
-
-void airlineStart(Airline* airline) {
+void CompanyStart(Company* Company) {
 	int i;
-	int semId = semaphore_create(33, airline->planesSize, 0);
+	int semId = semaphore_create(33, Company->planeCount, 0);
 	if (semId == -1) {
 		fatal("Error creating semaphore");
 	}
-	for(i = 0; i < airline->planesSize; i++) {
+	for(i = 0; i < Company->planeCount; i++) {
 		semctl(semId, i, SETVAL, 0);
-		pthread_create(airline->planesThreads + i, NULL, planeStart, airline->planes + i);
+		pthread_create(&(Company->plane[i].thread), NULL, planeStart, Company->plane + i);
 		//int pthread_key_create(pthread_key_t *key, void (*destructor) (void *));
 	}
 	for (i = 0; i < 10; i++) {
 		printf("Semaphore increment\n");
-		wakeUpPlanes(airline, semId);
+		wakeUpPlanes(Company, semId);
 		sleep(1);
 	}
 	/*
@@ -74,7 +46,7 @@ void airlineStart(Airline* airline) {
     ipcPackage package;
     package.id = 1;
 	while (waitpid(-1, NULL, WNOHANG) != -1) {
-        for (i = 0; i < airline->planeCount; i++) {
+        for (i = 0; i < Company->planeCount; i++) {
             if (ipcIsReady(i, WRITE) == TRUE) {
                 strcpy(package.data, "Message to plane :D\n");
                 sendData(i, package);
@@ -85,9 +57,9 @@ void airlineStart(Airline* airline) {
     exit(0);
 }
 
-void wakeUpPlanes(Airline* airline, int semId) {
+void wakeUpPlanes(Company* Company, int semId) {
 	int i;
-	for(i = 0; i < airline->planesSize; i++) {
+	for(i = 0; i < Company->planeCount; i++) {
 		semaphore_increment(semId, i);
 	}
 }
