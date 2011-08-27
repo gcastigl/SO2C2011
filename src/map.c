@@ -21,13 +21,15 @@ void createCities(Map* map) {
 	}
 	// Random distances between all cities...
 	map->distances = createIntMatrix(map->citiesSize, map->citiesSize);
-	for (i = 0; i < map->citiesSize; i++) {
-		for (j = 0; j < map->citiesSize; j++) {
+	for (i = 0; i < map->citiesSize - 1; i++) {
+		for (j = 0; j < map->citiesSize - 1; j++) {
 			if (i == j) {
 				map->distances[i][j] = 0;
 			} else if (i < j) {
 				map->distances[i][j] = randomInt(10, 25);
 			} else {
+                printf("(%d, %d) -> (%d, %d) max: %d\n", i, j, j, i, map->citiesSize);
+                fflush(stdout);
 				map->distances[i][j] = map->distances[j][i];
 			}
 		}

@@ -2,8 +2,9 @@
 #define SIGNAL_H_
 
 #include <signal.h>
-#include <stdio.h>
+#include <unistd.h>
 
-void initSignalHandling();
+void initSignalHandler();
+void initChildSignalHandler();
 
 #endif
