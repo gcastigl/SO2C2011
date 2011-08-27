@@ -15,7 +15,7 @@ typedef struct {
 	int planesSize;
 } Airline;
 
-Airline* createAirline(long id, int numberOfPlanes);
+Airline* createAirline(long id, Map* map, int numberOfPlanes);
 
 void airlineStart(Airline* airline);
 
