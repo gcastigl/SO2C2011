@@ -1,4 +1,10 @@
 #include "../include/plane.h"
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 void updateState(Plane* plane);
 void setNewTarget(Plane* plane);
@@ -17,12 +23,47 @@ Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int s
 	return plane;
 }
 
-void planeStart(Plane* plane) {
+void* planeStart(void* param) {
+	Plane* me = (Plane*) param;
+	int j=0;
+	int semId = semaphore_create(33, 1, 0);	// FIXME: can this 1 cause any problems?
+	if (semId == -1) {
+		printf("Error getting semaphore");
+		exit (0);
+	}
+	while (1) {
+		semaphore_decrement(semId, me->id);
+		printf ("Hijo %d -> %d\n", me->id, j);
+		j++;
+	}
+	exit(0);
+	return NULL;
+	/*
+	FakeIPC* fake_ipc = (FakeIPC*) param;
+	int i, elementoDistinto;
+	while (1) {
+		pthread_mutex_lock(&(fake_ipc->mutexCounter));
+		
+		elementoDistinto = 0;
+		for ( i = 1; i < fake_ipc->bufferSize; i++) {
+			if (fake_ipc->buffer[0] != fake_ipc->buffer[i]) {
+				elementoDistinto = 1;
+				break;
+			}
+		}
+		if (elementoDistinto)
+			printf ("Hijo  : Error. Elementos de buffer distintos\n");
+		else
+			printf ("Hijo  : Correcto\n");
+		
+		pthread_mutex_unlock(&(fake_ipc->mutexCounter));
+	}
+
     printf("Plane %d created\nWaiting for data...\n", plane->id);
     ipcPackage data;
     data = getData(plane->id);
     printf("Data for plane %d: %s\n",plane->id, data.data);
-	exit(0);
+	exit(0);*/
 }
 
 void updateState(Plane* plane) {
