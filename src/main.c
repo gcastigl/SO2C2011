@@ -7,7 +7,7 @@ int main() {
         switch(fork()) {
             case 0:
                 printf("Creating airline...\n");
-                Airline* airline = createAirline(12345678, 3);
+                Airline* airline = createAirline(12345678, NULL, 2);
                 airlineStart(airline);
                 break;
 

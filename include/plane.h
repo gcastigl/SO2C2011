@@ -20,7 +20,7 @@ typedef struct {
 
 Plane* createPlane(Map* map, int id, int initialCityIndex, Item* supplies, int suppliesSize);
 
-void planeStart(Plane* plane);
+void* planeStart(void* param);
 
 #endif
 
