@@ -1,12 +1,9 @@
 #include "../include/common.h"
 
+void** createMatrix(int elemSize, int rows, int columns);
+
 int** createIntMatrix(int rows, int columns) {
-	int i;
-	int** matrix = (int**) malloc(sizeof(int*) * rows);
-	for (i = 0; i < rows; i++) {
-		matrix[i] = malloc(sizeof(int) * columns); 
-	}
-	return matrix;
+	return (int**) createMatrix(sizeof(int), rows, columns);
 }
 
 float** createFloatMatrix(int rows, int columns) {
@@ -14,6 +11,17 @@ float** createFloatMatrix(int rows, int columns) {
 	float** matrix = (float**) malloc(sizeof(float*) * rows);
 	for (i = 0; i < rows; i++) {
 		matrix[i] = malloc(sizeof(float) * columns); 
+	}
+	return matrix;
+}
+
+void** createMatrix(int elemSize, int rows, int columns) {
+	int i;
+	char** aux;
+	void** matrix = malloc(elemSize * rows);
+	aux = (char**) matrix;
+	for (i = 0; i < rows; i++) {
+		aux[i] = malloc(elemSize * columns);
 	}
 	return matrix;
 }
