@@ -25,4 +25,4 @@ clean:
 	-@$(RM) -rf $(BINDIR)
 
 $(BINARY):
-	gcc $(CFLAGS) -MMD -MP $(CSRCS) -o $(BINARY)
+	gcc $(CFLAGS) -MMD -MP $(CSRCS) -o $(BINARY) -lpthread
