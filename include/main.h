@@ -4,5 +4,6 @@
 #include "airline.h"
 #include "map.h"
 #include "parser.h"
+#include "signal.h"
 
 #endif
