@@ -30,7 +30,7 @@ int semaphore_operation(int id, int op, int semnum) {
 	return semop(id, &operation, 1);
 }
 
-int semaphore_destroy(int key) {
-	// TODO:
+int semaphore_destroy(int id) {
+	semctl(id, 0, IPC_RMID);
 	return 0;
 }
