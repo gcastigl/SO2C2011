@@ -19,18 +19,18 @@ void addPlane(Company *company, Plane* plane) {
 }
 
 void companyStart(Company* company) {
-	int i;
-	int semId = semaphore_create(33, SEM_TOTAL, 0600);
-	if (semId == 0 || semId == -1) {
+	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0600);
+	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
+	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
 		fatal("Error creating semaphore");
 	}
-	for(i = 0; i < company->planeCount; i++) {
-		semctl(semId, i, SETVAL, 0);
+	for(int i = 0; i < company->planeCount; i++) {
+		semctl(planesTurnSemId, i, SETVAL, 0);
 		pthread_create(&(company->plane[i].thread), NULL, planeStart, company->plane + i);
 	}
-	for (i = 0; i < 10; i++) {
-		wakeUpPlanes(company, semId);
-		waitUntilPlanesReady(company, semId);
+	for (int i = 0; i < 10; i++) {
+		wakeUpPlanes(company, planesTurnSemId);
+		waitUntilPlanesReady(company, companyTurnSemId);
 	}
 	/*
 	FakeIPC fake_ipc;
@@ -66,13 +66,13 @@ void companyStart(Company* company) {
 void wakeUpPlanes(Company* company, int semId) {
 	printf("planes wake up!\n");
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_increment(semId, SEM_PLANES);
+		semaphore_increment(semId, i);
 	}
 }
 
 void waitUntilPlanesReady(Company* company, int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_decrement(semId, SEM_COMPANY);
+		semaphore_decrement(semId, 0);
 	}
 	printf("Waiting done!...\n");
 }

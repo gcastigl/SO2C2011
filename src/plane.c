@@ -26,14 +26,15 @@ void diffStock(Plane *plane, int itemId, int itemStockDiff) {
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
 	int j = 0;
-	int semId = semaphore_create(33, SEM_TOTAL, 0600);
-	if (semId == 0 || semId == -1) {
-		fatal("Error getting semaphore");
+	int planesTurnSemId = semaphore_create(50, 1, 0600);
+	int companyTurnSemId = semaphore_create(51, 1, 0600);
+	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
+		fatal("Error creating semaphore");
 	}
 	while (1) {
-		semaphore_decrement(semId, SEM_PLANES);
-		printf("Hijo %4ld -> %d\n", me->thread % 1000, j++);
-		semaphore_increment(semId, SEM_COMPANY);
+		semaphore_decrement(planesTurnSemId, me->id);
+		printf("Hijo %4d -> %d\n", me->id, j++);
+		semaphore_increment(companyTurnSemId, 0);
 	}
 	exit(0);
 	return NULL;
