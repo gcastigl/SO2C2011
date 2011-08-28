@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include "semaphore.h"
 #include "mathUtil.h"
+#include "util/logger.h"
 
 extern int errno;
 
