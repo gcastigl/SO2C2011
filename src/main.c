@@ -11,7 +11,7 @@ int main() {
             case 0:
                 initChildSignalHandler();
                 printf("Creating airline...\n");
-                Company* company = newCompany("pepe", 2);
+                Company* company = newCompany("pepe", 9);
                 companyStart(company);
                 break;
             case ERROR:

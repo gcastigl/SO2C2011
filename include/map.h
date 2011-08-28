@@ -10,6 +10,7 @@ typedef struct {
 	int destinationCityIndex;
 	int distanceToDestination;
 	int *itemStock;
+	int id;
 } Plane;
 
 typedef struct {
