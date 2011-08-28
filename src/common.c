@@ -1,4 +1,4 @@
-#include "../include/common.h"
+#include "common.h"
 
 void** createMatrix(int elemSize, int rows, int columns);
 

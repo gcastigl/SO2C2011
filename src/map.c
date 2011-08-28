@@ -1,4 +1,4 @@
-#include "../include/map.h"
+#include "map.h"
 
 void map_init(int maxCityCount) {
 	map = malloc(sizeof(Map));

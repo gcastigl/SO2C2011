@@ -2,6 +2,6 @@
 #define CURSES_SCREEN_H_
 
 #include <ncurses.h>
-#include "map.h"
+//#include "map.h"
 
 #endif

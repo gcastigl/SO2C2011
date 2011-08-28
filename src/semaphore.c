@@ -1,4 +1,4 @@
-#include "../include/semaphore.h"
+#include "semaphore.h"
 
 int semaphore_operation(int id, int op, int semnum);
 

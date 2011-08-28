@@ -1,4 +1,4 @@
-#include "../include/signal.h"
+#include "util/signal.h"
 
 void signalHandler(int signal);
 void childSignalHandler(int signal);

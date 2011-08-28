@@ -18,10 +18,10 @@ extern int errno;
 #define SEM_COMPANY_KEY 51
 
 // Status defines
-#define OK		0
+#define OP_OK	0
 #define ERROR	-1
 
-typedef enum {FALSE = 0, TRUE = 1} bool;
+typedef enum { FALSE = 0, TRUE = 1 } bool;
 
 void fatal(char* err);
 

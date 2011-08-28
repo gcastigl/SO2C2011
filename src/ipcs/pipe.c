@@ -1,4 +1,4 @@
-#include "../../include/pipe.h"
+#include "pipe.h"
 
 /*Private functions, don't use outside pipe.c unless certain 
 of what you are doing*/
@@ -18,7 +18,7 @@ int ipcSetupChild(int index) {
     rdPipes = temp;
     close(rdPipes[index][WRITE]);
     close(wrPipes[index][READ]);
-    return OK;
+    return OP_OK;
 }
 
 int ipcPostChildSetup(int ammount) {
@@ -27,7 +27,7 @@ int ipcPostChildSetup(int ammount) {
         close(rdPipes[i][WRITE]);
         close(wrPipes[i][READ]);
     }
-    return TRUE;
+    return OP_OK;
 }
 
 int ipcIsReady(int index, int channel) {
@@ -63,7 +63,7 @@ int initPipes(int ammount) {
         }
     }
     
-    return OK;
+    return OP_OK;
 }
 
 void closePipes(int** pipes, int channel, int totalPipes) {

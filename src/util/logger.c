@@ -1,4 +1,4 @@
-#include "../../include/logger.h"
+#include "util/logger.h"
 
 static FILE* logFile = NULL;
 static int initialized = 0;

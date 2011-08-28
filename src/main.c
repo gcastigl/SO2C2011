@@ -1,5 +1,5 @@
-#include "../include/main.h"
-#include "../include/parser.h"
+#include "main.h"
+#include "parser.h"
 
 int main() {
     initSignalHandler();

@@ -1,4 +1,4 @@
-#include "../include/company.h"
+#include "company.h"
 
 void wakeUpPlanes(Company* airline, int semId);
 void waitUntilPlanesReady(Company* company, int semId);

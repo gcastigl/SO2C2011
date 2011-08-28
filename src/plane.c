@@ -1,4 +1,4 @@
-#include "../include/plane.h"
+#include "plane.h"
 
 void updateState(Plane* plane);
 

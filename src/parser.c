@@ -1,5 +1,5 @@
-#include "../include/parser.h"
-#include "../include/map.h"
+#include "parser.h"
+#include "map.h"
 
 typedef enum {STATUS_NAME = 0, STATUS_STOCK = 1} Status;
 int isNewLine(char *line);

@@ -1,1 +1,1 @@
-#include "../include/curses_screen.h"
+#include "curses_screen.h"
