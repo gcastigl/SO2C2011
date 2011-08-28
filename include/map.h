@@ -2,27 +2,41 @@
 #define MAP_H_
 
 #include "common.h"
+#include <pthread.h>
 
 typedef struct {
-	int id;
-	Item* needs;
-	int needsSize;
+	pthread_t thread;
+	int originCityIndex;
+	int destinationCityIndex;
+	int distanceToDestination;
+	int *itemStock;
+} Plane;
+
+typedef struct {
+	char *name;
+	Plane *plane;
+	int planeCount;
+} Company;
+
+typedef struct {
+	char *name;
+	int *itemStock;
+	int *cityDistance;
 } City;
 
 typedef struct {
-	City* cities;
-	int citiesSize;
-	int** distances;
-	int turnCount;
+	int turn;
+	int cityCount;
+	City *city;
+	int itemCount;
+	char **itemName;
 } Map;
 
-Map* createRandomMap();
+Map *newMap(int maxCityCount);
+City *newCity(char* name);
+void addCity(Map* map, City city);
 
-City* createRandomCity(int id);
-
-Item* crateRandomItemArray(int* dim);
-
-Item* createRandomItem(int id);
+Map *map;
 
 #endif
 

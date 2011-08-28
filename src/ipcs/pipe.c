@@ -18,7 +18,7 @@ int ipcSetupChild(int index) {
     rdPipes = temp;
     close(rdPipes[index][WRITE]);
     close(wrPipes[index][READ]);
-    return NO_ERROR;
+    return OK;
 }
 
 int ipcPostChildSetup(int ammount) {
@@ -63,7 +63,7 @@ int initPipes(int ammount) {
         }
     }
     
-    return NO_ERROR;
+    return OK;
 }
 
 void closePipes(int** pipes, int channel, int totalPipes) {
@@ -97,6 +97,7 @@ int getFd(int index, int channel) {
         
         default:
             fd = ERROR;
+            break;
     }
     return fd;
 }
