@@ -5,3 +5,4 @@ bin/*
 src/a.out
 .*
 SO2C2011.xcodeproj/*
+log.txt
