@@ -1,18 +1,33 @@
 #include "../include/map.h"
 
-Map *newMap(int maxCityCount) {
-	Map* map = malloc(sizeof(Map));
+void map_init(int maxCityCount) {
+	map = malloc(sizeof(Map));
 	map->cityCount = 0;
+	map->itemCount = 0;
+	map->itemName = malloc(100*sizeof(char*));
 	map->city = malloc(maxCityCount * sizeof(City));
-	return map;
 }
 
 City *newCity(char* name) {
 	City* city = malloc(sizeof(City));
 	city->name = name;
+	city->itemStock = malloc(100*sizeof(int));
 	return city;
 }
 
-void addCity(Map* map, City city) {
+void map_addCity(City city) {
 	map->city[map->cityCount++] = city;
+}
+
+int map_getStockId(char* name) {
+	int i;
+	int x = map->itemCount;
+	for(i = 0; i < map->itemCount; i++) {
+		if (!strcmp(map->itemName[i], name)) {
+			return i;
+		}
+	}
+	map->itemCount++;
+	map->itemName[i] = name;
+	return i;
 }

@@ -1,9 +1,8 @@
 #include "../include/parser.h"
 #include "../include/map.h"
 
-#define S_LINES 0
-#define S_DATA1 1
-#define S_DATA2 2
+typedef enum {STATUS_NAME = 0, STATUS_STOCK = 1} Status;
+int isNewLine(char *line);
 
 char *fgetstr(char *string, int n, FILE *stream) {
 	char *result;
@@ -20,13 +19,39 @@ char *fgetstr(char *string, int n, FILE *stream) {
 	return (string);
 }
 
-void parseItem(FILE *stream) {
-
+void parseCityStock(char *line, City* city) {
+	char itemName[100];
+	int stock;
+	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
+		city->itemStock[map_getStockId(itemName)] = stock;
+		return;
+	}
+	fatal("Invalid City stock");
 }
 
 City *parseCity(FILE *stream) {
-	City *city = newCity("TEST");
-	return city;
+	Status status = STATUS_NAME;
+	City *city;
+	char line[BUFSIZ];
+	while (fgetstr(line, sizeof line, stream)) {
+		switch (status) {
+			case STATUS_NAME:
+				if (!isNewLine(line)) {
+					city = newCity(line);
+					status = STATUS_STOCK;
+				}
+				break;
+			case STATUS_STOCK:
+				if (isNewLine(line)) {
+					return city;
+				} else {
+					parseCityStock(line, city);
+				}
+				break;
+		}
+	}
+	fatal("city not found");
+	return NULL;
 }
 
 void parseDistance(FILE *stream) {
@@ -48,12 +73,14 @@ int parseInt(FILE *stream) {
 void parseMap(char *fileName) {
 	Map *map;
 	FILE *file = fopen(fileName, "r");
+	int maxCityCount;
 	if (file) {
-		map = newMap(parseInt(file));
-		for(int i = 0; i < map->cityCount; i++) {
-			addCity(map, *parseCity(file));
+		maxCityCount = parseInt(file);
+		map_init(maxCityCount);
+		for(int i = 0; i < maxCityCount; i++) {
+			map_addCity(*parseCity(file));
 		}
-		for(int i = 0; i < map->cityCount; i++) {
+		for(int i = 0; i < maxCityCount; i++) {
 			parseDistance(file);
 		}
 		fclose(file);
