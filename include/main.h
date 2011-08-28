@@ -4,6 +4,6 @@
 #include "company.h"
 #include "map.h"
 #include "parser.h"
-#include "signal.h"
+#include "util/signal.h"
 
 #endif
