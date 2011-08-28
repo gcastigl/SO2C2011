@@ -24,6 +24,7 @@ void parseCityStock(char *line, City* city) {
 	int stock;
 	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
 		city->itemStock[map_getStockId(itemName)] = stock;
+		return;
 	}
 	fatal("Invalid City stock");
 }
@@ -72,12 +73,14 @@ int parseInt(FILE *stream) {
 void parseMap(char *fileName) {
 	Map *map;
 	FILE *file = fopen(fileName, "r");
+	int maxCityCount;
 	if (file) {
-		map = newMap(parseInt(file));
-		for(int i = 0; i < map->cityCount; i++) {
+		maxCityCount = parseInt(file);
+		map_init(maxCityCount);
+		for(int i = 0; i < maxCityCount; i++) {
 			map_addCity(*parseCity(file));
 		}
-		for(int i = 0; i < map->cityCount; i++) {
+		for(int i = 0; i < maxCityCount; i++) {
 			parseDistance(file);
 		}
 		fclose(file);
