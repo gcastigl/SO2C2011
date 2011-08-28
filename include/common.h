@@ -22,7 +22,8 @@ extern int errno;
 #define OP_OK	0
 #define ERROR	-1
 
-typedef enum { FALSE = 0, TRUE = 1 } bool;
+#define FALSE 0
+#define TRUE 1
 
 void fatal(char* err);
 
