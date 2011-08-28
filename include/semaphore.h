@@ -11,6 +11,7 @@ union semun {
 	struct seminfo *__buf;
 };
 #endif
+
 int semaphore_create(int key, int semSize, int flags);
 
 int semaphore_increment(int id, int semnum);

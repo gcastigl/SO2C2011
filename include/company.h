@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void companyStart(Company *company);
-
 Company *newCompany(char* name, int maxPlaneCount);
+
+void addPlane(Company *company, Plane* plane);
+
+void companyStart(Company *company);
 
 #endif
 

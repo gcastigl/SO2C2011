@@ -3,13 +3,11 @@
 int semaphore_operation(int id, int op, int semnum);
 
 int semaphore_create(int key, int semSize, int flags) {
-	key_t semKey;
-	int semId;
-	semKey = ftok("/bin/ls", key); //FIXME: change to /tmp/sim
+	key_t semKey = ftok("/bin/ls", key); //FIXME: change to /tmp/sim
 	if (semKey == (key_t)-1) {
 		return -1;
 	}
-	semId = semget(semKey, semSize, flags | 0600 | IPC_CREAT);
+	int semId = semget(semKey, semSize, flags | IPC_CREAT);
 	if (semId == -1) {
 		return -1;
 	}
@@ -32,7 +30,7 @@ int semaphore_operation(int id, int op, int semnum) {
 	return semop(id, &operation, 1);
 }
 
-int semaphore_destroy(int key) {
-	// TODO:
+int semaphore_destroy(int id) {
+	semctl(id, 0, IPC_RMID);
 	return 0;
 }

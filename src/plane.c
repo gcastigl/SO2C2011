@@ -1,10 +1,12 @@
 #include "../include/plane.h"
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <stdlib.h>
-#include <unistd.h>
+
+void updateState(Plane* plane);
+
+void setNewTarget(Plane* plane);
+
+int canSupplyCity(Plane* plane, City* city);
+
+int getScore(Plane* plane, int originCityIndex, City* destination);
 
 Plane *newPlane() {
 	Plane* plane = malloc(sizeof(Plane));
@@ -12,7 +14,7 @@ Plane *newPlane() {
 	plane->distanceToDestination = 0;
 	plane->originCityIndex = 0;
 	plane->thread = 0;
-	plane->itemStock = malloc(20*sizeof(int));
+	plane->itemStock = malloc(20 * sizeof(int));  // FIXME: remove this hard coded value
 	return plane;
 }
 
@@ -20,22 +22,17 @@ void diffStock(Plane *plane, int itemId, int itemStockDiff) {
 	plane->itemStock[itemId] += itemStockDiff;
 }
 
-void updateState(Plane* plane);
-void setNewTarget(Plane* plane);
-int canSupplyCity(Plane* plane, City* city);
-int getScore(Plane* plane, int originCityIndex, City* destination);
-
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
-	int j=0;
-	int semId = semaphore_create(33, 1, 0);	// FIXME: can this 1 cause any problems?
-	if (semId == -1) {
+	int j = 0;
+	int semId = semaphore_create(33, SEM_TOTAL, 0600);
+	if (semId == 0 || semId == -1) {
 		fatal("Error getting semaphore");
 	}
 	while (1) {
-		semaphore_decrement(semId, 0);
-		printf("Hijo %ld -> %d\n", me->thread, j);
-		j++;
+		semaphore_decrement(semId, SEM_PLANES);
+		printf("Hijo %4ld -> %d\n", me->thread % 1000, j++);
+		semaphore_increment(semId, SEM_COMPANY);
 	}
 	exit(0);
 	return NULL;
