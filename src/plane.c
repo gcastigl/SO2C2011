@@ -33,8 +33,8 @@ void* planeStart(void* param) {
 		fatal("Error getting semaphore");
 	}
 	while (1) {
-		semaphore_decrement(semId, (int) me->thread);
-		printf("Hijo %d -> %d\n", (int) me->thread, j);
+		semaphore_decrement(semId, 0);
+		printf("Hijo %d -> %d\n", 1, j);
 		j++;
 	}
 	exit(0);
