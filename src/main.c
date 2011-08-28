@@ -12,7 +12,7 @@ int main() {
                 initChildSignalHandler();
                 log_debug("Creating airline...\n");
                 log_error("Bleh\n");
-                Company* company = newCompany("pepe", 9);
+                Company* company = newCompany("pepe", 3);
                 companyStart(company);
                 break;
             case ERROR:

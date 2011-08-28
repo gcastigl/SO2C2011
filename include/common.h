@@ -16,8 +16,8 @@ extern int errno;
 
 #define DEFAULT_FOLDER	"/tmp/"
 // Semaphore keys
-#define SEM_PLANE_KEY 	55
-#define SEM_COMPANY_KEY 56
+#define SEM_PLANE_KEY 	0x8512154
+#define SEM_COMPANY_KEY 0x1233468
 
 // Status defines
 #define OP_OK	0
