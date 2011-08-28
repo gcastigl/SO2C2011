@@ -71,7 +71,6 @@ int parseInt(FILE *stream) {
 }
 
 void parseMap(char *fileName) {
-	Map *map;
 	FILE *file = fopen(fileName, "r");
 	int maxCityCount;
 	if (file) {
