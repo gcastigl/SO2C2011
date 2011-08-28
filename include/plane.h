@@ -12,7 +12,7 @@
 
 #define NO_TARGET	-1
 
-Plane *newPlane();
+Plane *newPlane(int id);
 
 void *planeStart(void* param);
 

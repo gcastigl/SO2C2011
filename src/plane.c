@@ -8,12 +8,13 @@ int canSupplyCity(Plane* plane, City* city);
 
 int getScore(Plane* plane, int originCityIndex, City* destination);
 
-Plane *newPlane() {
+Plane *newPlane(int id) {
 	Plane* plane = malloc(sizeof(Plane));
 	plane->destinationCityIndex = 0;
 	plane->distanceToDestination = 0;
 	plane->originCityIndex = 0;
 	plane->thread = 0;
+	plane->id = id;
 	plane->itemStock = malloc(20 * sizeof(int));  // FIXME: remove this hard coded value
 	return plane;
 }
