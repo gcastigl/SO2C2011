@@ -73,13 +73,13 @@ void closePipes(int** pipes, int channel, int totalPipes) {
     }
 }
 
-void sendData(int index, ipcPackage data) {
+void sendData(int index, IpcPackage data) {
     write(wrPipes[index][WRITE], &data, PACKAGE_SIZE);
 }
 
-ipcPackage getData(int index) {
+IpcPackage getData(int index) {
     fflush(stdout);
-    ipcPackage data;
+    IpcPackage data;
     read(rdPipes[index][READ], &data, PACKAGE_SIZE);
     return data;
 }
