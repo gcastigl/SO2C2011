@@ -1,38 +1,36 @@
 #include "../include/company.h"
 
 void wakeUpPlanes(Company* airline, int semId);
+void waitUntilPlanesReady(Company* company, int semId);
 
 Company *newCompany(char* name, int maxPlaneCount) {
 	Company* company = malloc(sizeof(Company));
 	company->name = name;
-	company->planeCount = maxPlaneCount;
+	company->planeCount = 0;
 	company->plane = malloc(maxPlaneCount * sizeof(Company));
-	int i;
-	for (i = 0; i < maxPlaneCount; ++i) {
-		Plane* p = newPlane();
-		company->plane[i] = *p;
+	for (int i = 0; i < maxPlaneCount; ++i) {
+		addPlane(company, newPlane(i));
 	}
 	return company;
 }
 
-void addPlane(Company *company, Plane plane) {
-	company->plane[company->planeCount++] = plane;
+void addPlane(Company *company, Plane* plane) {
+	company->plane[company->planeCount++] = *plane;
 }
 
-void companyStart(Company* Company) {
+void companyStart(Company* company) {
 	int i;
-	int semId = semaphore_create(33, 1, 0);
-	if (semId == -1) {
+	int semId = semaphore_create(33, SEM_TOTAL, 0600);
+	if (semId == 0 || semId == -1) {
 		fatal("Error creating semaphore");
 	}
-	for(i = 0; i < Company->planeCount; i++) {
+	for(i = 0; i < company->planeCount; i++) {
 		semctl(semId, i, SETVAL, 0);
-		pthread_create(&(Company->plane[i].thread), NULL, planeStart, Company->plane + i);
+		pthread_create(&(company->plane[i].thread), NULL, planeStart, company->plane + i);
 	}
 	for (i = 0; i < 10; i++) {
-		printf("Semaphore increment\n");
-		wakeUpPlanes(Company, semId);
-		sleep(1);
+		wakeUpPlanes(company, semId);
+		waitUntilPlanesReady(company, semId);
 	}
 	/*
 	FakeIPC fake_ipc;
@@ -65,9 +63,16 @@ void companyStart(Company* Company) {
     exit(0);
 }
 
-void wakeUpPlanes(Company* Company, int semId) {
-	int i;
-	for(i = 0; i < Company->planeCount; i++) {
-		semaphore_increment(semId, 0);
+void wakeUpPlanes(Company* company, int semId) {
+	printf("planes wake up!\n");
+	for(int i = 0; i < company->planeCount; i++) {
+		semaphore_increment(semId, SEM_PLANES);
 	}
+}
+
+void waitUntilPlanesReady(Company* company, int semId) {
+	for(int i = 0; i < company->planeCount; i++) {
+		semaphore_decrement(semId, SEM_COMPANY);
+	}
+	printf("Waiting done!...\n");
 }

@@ -7,11 +7,18 @@
 #include <unistd.h>
 #include <errno.h>
 #include <math.h>
+#include <pthread.h>
 #include "semaphore.h"
 #include "mathUtil.h"
 
 extern int errno;
 
+// Semaphore keys
+#define SEM_PLANES		0
+#define SEM_COMPANY		1
+#define SEM_TOTAL		2
+
+// Status defines
 #define OK		0
 #define ERROR	-1
 
