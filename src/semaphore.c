@@ -3,7 +3,7 @@
 int semaphore_operation(int id, int op, int semnum);
 
 int semaphore_create(int key, int semSize, int flags) {
-	key_t semKey = ftok("/bin/ls", key); //FIXME: change to /tmp/sim
+	key_t semKey = ftok(DEFAULT_FOLDER, key); //FIXME: change to /tmp/sim
 	if (semKey == (key_t)-1) {
 		return -1;
 	}

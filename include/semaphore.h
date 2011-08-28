@@ -2,6 +2,7 @@
 #define SEMAPHORE_H_
 
 #include <sys/sem.h>
+#include "common.h"
 
 #ifdef LINUX
 union semun {
