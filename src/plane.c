@@ -34,7 +34,7 @@ void* planeStart(void* param) {
 	}
 	while (1) {
 		semaphore_decrement(semId, 0);
-		printf("Hijo %d -> %d\n", 1, j);
+		printf("Hijo %ld -> %d\n", me->thread, j);
 		j++;
 	}
 	exit(0);

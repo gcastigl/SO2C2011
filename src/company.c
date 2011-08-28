@@ -28,7 +28,6 @@ void companyStart(Company* Company) {
 	for(i = 0; i < Company->planeCount; i++) {
 		semctl(semId, i, SETVAL, 0);
 		pthread_create(&(Company->plane[i].thread), NULL, planeStart, Company->plane + i);
-		//int pthread_key_create(pthread_key_t *key, void (*destructor) (void *));
 	}
 	for (i = 0; i < 10; i++) {
 		printf("Semaphore increment\n");
