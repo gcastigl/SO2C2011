@@ -21,14 +21,13 @@ void addPlane(Company *company, Plane plane) {
 
 void companyStart(Company* Company) {
 	int i;
-	int semId = semaphore_create(33, Company->planeCount, 0);
+	int semId = semaphore_create(33, 1, 0);
 	if (semId == -1) {
-			fatal("Error creating semaphore");
+		fatal("Error creating semaphore");
 	}
 	for(i = 0; i < Company->planeCount; i++) {
 		semctl(semId, i, SETVAL, 0);
 		pthread_create(&(Company->plane[i].thread), NULL, planeStart, Company->plane + i);
-		//int pthread_key_create(pthread_key_t *key, void (*destructor) (void *));
 	}
 	for (i = 0; i < 10; i++) {
 		printf("Semaphore increment\n");
@@ -69,6 +68,6 @@ void companyStart(Company* Company) {
 void wakeUpPlanes(Company* Company, int semId) {
 	int i;
 	for(i = 0; i < Company->planeCount; i++) {
-		semaphore_increment(semId, i);
+		semaphore_increment(semId, 0);
 	}
 }
