@@ -15,8 +15,8 @@
 extern int errno;
 
 // Semaphore keys
-#define SEM_PLANE_KEY 	50
-#define SEM_COMPANY_KEY 51
+#define SEM_PLANE_KEY 	55
+#define SEM_COMPANY_KEY 56
 
 // Status defines
 #define OP_OK	0

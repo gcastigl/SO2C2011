@@ -21,7 +21,6 @@ void map_addCity(City city) {
 
 int map_getStockId(char* name) {
 	int i;
-	int x = map->itemCount;
 	for(i = 0; i < map->itemCount; i++) {
 		if (!strcmp(map->itemName[i], name)) {
 			return i;

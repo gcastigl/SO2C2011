@@ -10,15 +10,19 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
-	int j = 0;
-	int planesTurnSemId = semaphore_create(50, 1, 0600);
-	int companyTurnSemId = semaphore_create(51, 1, 0600);
+	int turn = 0;
+	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, 1, 0600);
+	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
 	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
 		fatal("Error creating semaphore");
 	}
 	while (1) {
 		semaphore_decrement(planesTurnSemId, me->id);
-		printf("Hijo %4d -> %d\n", me->id, j++);
+		printf("------------Hijo %d -> turn: %d-----------------\n", me->id, turn++);
+		printf("Distance to destination: %d\n", me->distanceToDestination);
+		printf("----------------------------------------------\n\n");
+		//updateState(me);
+		sleep(1);
 		semaphore_increment(companyTurnSemId, 0);
 	}
 	exit(0);
@@ -88,8 +92,7 @@ void setNewTarget(Plane* plane) {
 }
 
 int canSupplyCity(Plane* plane, City* city) {
-	int i;
-	for (i = 0; i < map->itemCount; i++) {
+	for (int i = 0; i < map->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && city->itemStock[i] < 0) {
 			return TRUE;
 		}
@@ -98,8 +101,8 @@ int canSupplyCity(Plane* plane, City* city) {
 }
 
 int getScore(Plane* plane, int originCityIndex, City* destination) {
-	int i, score = 0;
-	for (i = 0; i < map->itemCount; i++) {
+	int score = 0;
+	for (int i = 0; i < map->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && destination->itemStock[i] < 0) {
 			score += min(plane->itemStock[i], -destination->itemStock[i]);
 		}
