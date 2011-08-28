@@ -1,9 +1,10 @@
 #include "../include/main.h"
+#include "../include/parser.h"
 
 int main() {
     int numAirlines = 1;
     int i;
-    map = newMap(1);
+    parseMap("resources/loads/ciudades.txt");
     for (i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:

@@ -34,7 +34,8 @@ typedef struct {
 
 Map *newMap(int maxCityCount);
 City *newCity(char* name);
-void addCity(Map* map, City city);
+void map_addCity(City city);
+int map_getStockId(char* name);
 
 Map *map;
 

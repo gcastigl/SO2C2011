@@ -13,6 +13,18 @@ City *newCity(char* name) {
 	return city;
 }
 
-void addCity(Map* map, City city) {
+void map_addCity(City city) {
 	map->city[map->cityCount++] = city;
+}
+
+int map_getStockId(char* name) {
+	int i;
+	for(i = 0; i<map->itemCount; i++) {
+		if (!strcmp(map->itemName[i], name)) {
+			return i;
+		}
+	}
+	map->itemCount++;
+	map->itemName[i] = name;
+	return i;
 }

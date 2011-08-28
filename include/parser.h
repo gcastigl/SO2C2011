@@ -3,10 +3,6 @@
 
 #include "common.h"
 
-void loadExampleCities();
-void loadExampleCompanies();
-
-void loadCities(FILE *stream);
-void loadCompanies(FILE *stream);
+void parseMap(char *fileName);
 
 #endif /* HEADER_H_ */
