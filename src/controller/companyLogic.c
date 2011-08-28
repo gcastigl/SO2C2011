@@ -1,4 +1,4 @@
-#include "companyLogic.h"
+#include "controller/companyLogic.h"
 
 void wakeUpPlanes(Company* company, int semId);
 
