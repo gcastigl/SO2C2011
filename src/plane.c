@@ -1,10 +1,12 @@
 #include "../include/plane.h"
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <stdlib.h>
-#include <unistd.h>
+
+void updateState(Plane* plane);
+
+void setNewTarget(Plane* plane);
+
+int canSupplyCity(Plane* plane, City* city);
+
+int getScore(Plane* plane, int originCityIndex, City* destination);
 
 Plane *newPlane() {
 	Plane* plane = malloc(sizeof(Plane));
@@ -20,15 +22,10 @@ void diffStock(Plane *plane, int itemId, int itemStockDiff) {
 	plane->itemStock[itemId] += itemStockDiff;
 }
 
-void updateState(Plane* plane);
-void setNewTarget(Plane* plane);
-int canSupplyCity(Plane* plane, City* city);
-int getScore(Plane* plane, int originCityIndex, City* destination);
-
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
 	int j=0;
-	int semId = semaphore_create(33, 1, 0);	// FIXME: can this 1 cause any problems?
+	int semId = semaphore_create(33, 1, 0);
 	if (semId == -1) {
 		fatal("Error getting semaphore");
 	}
