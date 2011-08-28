@@ -21,4 +21,6 @@ int semaphore_decrement(int id, int semnum);
 
 int semaphore_operation(int id, int op, int semnum);
 
+int semaphore_destroy(int id);
+
 #endif

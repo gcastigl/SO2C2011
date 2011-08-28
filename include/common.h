@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include "semaphore.h"
 #include "mathUtil.h"
+#include "util/logger.h"
 
 extern int errno;
 
@@ -22,7 +23,8 @@ extern int errno;
 #define OP_OK	0
 #define ERROR	-1
 
-typedef enum { FALSE = 0, TRUE = 1 } bool;
+#define FALSE 0
+#define TRUE 1
 
 void fatal(char* err);
 

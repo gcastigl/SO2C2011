@@ -10,8 +10,9 @@ int main() {
         switch(fork()) {
             case 0:
                 initChildSignalHandler();
-                printf("Creating airline...\n");
-                Company* company = newCompany("pepe", 3);
+                log_debug("Creating airline...\n");
+                log_error("Bleh\n");
+                Company* company = newCompany("pepe", 9);
                 companyStart(company);
                 break;
             case ERROR:
