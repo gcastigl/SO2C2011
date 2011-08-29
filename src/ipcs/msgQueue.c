@@ -14,6 +14,7 @@ int ipc_init(int key, int flags) {
 }
 
 int ipc_write(int ipcId, IpcPackage* msg) {
+	msg->id = 0;
 	return msgsnd(ipcId, (struct msgbuf *) msg,
 		sizeof(msg->numericDataType) + sizeof(msg->data), IPC_NOWAIT);
 }
