@@ -49,3 +49,8 @@ void printMatrix(int** matrix, int rows, int columns) {
 		printf("\n");
 	}
 }
+
+char *mstrcpy(char **to, char *from) {
+	*to = malloc((strlen(from)+1) * sizeof(char));
+	return strcpy(*to, from);
+}

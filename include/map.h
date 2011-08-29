@@ -5,16 +5,17 @@
 #include <pthread.h>
 
 #define MAX_CITY_COUNT 64
+#define MAX_COMPANY_COUNT 64
 #define MAX_ITEM_COUNT 128
 #define MAX_PLANE_COUNT 32
 
 typedef struct {
+	int id;
 	pthread_t thread;
-	int originCityIndex;
-	int destinationCityIndex;
+	int cityIdFrom;
+	int cityIdTo;
 	int distanceToDestination;
 	int itemStock[MAX_ITEM_COUNT];
-	int id;
 } Plane;
 
 typedef struct {
@@ -35,11 +36,14 @@ typedef struct {
 	City city[MAX_CITY_COUNT];
 	int itemCount;
 	char *itemName[MAX_ITEM_COUNT];
+	int companyCount;
+	Company company[MAX_COMPANY_COUNT];
 } Map;
 
 void map_init(int maxCityCount);
 City *newCity(char* name);
 void map_addCity(City city);
+void map_addCompany(Company company);
 int map_getCityId(char* name);
 int map_getStockId(char* name);
 

@@ -1,8 +1,8 @@
 #ifndef SEMAPHORE_H_
 #define SEMAPHORE_H_
 
-#include <sys/sem.h>
 #include "common.h"
+#include <sys/sem.h>
 
 #ifdef LINUX
 union semun {

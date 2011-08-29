@@ -1,9 +1,8 @@
 #include "parser.h"
-#include "map.h"
 
 #define MAX_NAME 100
 
-typedef enum {STATUS_NAME = 0, STATUS_STOCK = 1} Status;
+typedef enum {S0 = 0, S1 = 1} Status;
 int isNewLine(char *line);
 
 char *fgetstr(char *string, int n, FILE *stream) {
@@ -32,18 +31,18 @@ void parseCityStock(char *line, City* city) {
 }
 
 City *parseCity(FILE *stream) {
-	Status status = STATUS_NAME;
+	Status status = S0;
 	City *city;
 	char line[BUFSIZ];
 	while (fgetstr(line, sizeof line, stream)) {
 		switch (status) {
-			case STATUS_NAME:
+			case S0:
 				if (!isNewLine(line)) {
 					city = newCity(line);
-					status = STATUS_STOCK;
+					status = S1;
 				}
 				break;
-			case STATUS_STOCK:
+			case S1:
 				if (isNewLine(line)) {
 					return city;
 				} else {
@@ -53,6 +52,41 @@ City *parseCity(FILE *stream) {
 		}
 	}
 	fatal("city not found");
+	return NULL;
+}
+
+void parsePlaneStock(char *line, Plane* plane) {
+	char itemName[MAX_NAME];
+	int stock;
+	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
+		plane->itemStock[map_getStockId(itemName)] = stock;
+		return;
+	}
+	fatal("Invalid City stock");
+}
+
+Plane *parsePlane(FILE *stream, int id) {
+	Status status = S0;
+	Plane *plane;
+	char line[BUFSIZ];
+	while (fgetstr(line, sizeof line, stream)) {
+		switch (status) {
+			case S0:
+				if (!isNewLine(line)) {
+					plane = newPlane(id, map_getCityId(line));
+					status = S1;
+				}
+				break;
+			case S1:
+				if (isNewLine(line)) {
+					return plane;
+				} else {
+					parsePlaneStock(line, plane);
+				}
+				break;
+		}
+	}
+	fatal("plane not found");
 	return NULL;
 }
 
@@ -97,6 +131,23 @@ void parseMap(char *fileName) {
 		fclose(file);
 	} else {
 		fatal("Error loading map file.");
+	}
+}
+
+Company *parseCompany(char *fileName) {
+	FILE *file = fopen(fileName, "r");
+	int maxPlaneCount;
+	if (file) {
+		maxPlaneCount = parseInt(file);
+		Company *company = newCompany(fileName, maxPlaneCount);
+		for(int i = 0; i < maxPlaneCount; i++) {
+			addPlane(company, *parsePlane(file, i));
+		}
+		fclose(file);
+		return company;
+	} else {
+		fatal("Error loading company file.");
+		return (Company *)NULL;
 	}
 }
 

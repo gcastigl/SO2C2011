@@ -7,8 +7,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <math.h>
-#include <pthread.h>
-#include "semaphore.h"
 #include "mathUtil.h"
 #include "util/logger.h"
 
@@ -33,5 +31,7 @@ int** createIntMatrix(int rows, int columns);
 float** createFloatMatrix(int rows, int columns);
 
 void printMatrix(int** matrix, int rows, int columns);
+
+char *mstrcpy(char **to, char *from);
 
 #endif

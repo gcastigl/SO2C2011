@@ -6,7 +6,7 @@
 
 #define NO_TARGET	-1
 
-Plane *newPlane(int id);
+Plane *newPlane(int id, int cityIdFrom);
 
 void *planeStart(void* param);
 

@@ -90,11 +90,9 @@ int getFd(int index, int channel) {
         case READ:
             fd = rdPipes[index][READ];
             break;
-        
         case WRITE:
             fd = wrPipes[index][WRITE];
             break;
-        
         default:
             fd = ERROR;
             break;

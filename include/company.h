@@ -11,7 +11,7 @@
 
 Company *newCompany(char* name, int maxPlaneCount);
 
-void addPlane(Company *company, Plane* plane);
+void addPlane(Company *company, Plane plane);
 
 void companyStart(Company *company);
 
