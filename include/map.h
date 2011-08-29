@@ -4,6 +4,7 @@
 #include "common.h"
 #include <pthread.h>
 
+//FIXME: remove all this values
 #define MAX_CITY_COUNT 64
 #define MAX_COMPANY_COUNT 64
 #define MAX_ITEM_COUNT 128

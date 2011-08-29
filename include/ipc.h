@@ -30,6 +30,8 @@ typedef struct {
 
 #define PACKAGE_SIZE sizeof(IpcPackage)
 
+// TODO: this API is maked to be removed (but keep the structs defines!)
+
 int ipcSetup(int ammount);
 int ipcSetupChild(int index);
 int ipcPostChildSetup(int ammount);

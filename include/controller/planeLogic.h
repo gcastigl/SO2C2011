@@ -3,5 +3,7 @@
 
 #include "../common.h"
 #include "../plane.h"
+#include "../communicator.h"
+#include <string.h>
 
 #endif
