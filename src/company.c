@@ -7,7 +7,7 @@ Company *newCompany(char* name, int maxPlaneCount) {
 	return company;
 }
 
-void addPlane(Company *company, Plane plane) {
+void addPlane(Company *company, Plane *plane) {
 	company->plane[company->planeCount++] = plane;
 }
 

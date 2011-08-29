@@ -4,8 +4,6 @@
 #include "../common.h"
 #include "../map.h"
 #include "../plane.h"
-#include "../ipc.h"
-#include "../ipc.h"
 #include "../communicator.h"
 #include <string.h>
 #include <pthread.h>

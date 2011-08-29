@@ -86,8 +86,7 @@ Plane *parsePlane(FILE *stream, int id) {
 				break;
 		}
 	}
-	fatal("plane not found");
-	return NULL;
+	return plane;
 }
 
 void parseCityDistances(FILE *stream) {
@@ -100,7 +99,7 @@ void parseCityDistances(FILE *stream) {
 			char cityName1[MAX_NAME];
 			char cityName2[MAX_NAME];
 			if (sscanf(line, "%s %s %d", cityName1, cityName2, &distance) == 3) {
-				map->city[map_getCityId(cityName1)].cityDistance[map_getCityId(cityName2)] = distance;
+				map->city[map_getCityId(cityName1)]->cityDistance[map_getCityId(cityName2)] = distance;
 			}
 		}
 	}
@@ -125,7 +124,7 @@ void parseMap(char *fileName) {
 		maxCityCount = parseInt(file);
 		map_init(maxCityCount);
 		for(int i = 0; i < maxCityCount; i++) {
-			map_addCity(*parseCity(file));
+			map_addCity(parseCity(file));
 		}
 		parseCityDistances(file);
 		fclose(file);
@@ -141,7 +140,7 @@ Company *parseCompany(char *fileName) {
 		maxPlaneCount = parseInt(file);
 		Company *company = newCompany(fileName, maxPlaneCount);
 		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, *parsePlane(file, i));
+			addPlane(company, parsePlane(file, i));
 		}
 		fclose(file);
 		return company;

@@ -93,7 +93,7 @@ void setNewTarget(Plane* plane) {
 			// Skip current city...
 			continue;
 		}
-		newCity = map->city[i];
+		newCity = *map->city[i];
 		if (canSupplyCity(plane, &newCity)) {
 			newTargetScore = getScore(plane, plane->cityIdFrom, &newCity);
 			if (bestCityScore < newTargetScore) {
@@ -109,7 +109,7 @@ void setNewTarget(Plane* plane) {
 	}
 	// Set new distance from currentTargetId to newTaget
 	plane->cityIdTo = bestCityindex;
-	plane->distanceToDestination = map->city[plane->cityIdFrom].cityDistance[bestCityindex];
+	plane->distanceToDestination = map->city[plane->cityIdFrom]->cityDistance[bestCityindex];
 }
 
 int canSupplyCity(Plane* plane, City* city) {
