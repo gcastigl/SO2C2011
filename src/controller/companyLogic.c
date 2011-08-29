@@ -44,11 +44,11 @@ void waitUntilPlanesReady(Company* company, int semId) {
 void readAndProcessMessages(Company *company) {
 	IpcPackage package;
 	package.id = 1;
+	int ipcId = ipc_init(IPC_BASE_KEY, 0600);
+	printf("compania lee del id = %d\n", ipcId);
 	for (int i = 0; i < company->planeCount; i++) {
-		//if (ipcIsReady(i, WRITE) == TRUE) {
-			//strcpy(package.data, "Message to plane :D\n");
-			//sendData(i, package);
-		//}
+		IpcPackage * msg = ipc_get(ipcId);
+		printf("mensajes: %p\n", msg);
 	}
 	/*int i;
 	ipcPackage package;
