@@ -47,7 +47,7 @@ void readAndProcessMessages(Company *company) {
 	int ipcId = ipc_init(IPC_BASE_KEY, 0600);
 	printf("compania lee del id = %d\n", ipcId);
 	for (int i = 0; i < company->planeCount; i++) {
-		IpcPackage * msg = ipc_get(ipcId);
+		IpcPackage * msg = ipc_read(ipcId);
 		printf("mensajes: %p\n", msg);
 	}
 	/*int i;

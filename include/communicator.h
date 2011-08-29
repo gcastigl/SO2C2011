@@ -28,7 +28,7 @@ int ipc_init(int key, int flags);
 
 int ipc_write(int ipcId, IpcPackage* msg);
 
-IpcPackage* ipc_get(int ipcId);
+IpcPackage* ipc_read(int ipcId);
 
 void ipc_close(int ipcId);
 

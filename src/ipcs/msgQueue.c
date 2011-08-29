@@ -22,7 +22,7 @@ int ipc_write(int ipcId, IpcPackage* msg) {
 // - Identificador del tipo de mensaje que queremos recibir. En este caso
 // se quiere un mensaje de tipo 2. Si ponemos tipo 1, se extrae el mensaje
 // que se acaba de enviar en la llamada anterior a msgsnd().
-IpcPackage* ipc_get(int ipcId) {
+IpcPackage* ipc_read(int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	int result = msgrcv(ipcId, (struct msgbuf *) msg,
 		sizeof(msg->numericDataType) + sizeof(msg->data),
