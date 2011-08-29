@@ -7,7 +7,6 @@ Plane *newPlane(int id) {
 	plane->originCityIndex = 0;
 	plane->thread = 0;
 	plane->id = id;
-	plane->itemStock = malloc(20 * sizeof(int));  // FIXME: remove this hard coded value
 	return plane;
 }
 

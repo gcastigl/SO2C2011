@@ -1,6 +1,8 @@
 #include "parser.h"
 #include "map.h"
 
+#define MAX_NAME 100
+
 typedef enum {STATUS_NAME = 0, STATUS_STOCK = 1} Status;
 int isNewLine(char *line);
 
@@ -20,7 +22,7 @@ char *fgetstr(char *string, int n, FILE *stream) {
 }
 
 void parseCityStock(char *line, City* city) {
-	char itemName[100];
+	char itemName[MAX_NAME];
 	int stock;
 	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
 		city->itemStock[map_getStockId(itemName)] = stock;
@@ -54,8 +56,20 @@ City *parseCity(FILE *stream) {
 	return NULL;
 }
 
-void parseDistance(FILE *stream) {
-
+void parseCityDistances(FILE *stream) {
+	char line[BUFSIZ];
+	while (fgetstr(line, sizeof line, stream)) {
+		if (isNewLine(line)) {
+			continue;
+		} else {
+			int distance;
+			char cityName1[MAX_NAME];
+			char cityName2[MAX_NAME];
+			if (sscanf(line, "%s %s %d", cityName1, cityName2, &distance) == 3) {
+				map->city[map_getCityId(cityName1)].cityDistance[map_getCityId(cityName2)] = distance;
+			}
+		}
+	}
 }
 
 int parseInt(FILE *stream) {
@@ -79,9 +93,7 @@ void parseMap(char *fileName) {
 		for(int i = 0; i < maxCityCount; i++) {
 			map_addCity(*parseCity(file));
 		}
-		for(int i = 0; i < maxCityCount; i++) {
-			parseDistance(file);
-		}
+		parseCityDistances(file);
 		fclose(file);
 	} else {
 		fatal("Error loading map file.");

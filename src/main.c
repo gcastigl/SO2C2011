@@ -6,6 +6,7 @@ int main() {
     int numAirlines = 1;
     int i;
     parseMap("resources/loads/ciudades.txt");
+    map;
     for (i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:

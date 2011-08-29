@@ -4,19 +4,25 @@ void map_init(int maxCityCount) {
 	map = malloc(sizeof(Map));
 	map->cityCount = 0;
 	map->itemCount = 0;
-	map->itemName = malloc(100*sizeof(char*));
-	map->city = malloc(maxCityCount * sizeof(City));
 }
 
 City *newCity(char* name) {
 	City* city = malloc(sizeof(City));
-	city->name = name;
-	city->itemStock = malloc(100*sizeof(int));
+	city->name = malloc((strlen(name)+1) * sizeof(char));
+	strcpy(city->name, name);
 	return city;
 }
 
 void map_addCity(City city) {
 	map->city[map->cityCount++] = city;
+}
+
+int map_getCityId(char *name) {
+	for (int i = 0; map->cityCount; i++) {
+		if (!strcmp(map->city[i].name, name)) {
+			return i;
+		}
+	}
 }
 
 int map_getStockId(char* name) {
@@ -27,6 +33,7 @@ int map_getStockId(char* name) {
 		}
 	}
 	map->itemCount++;
-	map->itemName[i] = name;
+	map->itemName[i] = malloc((strlen(name)+1) * sizeof(char));
+	strcpy(map->itemName[i], name);
 	return i;
 }
