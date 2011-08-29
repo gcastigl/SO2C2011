@@ -20,7 +20,7 @@ typedef struct {
 
 typedef struct {
 	char *name;
-	Plane plane[MAX_PLANE_COUNT];
+	Plane *plane[MAX_PLANE_COUNT];
 	int planeCount;
 } Company;
 
@@ -33,17 +33,17 @@ typedef struct {
 typedef struct {
 	int turn;
 	int cityCount;
-	City city[MAX_CITY_COUNT];
+	City *city[MAX_CITY_COUNT];
 	int itemCount;
 	char *itemName[MAX_ITEM_COUNT];
 	int companyCount;
-	Company company[MAX_COMPANY_COUNT];
+	Company *company[MAX_COMPANY_COUNT];
 } Map;
 
 void map_init(int maxCityCount);
 City *newCity(char* name);
-void map_addCity(City city);
-void map_addCompany(Company company);
+void map_addCity(City *city);
+void map_addCompany(Company *company);
 int map_getCityId(char* name);
 int map_getStockId(char* name);
 

@@ -4,7 +4,7 @@
 #include "../common.h"
 #include "../map.h"
 #include "../plane.h"
-#include "../ipc.h"
+#include "../communicator.h"
 #include <pthread.h>
 #include <sys/types.h>
 #include <stdlib.h>

@@ -17,7 +17,7 @@ void companyStart(Company* company) {
 	}
 	for(int i = 0; i < company->planeCount; i++) {
 		semctl(planesTurnSemId, i, SETVAL, 0);
-		pthread_create(&(company->plane[i].thread), NULL, planeStart, company->plane + i);
+		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane + i);
 	}
 	for (int i = 0; i < 10; i++) {
 		wakeUpPlanes(company, planesTurnSemId);

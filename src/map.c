@@ -12,17 +12,17 @@ City *newCity(char* name) {
 	return city;
 }
 
-void map_addCity(City city) {
+void map_addCity(City *city) {
 	map->city[map->cityCount++] = city;
 }
 
-void map_addCompany(Company company) {
+void map_addCompany(Company *company) {
 	map->company[map->companyCount++] = company;
 }
 
 int map_getCityId(char *name) {
 	for (int i = 0; map->cityCount; i++) {
-		if (!strcmp(map->city[i].name, name)) {
+		if (!strcmp(map->city[i]->name, name)) {
 			return i;
 		}
 	}
