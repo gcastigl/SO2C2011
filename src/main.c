@@ -6,8 +6,8 @@ int main() {
     int numAirlines = 1;
     int i;
     parseMap("resources/loads/ciudades.txt");
-    Company *company = parseCompany("resources/loads/empresa.txt");
-    map_addCompany(*company);
+    //Company *company = parseCompany("resources/loads/empresa.txt");
+    //map_addCompany(*company);
     for (i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:
@@ -15,6 +15,9 @@ int main() {
                 log_debug("Creating airline...\n");
                 log_error("Bleh\n");
                 Company* company = newCompany("pepe", 3);
+                for( int i = 0; i < 3; i++) {
+                	addPlane(company, *newPlane(i, 0));
+                }
                 companyStart(company);
                 break;
             case ERROR:
