@@ -45,8 +45,7 @@ void waitUntilPlanesReady(Company* company, int semId) {
 void readAndProcessMessages(Company *company) {
 	IpcPackage package;
 	package.id = 1;
-	int ipcId = ipc_init(IPC_BASE_KEY, 0600);
-	printf("compania lee del id = %d\n", ipcId);
+	int ipcId = ipc_init(IPC_KEY, 0600);
 	for (int i = 0; i < company->planeCount; i++) {
 		IpcPackage * msg = ipc_read(ipcId);
 		printf("mensajes: %p\n", msg);

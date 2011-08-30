@@ -15,7 +15,7 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
 	int turn = 0;
-	int ipcId = ipc_get(IPC_BASE_KEY);
+	int ipcId = ipc_get(IPC_KEY);
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, 1, 0600);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
 	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
