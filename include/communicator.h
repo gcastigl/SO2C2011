@@ -19,7 +19,7 @@ typedef enum {
  * mensaje.
  */
 typedef struct {
-	long id;
+	long msgType;		/* message type, must be > 0 */
 	char data[DATA_SIZE];
 } IpcPackage;
 
@@ -29,7 +29,7 @@ int ipc_get(int key);
 
 int ipc_write(int ipcId, IpcPackage* msg);
 
-IpcPackage* ipc_read(int ipcId);
+IpcPackage* ipc_read(int ipcId, int fromId);
 
 void ipc_close(int ipcId);
 
