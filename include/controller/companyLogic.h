@@ -5,12 +5,15 @@
 #include "../map.h"
 #include "../plane.h"
 #include "../communicator.h"
+#include "../semaphore.h"
 #include <string.h>
 #include <pthread.h>
-#include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "../semaphore.h"
+#include <sys/msg.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 
 void companyStart(Company* company);
 
