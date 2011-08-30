@@ -4,7 +4,7 @@
 int main() {
     initSignalHandler();
     parseMap("resources/loads/ciudades.txt");
-    map_addCompany(parseCompany("resources/loads/empresa.txt"));
+    map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
 //    for (int i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:
