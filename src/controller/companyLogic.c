@@ -5,6 +5,7 @@ void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 
 void readAndProcessMessages(Company *company);
+
 /*
  * 1 - Wake up planes.
  * 2 - Read & process plane messages.
@@ -43,14 +44,14 @@ void waitUntilPlanesReady(Company* company, int semId) {
 }
 
 void readAndProcessMessages(Company *company) {
-	IpcPackage package;
+	//IpcPackage package;
 	int ipcId = ipc_get(IPC_KEY);
 	for (int i = 0; i < company->planeCount; i++) {
-		IpcPackage * msg = ipc_read(ipcId, company->plane[i]->id + 1);
+		IpcPackage * msg = ipc_read(ipcId, company->id);
 		if (msg != NULL) {
-			printf("mensaje from child %d -> %s\n", company->plane[i]->id, msg->data);
+			printf("Message from child %d -> %s\n", company->plane[i]->id, msg->data);
 		} else {
-			printf("no message from child: %ld\n", company->plane[i]->id);
+			printf("No message from child: %d\n", company->plane[i]->id);
 		}
 	}
 	/*int i;
