@@ -15,8 +15,7 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
 	int turn = 0;
-	int ipcId = ipc_init(IPC_BASE_KEY, 0600);
-	printf("Avion lee del id = %d\n", ipcId);
+	int ipcId = ipc_get(IPC_BASE_KEY);
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, 1, 0600);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
 	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
@@ -70,10 +69,9 @@ void readMessages(Plane* plane, int ipcId) {
 // FIXME: the message instance could be the same every time instaed of creating a new one on every call!!
 void writeMessages(Plane* planen, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	msg->id = 12345;
-	msg->numericDataType = 1;
+	msg->id = 1;
 	strcpy(msg->data, "Message to company\n");
-	ipc_write(ipcId, msg);
+	printf("writing return %d\n", ipc_write(ipcId, msg));
 }
 
 void updateState(Plane* plane) {
