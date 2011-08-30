@@ -14,6 +14,11 @@ int semaphore_create(int key, int semSize, int flags) {
 	return semId;
 }
 
+int semaphore_get(int key) {
+	return semaphore_create(key, 1, 0666 | IPC_CREAT);
+	// This 1 (second parameter) does not matter because the semaphore is supposed to be already created.
+}
+
 int semaphore_increment(int id, int semnum) {
 	return semaphore_operation(id, 1, semnum);
 }

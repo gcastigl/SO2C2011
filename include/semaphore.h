@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include <sys/sem.h>
+#include <sys/types.h>
 
 #ifdef LINUX
 union semun {
@@ -14,6 +15,8 @@ union semun {
 #endif
 
 int semaphore_create(int key, int semSize, int flags);
+
+int semaphore_get(int key);
 
 int semaphore_increment(int id, int semnum);
 
