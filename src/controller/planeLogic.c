@@ -16,10 +16,10 @@ void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
 	int turn = 0;
 	int ipcId = ipc_get(IPC_KEY);
-	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, 1, 0600);
-	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
-	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
-		fatal("Error creating semaphore");
+	int planesTurnSemId = semaphore_get(SEM_PLANE_KEY);
+	int companyTurnSemId = semaphore_get(SEM_COMPANY_KEY);
+	if (planesTurnSemId < 0 || companyTurnSemId < 0 || ipcId < 0) {
+		fatal("Error nitializing initial varibles.");
 	}
 	while (1) {
 		semaphore_decrement(planesTurnSemId, me->id);
@@ -35,31 +35,11 @@ void* planeStart(void* param) {
 	exit(0);
 	return NULL;
 	/*
-	FakeIPC* fake_ipc = (FakeIPC*) param;
-	int i, elementoDistinto;
 	while (1) {
 		pthread_mutex_lock(&(fake_ipc->mutexCounter));
-
-		elementoDistinto = 0;
-		for ( i = 1; i < fake_ipc->bufferSize; i++) {
-			if (fake_ipc->buffer[0] != fake_ipc->buffer[i]) {
-				elementoDistinto = 1;
-				break;
-			}
-		}
-		if (elementoDistinto)
-			printf ("Hijo  : Error. Elementos de buffer distintos\n");
-		else
-			printf ("Hijo  : Correcto\n");
-
+		...
 		pthread_mutex_unlock(&(fake_ipc->mutexCounter));
-	}
-
-    printf("Plane %d created\nWaiting for data...\n", plane->id);
-    ipcPackage data;
-    data = getData(plane->id);
-    printf("Data for plane %d: %s\n",plane->id, data.data);
-	exit(0);*/
+	}*/
 }
 
 void readMessages(Plane* plane, int ipcId) {
@@ -69,9 +49,9 @@ void readMessages(Plane* plane, int ipcId) {
 // FIXME: the message instance could be the same every time instaed of creating a new one on every call!!
 void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	msg->msgType = plane->id + 1;
-	strcpy(msg->data, "Message to company\n");
-	//printf("writing return %d\n", ipc_write(ipcId, msg));
+	msg->addressee = plane->ownerCompanyId;
+	strcpy(msg->data, "This is a message to my company! <(0_0)>\n");
+	printf("writing return %d\n", ipc_write(ipcId, msg));
 }
 
 void updateState(Plane* plane) {
