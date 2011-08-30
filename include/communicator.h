@@ -19,7 +19,7 @@ typedef enum {
  * mensaje.
  */
 typedef struct {
-	long msgType;		/* message type, must be > 0 */
+	long addressee;		/* addressee, must be > 0 */
 	char data[DATA_SIZE];
 } IpcPackage;
 
@@ -34,4 +34,3 @@ IpcPackage* ipc_read(int ipcId, int fromId);
 void ipc_close(int ipcId);
 
 #endif
-
