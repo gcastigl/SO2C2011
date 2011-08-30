@@ -43,13 +43,17 @@ void* planeStart(void* param) {
 }
 
 void readMessages(Plane* plane, int ipcId) {
-
+	IpcPackage* msg = ipc_read(ipcId, plane->ownerCompanyId);
+	if (msg != NULL) {
+		printf("Plane %ld recieved a msg from its company: %s\n", plane->thread, msg->data);
+	}
 }
 
 // FIXME: the message instance could be the same every time instaed of creating a new one on every call!!
 void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	msg->addressee = plane->ownerCompanyId;
+	msg->sender = plane->thread;
 	strcpy(msg->data, "This is a message to my company! <(0_0)>\n");
 	printf("writing return %d\n", ipc_write(ipcId, msg));
 }

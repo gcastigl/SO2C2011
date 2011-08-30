@@ -44,43 +44,29 @@ void waitUntilPlanesReady(Company* company, int semId) {
 }
 
 void readAndProcessMessages(Company *company) {
-	//IpcPackage package;
+	IpcPackage package;
 	int ipcId = ipc_get(IPC_KEY);
 	for (int i = 0; i < company->planeCount; i++) {
 		IpcPackage * msg = ipc_read(ipcId, company->id);
 		if (msg != NULL) {
-			printf("Message from child %d -> %s\n", company->plane[i]->id, msg->data);
+			printf("Message from child %ld -> %s\n", company->plane[i]->thread, msg->data);
+			package.addressee = company->id;
+			strcpy(package.data, "This is a response message from the company!\n");
+			ipc_write(ipcId, &package);
 		} else {
 			printf("No message from child: %d\n", company->plane[i]->id);
 		}
 	}
-	/*int i;
-	ipcPackage package;
-	package.id = 1;
-	while (waitpid(-1, NULL, WNOHANG) != -1) {
-		for (i = 0; i < Company->planeCount; i++) {
-			if (ipcIsReady(i, WRITE) == TRUE) {
-				strcpy(package.data, "Message to plane :D\n");
-				sendData(i, package);
-			}
-		}
-		sleep(1);
-	}*/
 }
 
 /*
 FakeIPC fake_ipc;
-fake_ipc.counter = 0;
-fake_ipc.bufferSize = 1000;
 fake_ipc.buffer = malloc(sizeof(int) * fake_ipc.bufferSize);
 pthread_mutex_init(&fake_ipc.mutexCounter, NULL);
 pthread_mutex_init(&fake_ipc.finished_thinking_mutex, NULL);
-pthread_t idHilo;
 pthread_create(&idHilo, NULL, planeStart, &fake_ipc);
 while (1) {
 	pthread_mutex_lock(&fake_ipc.mutexCounter);
-	for (i = 0; i < fake_ipc.bufferSize; i++)
-		fake_ipc.buffer[i] = fake_ipc.counter;
+	...
 	pthread_mutex_unlock(&fake_ipc.mutexCounter);
-	fake_ipc.counter++;
 }*/
