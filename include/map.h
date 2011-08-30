@@ -12,6 +12,7 @@
 
 typedef struct {
 	int id;
+	int ownerCompanyId;
 	pthread_t thread;
 	int cityIdFrom;
 	int cityIdTo;
@@ -20,6 +21,7 @@ typedef struct {
 } Plane;
 
 typedef struct {
+	int id;
 	char *name;
 	Plane *plane[MAX_PLANE_COUNT];
 	int planeCount;
