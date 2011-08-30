@@ -6,6 +6,6 @@
 #include "map.h"
 
 void parseMap(char *fileName);
-Company *parseCompany(char *fileName);
+Company *parseCompany(char *fileName, int companyId);
 
 #endif /* HEADER_H_ */

@@ -65,7 +65,7 @@ void parsePlaneStock(char *line, Plane* plane) {
 	fatal("Invalid City stock");
 }
 
-Plane *parsePlane(FILE *stream, int id) {
+Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
 	Status status = S0;
 	Plane *plane;
 	char line[BUFSIZ];
@@ -73,7 +73,7 @@ Plane *parsePlane(FILE *stream, int id) {
 		switch (status) {
 			case S0:
 				if (!isNewLine(line)) {
-					plane = newPlane(id, map_getCityId(line));
+					plane = newPlane(id, owenerCompanyId, map_getCityId(line));
 					status = S1;
 				}
 				break;
@@ -133,14 +133,14 @@ void parseMap(char *fileName) {
 	}
 }
 
-Company *parseCompany(char *fileName) {
+Company *parseCompany(char *fileName, int companyId) {
 	FILE *file = fopen(fileName, "r");
 	int maxPlaneCount;
 	if (file) {
 		maxPlaneCount = parseInt(file);
-		Company *company = newCompany(fileName, maxPlaneCount);
+		Company *company = newCompany(companyId, fileName, maxPlaneCount);
 		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, parsePlane(file, i));
+			addPlane(company, parsePlane(file, company->id, i));
 		}
 		fclose(file);
 		return company;

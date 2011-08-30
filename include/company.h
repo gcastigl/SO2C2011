@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-Company *newCompany(char* name, int maxPlaneCount);
+Company *newCompany(int id, char* name, int maxPlaneCount);
 
 void addPlane(Company *company, Plane *plane);
 
