@@ -17,7 +17,7 @@ void initLogging() {
         logFile = stderr;
     #endif
     
-    semId = semaphore_create(semKey, 1, 0600);
+    semId = semaphore_create(semKey, 1, 0666);
     semctl(semId, 0, SETVAL, 1);
     initialized = 1;
 }

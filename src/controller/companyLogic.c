@@ -11,8 +11,8 @@ void readAndProcessMessages(Company *company);
  * 2 - Read & process plane messages.
  */
 void companyStart(Company* company) {
-	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0600);
-	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0600);
+	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
+	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
 	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
 		fatal("Error creating semaphore");
 	}
