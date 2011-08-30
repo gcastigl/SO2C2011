@@ -67,11 +67,11 @@ void readMessages(Plane* plane, int ipcId) {
 }
 
 // FIXME: the message instance could be the same every time instaed of creating a new one on every call!!
-void writeMessages(Plane* planen, int ipcId) {
+void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	msg->id = 1;
+	msg->msgType = plane->id + 1;
 	strcpy(msg->data, "Message to company\n");
-	printf("writing return %d\n", ipc_write(ipcId, msg));
+	//printf("writing return %d\n", ipc_write(ipcId, msg));
 }
 
 void updateState(Plane* plane) {

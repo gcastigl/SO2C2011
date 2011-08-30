@@ -44,11 +44,14 @@ void waitUntilPlanesReady(Company* company, int semId) {
 
 void readAndProcessMessages(Company *company) {
 	IpcPackage package;
-	package.id = 1;
-	int ipcId = ipc_init(IPC_KEY, 0600);
+	int ipcId = ipc_get(IPC_KEY);
 	for (int i = 0; i < company->planeCount; i++) {
-		IpcPackage * msg = ipc_read(ipcId);
-		printf("mensajes: %p\n", msg);
+		IpcPackage * msg = ipc_read(ipcId, company->plane[i]->id + 1);
+		if (msg != NULL) {
+			printf("mensaje from child %d -> %s\n", company->plane[i]->id, msg->data);
+		} else {
+			printf("no message from child: %ld\n", company->plane[i]->id);
+		}
 	}
 	/*int i;
 	ipcPackage package;
