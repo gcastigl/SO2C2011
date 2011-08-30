@@ -18,7 +18,7 @@ int ipc_get(int key) {
 }
 
 int ipc_write(int ipcId, IpcPackage* msg) {
-	int result = msgsnd(ipcId, (void *) msg, sizeof(msg->data), IPC_NOWAIT);
+	int result = msgsnd(ipcId, (void *) msg, sizeof(msg->data) + sizeof(msg->sender), IPC_NOWAIT);
 	if (result == -1) {
 		perror("msgsnd failed @msjQueue/write");
 	}
@@ -27,7 +27,7 @@ int ipc_write(int ipcId, IpcPackage* msg) {
 
 IpcPackage* ipc_read(int ipcId, int fromId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	int result = msgrcv(ipcId, msg, sizeof(msg->data), fromId, IPC_NOWAIT);
+	int result = msgrcv(ipcId, msg, sizeof(msg->data)+ sizeof(msg->sender), fromId, IPC_NOWAIT);
 	if (result < 0) {
 		free(msg);
 		perror("msgrcv() failed @msjQueue/read, retuning NULL...");

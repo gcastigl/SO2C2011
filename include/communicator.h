@@ -20,6 +20,7 @@ typedef enum {
  */
 typedef struct {
 	long addressee;		/* addressee, must be > 0 */
+	long sender;
 	char data[DATA_SIZE];
 } IpcPackage;
 
