@@ -6,7 +6,7 @@ int ipc_init(int key, int flags) {
 	if (ipcId == (key_t)-1) {
 		return -1;
 	}
-	int id = msgget(key, flags | IPC_CREAT);
+	int id = msgget(key, flags);
 	if (id < 0) {
 		return -1;
 	}
