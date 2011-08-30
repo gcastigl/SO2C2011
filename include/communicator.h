@@ -20,11 +20,12 @@ typedef enum {
  */
 typedef struct {
 	long id;
-	int numericDataType;
 	char data[DATA_SIZE];
 } IpcPackage;
 
 int ipc_init(int key, int flags);
+
+int ipc_get(int key);
 
 int ipc_write(int ipcId, IpcPackage* msg);
 
