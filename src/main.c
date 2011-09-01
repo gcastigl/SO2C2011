@@ -10,7 +10,6 @@ int main() {
             case 0:
                 initChildSignalHandler();
                 log_debug("Creating airline...\n");
-                log_error("Bleh\n");
                 companyStart(map->company[0]);
                 break;
             case ERROR:
