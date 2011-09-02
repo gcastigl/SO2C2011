@@ -1,9 +1,7 @@
 #include "controller/companyLogic.h"
 
 void wakeUpPlanes(Company* company, int semId);
-
 void waitUntilPlanesReady(Company* company, int semId);
-
 void readAndProcessMessages(Company *company);
 
 /*
@@ -13,15 +11,15 @@ void readAndProcessMessages(Company *company);
 void companyStart(Company* company) {
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
-	if (planesTurnSemId <= 0 || companyTurnSemId <= 0) {
+	int ipcId = ipc_init(IPC_KEY, IPC_CREAT | 0666);
+	if (planesTurnSemId < 0 || companyTurnSemId < 0 || ipcId < 0) {
 		fatal("Error creating semaphore");
 	}
 	for(int i = 0; i < company->planeCount; i++) {
-		semctl(planesTurnSemId, i, SETVAL, 0);
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
-	semctl(companyTurnSemId, 0, SETVAL, 0);
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
+		printf("--------------- turn: %d -------------------\n", i);
 		wakeUpPlanes(company, planesTurnSemId);
 		waitUntilPlanesReady(company, companyTurnSemId);
 		readAndProcessMessages(company);
@@ -30,9 +28,10 @@ void companyStart(Company* company) {
 }
 
 void wakeUpPlanes(Company* company, int semId) {
-	printf("planes wake up!\n\n");
+	printf("[Company %d] Planes wake up!\n", company->id);
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_increment(semId, i);
+		printf("[Company %d] Waking %d\n", company->id, company->plane[i]->id);
+		semaphore_increment(semId, company->plane[i]->id);
 	}
 }
 
@@ -40,23 +39,26 @@ void waitUntilPlanesReady(Company* company, int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_decrement(semId, 0);
 	}
-	printf("Waiting done!...\n\n");
+	printf("[Company %d] Waiting done!...\n", company->id);
 }
 
 void readAndProcessMessages(Company *company) {
-	IpcPackage package;
+	IpcPackage * package = malloc(sizeof(IpcPackage));
 	int ipcId = ipc_get(IPC_KEY);
 	for (int i = 0; i < company->planeCount; i++) {
 		IpcPackage * msg = ipc_read(ipcId, company->id);
 		if (msg != NULL) {
-			printf("Message from child %ld -> %s\n", company->plane[i]->thread, msg->data);
-			package.addressee = company->id;
-			strcpy(package.data, "This is a response message from the company!\n");
-			ipc_write(ipcId, &package);
+			printf("[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
+			printf("[Company %d] writing response to: %ld\n", company->id, msg->sender);
+			package->addressee = msg->sender + 1;
+			package->sender = company->id;
+			strcpy(package->data, "This is a response with data from the company\n");
+			ipc_write(ipcId, package);
 		} else {
-			printf("No message from child: %d\n", company->plane[i]->id);
+			printf("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
 		}
 	}
+	ipc_close(ipcId);
 }
 
 /*

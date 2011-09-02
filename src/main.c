@@ -2,10 +2,11 @@
 #include "parser.h"
 
 int main() {
-    initSignalHandler();
+    //initSignalHandler();
     parseMap("resources/loads/ciudades.txt");
-    map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
-//    for (int i = 0; i < numAirlines; i++) {
+    map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
+    companyStart(map->company[0]);
+/*    for (int i = 0; i < numAirlines; i++) {
         switch(fork()) {
             case 0:
                 initChildSignalHandler();
@@ -20,7 +21,7 @@ int main() {
                 wait(NULL);
                 break;
         }
- //   }
+    }*/
     printf("Simulation Done!\n");
 	return 0;
 }

@@ -5,7 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/wait.h>
 #include <sys/select.h>
-#define DATA_SIZE 64
+#define DATA_SIZE 128
 #define READ 0
 #define WRITE 1
 
