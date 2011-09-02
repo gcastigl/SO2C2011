@@ -12,6 +12,7 @@ void initLogging() {
     }
     
     #ifdef LOG_TO_FILE
+        unlink("log.txt");
         logFile = fopen("log.txt", "a");
     #else
         logFile = stderr;
