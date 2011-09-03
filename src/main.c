@@ -18,7 +18,7 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; i++) {
         switch(pId = fork()) {
             case 0:
-                //initChildSignalHandler();
+                initChildSignalHandler();
                 companyStart(map->company[i]);
                 exit(0);
                 break;

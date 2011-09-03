@@ -85,4 +85,7 @@ void *sig_threadHandler(void* args) {
         log_debug("Signal thead caught signal number %d\n", sig);
         childSignalHandler(sig);
     }
+    return NULL;
 }
+
+
