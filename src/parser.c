@@ -140,7 +140,7 @@ Company *parseCompany(char *fileName, int companyId) {
 		maxPlaneCount = parseInt(file);
 		Company *company = newCompany(companyId, fileName, maxPlaneCount);
 		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, parsePlane(file, company->id, i));
+			addPlane(company, parsePlane(file, company->id, MIN_PLANE_ID + i));
 		}
 		fclose(file);
 		return company;
