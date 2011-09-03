@@ -2,6 +2,7 @@
 
 void startSimulation();
 void initEnvironment();
+void startSimulationDisplayer();
 
 int main() {
     startSimulation();
@@ -13,11 +14,13 @@ void startSimulation() {
     initEnvironment();
     pid_t pId;
     initSignalHandler();
+    // Initialize companies
     for (int i = 0; i < map->companyCount; i++) {
         switch(pId = fork()) {
             case 0:
                 initChildSignalHandler();
-                companyStart(map->company[0]);
+                companyStart(map->company[i]);
+                exit(0);
                 break;
             case ERROR:
                 fatal("Fork Error");
@@ -27,7 +30,18 @@ void startSimulation() {
                 break;
         }
     }
+    // Initialize UI thread
+	/* switch(pId = fork()) {
+		case 0:
+			startSimulationDisplayer();
+			exit(0);
+			break;
+		case ERROR:
+			fatal("Fork Error");
+			break;
+	}*/
     wait(NULL);
+    printf("\n\nSimulation Done!\n\n\n");
 }
 
 void initEnvironment() {
@@ -37,4 +51,6 @@ void initEnvironment() {
     return;
 }
 
-
+void startSimulationDisplayer() {
+	displaySimulation();
+}
