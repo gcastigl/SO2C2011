@@ -5,5 +5,8 @@
 #include "map.h"
 #include "parser.h"
 #include "util/signal.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+
 
 #endif

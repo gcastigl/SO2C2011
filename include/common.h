@@ -29,11 +29,13 @@ extern int errno;
 #define MIN_PLANE_ID	100
 #define MIN_COMPANY_ID	1000
 
+int *childPid;
+
 void fatal(char* err);
 
-int** createIntMatrix(int rows, int columns);
+int **createIntMatrix(int rows, int columns);
 
-float** createFloatMatrix(int rows, int columns);
+float **createFloatMatrix(int rows, int columns);
 
 void printMatrix(int** matrix, int rows, int columns);
 

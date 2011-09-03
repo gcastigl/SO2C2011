@@ -48,7 +48,7 @@ void readAndProcessMessages(Company *company) {
 	for (int i = 0; i < company->planeCount; i++) {
 		int msgRead = ipc_read(ipcId, company->id, msg);
 		if (msgRead != -1) {
-			printf("[Company %d]enen Message from child %ld -> %s", company->id, msg->sender, msg->data);
+			printf("[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
 			printf("[Company %d] writing response to: %ld\n", company->id, msg->sender);
 			// Set un msg with the new data to be sent
 			msg->addressee = msg->sender;
