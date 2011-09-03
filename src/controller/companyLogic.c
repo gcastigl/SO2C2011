@@ -43,22 +43,28 @@ void waitUntilPlanesReady(Company* company, int semId) {
 }
 
 void readAndProcessMessages(Company *company) {
-	IpcPackage * package = malloc(sizeof(IpcPackage));
+	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	int ipcId = ipc_get(IPC_KEY);
 	for (int i = 0; i < company->planeCount; i++) {
-		IpcPackage * msg = ipc_read(ipcId, company->id);
-		if (msg != NULL) {
-			printf("[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
+		int msgRead = ipc_read(ipcId, company->id, msg);
+		if (msgRead != -1) {
+			printf("[Company %d]enen Message from child %ld -> %s", company->id, msg->sender, msg->data);
 			printf("[Company %d] writing response to: %ld\n", company->id, msg->sender);
-			package->addressee = msg->sender + 1;
-			package->sender = company->id;
-			strcpy(package->data, "This is a response with data from the company\n");
-			ipc_write(ipcId, package);
+			// Set un msg with the new data to be sent
+			msg->addressee = msg->sender;
+			msg->sender = company->id;
+			strcpy(msg->data, "This is a response with data from the company\n");
+			int writeReturn = ipc_write(ipcId, msg);
+			if (writeReturn != -1) {
+				printf("[Message sent OK]\n");
+			} else {
+				printf("[Company %d] ERROR writing to plane...\n", company->id);
+				perror("");
+			}
 		} else {
 			printf("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
 		}
 	}
-	ipc_close(ipcId);
 }
 
 /*

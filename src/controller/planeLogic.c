@@ -1,7 +1,7 @@
 #include "controller/planeLogic.h"
 
 void readMessages(Plane* plane, int ipcId);
-void writeMessages(Plane* plane, int ipcId, IpcPackage* msg);
+void writeMessages(Plane* plane, int ipcId);
 void updateState(Plane* plane);
 void setNewTarget(Plane* plane);
 int canSupplyCity(Plane* plane, City* city);
@@ -9,7 +9,6 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
-	IpcPackage msg;
 	int ipcId = ipc_get(IPC_KEY);
 	int planesTurnSemId = semaphore_get(SEM_PLANE_KEY);
 	int companyTurnSemId = semaphore_get(SEM_COMPANY_KEY);
@@ -18,9 +17,9 @@ void* planeStart(void* param) {
 	}
 	while (1) {
 		semaphore_decrement(planesTurnSemId, me->id);
-		// readMessages(me, ipcId);
+		readMessages(me, ipcId);
 		// updateState(me);
-		writeMessages(me, ipcId, &msg);
+		writeMessages(me, ipcId);
 		sleep(1);
 		semaphore_increment(companyTurnSemId, 0);
 	}
@@ -28,27 +27,28 @@ void* planeStart(void* param) {
 }
 
 void readMessages(Plane* plane, int ipcId) {
-	IpcPackage* msg = ipc_read(ipcId, plane->id);
+	IpcPackage msg;
 	printf("[Plane %d] Reading from company...\n", plane->id);
-	if (msg != NULL) {
-		printf("[Plane %d] Response response from company: %s", plane->id, msg->data);
-		free(msg);
+	int msgRead = ipc_read(ipcId, plane->id, &msg);
+	if (msgRead != -1) {
+		printf("[Plane %d] Response response from company: %s", plane->id, msg.data);
 	} else {
 		printf("[Plane %d] NO messages from company\n", plane->id);
 		perror("");
 	}
 }
 
-void writeMessages(Plane* plane, int ipcId, IpcPackage* msg) {
+void writeMessages(Plane* plane, int ipcId) {
+	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	msg->addressee = plane->ownerCompanyId;
 	msg->sender = plane->id;
 	sprintf(msg->data, "plane %d needs some information\n", plane->id);
 	printf("[Plane %d] Writing to company...\n", plane->id);
 	int writeReturn = ipc_write(ipcId, msg);
-	if (writeReturn == -1) {
-		printf("[Plane %d] ERROR writing to company...\n", plane->id);
-	} else {
+	if (writeReturn != -1) {
 		printf("[Message sent OK]\n");
+	} else {
+		printf("[Plane %d] ERROR writing to company...\n", plane->id);
 	}
 }
 
