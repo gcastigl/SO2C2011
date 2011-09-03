@@ -3,7 +3,7 @@
 void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 void readAndProcessMessages(Company *company);
-void sig_threadHandler();
+void *sig_threadHandler(void* args);
 
 //TODO: when everything is working as it should be, all the sprnfs calls should be removed from the code
 
@@ -26,7 +26,9 @@ void companyStart(Company* company) {
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
-    pthread_create(&sig_thread, NULL, sig_threadHandler, NULL);
+    if (pthread_create(&sig_thread, NULL, sig_threadHandler, NULL) != 0) {
+        log_error("Error creating signal thread");
+    }
 	for (int i = 0; i < 5; i++) {
 		wakeUpPlanes(company, planesTurnSemId);
 		waitUntilPlanesReady(company, companyTurnSemId);
@@ -51,7 +53,6 @@ void waitUntilPlanesReady(Company* company, int semId) {
 void readAndProcessMessages(Company *company) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	int ipcId = ipc_get(IPC_KEY);
-	char auxBuffer[100];
 	for (int i = 0; i < company->planeCount; i++) {
 		int msgRead = ipc_read(ipcId, company->id, msg);
 		if (msgRead != -1) {
@@ -74,7 +75,8 @@ void readAndProcessMessages(Company *company) {
 	}
 }
 
-void sig_threadHandler() {
+void *sig_threadHandler(void* args) {
+    log_debug("Signal handler called\n");
     sigset_t signal_set;
     int sig;
     for (;;) {

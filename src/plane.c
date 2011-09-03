@@ -5,7 +5,7 @@ Plane *newPlane(int id, int companyId, int cityIdFrom) {
 	plane->cityIdTo = NO_TARGET;
 	plane->distanceToDestination = 0;
 	plane->cityIdFrom = cityIdFrom;
-	plane->thread = -1;
+	plane->thread = (void*)-1;
 	plane->id = id;
 	plane->ownerCompanyId = companyId;
 	return plane;

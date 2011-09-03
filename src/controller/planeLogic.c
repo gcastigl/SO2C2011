@@ -27,10 +27,8 @@ void* planeStart(void* param) {
 }
 
 void readMessages(Plane* plane, int ipcId) {
-	char auxBuffer[100];
 	IpcPackage msg;
-	sprintf(auxBuffer, "[Plane %d] Reading from company...\n", plane->id);
-	log_debug(auxBuffer);
+	log_debug("[Plane %d] Reading from company...\n", plane->id);
 	int msgRead = ipc_read(ipcId, plane->id, &msg);
 	if (msgRead != -1) {
 		log_debug("[Plane %d] Response response from company: %s", plane->id, msg.data);
@@ -42,7 +40,6 @@ void readMessages(Plane* plane, int ipcId) {
 
 void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	char auxBuffer[100];
 	msg->addressee = plane->ownerCompanyId;
 	msg->sender = plane->id;
 	sprintf(msg->data, "plane %d needs some information\n", plane->id);
