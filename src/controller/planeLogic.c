@@ -42,7 +42,6 @@ void readMessages(Plane* plane, int ipcId) {
 
 void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	char auxBuffer[100];
 	msg->addressee = plane->ownerCompanyId;
 	msg->sender = plane->id;
 	sprintf(msg->data, "plane %d needs some information\n", plane->id);

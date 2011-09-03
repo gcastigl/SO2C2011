@@ -3,7 +3,7 @@
 void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 void readAndProcessMessages(Company *company);
-void sig_threadHandler();
+void *sig_threadHandler(void *);
 
 //TODO: when everything is working as it should be, all the sprnfs calls should be removed from the code
 
@@ -51,7 +51,6 @@ void waitUntilPlanesReady(Company* company, int semId) {
 void readAndProcessMessages(Company *company) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
 	int ipcId = ipc_get(IPC_KEY);
-	char auxBuffer[100];
 	for (int i = 0; i < company->planeCount; i++) {
 		int msgRead = ipc_read(ipcId, company->id, msg);
 		if (msgRead != -1) {
@@ -74,7 +73,7 @@ void readAndProcessMessages(Company *company) {
 	}
 }
 
-void sig_threadHandler() {
+void *sig_threadHandler(void *inf) {
     sigset_t signal_set;
     int sig;
     for (;;) {
@@ -83,4 +82,7 @@ void sig_threadHandler() {
         log_debug("Signal thead caught signal number %d\n", sig);
         childSignalHandler(sig);
     }
+    return NULL;
 }
+
+
