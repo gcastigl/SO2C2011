@@ -7,7 +7,6 @@ int semaphore_create(int key, int semSize, int flags) {
 	if (semKey == (key_t)-1) {
 		return -1;
 	}
-	// fails if semaphore set already exists.
 	int semId = semget(semKey, semSize, 0666 | IPC_CREAT);
 	if (semId == -1) {
 		return -1;
@@ -19,8 +18,7 @@ int semaphore_create(int key, int semSize, int flags) {
 
 int semaphore_get(int key) {
 	key_t semKey = ftok(TMP_FOLDER, key);
-	int id = semget(semKey, 1, 0);
-	return id;
+	return semget(semKey, 1, 0);
 }
 
 int semaphore_setAll(int id, int semSize, int value) {

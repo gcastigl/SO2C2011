@@ -31,7 +31,7 @@ void wakeUpPlanes(Company* company, int semId) {
 	printf("[Company %d] Planes wake up!\n", company->id);
 	for(int i = 0; i < company->planeCount; i++) {
 		printf("[Company %d] Waking %d\n", company->id, company->plane[i]->id);
-		semaphore_increment(semId, company->plane[i]->id);
+		semaphore_increment(semId, company->plane[i]->id - MIN_PLANE_ID);
 	}
 }
 

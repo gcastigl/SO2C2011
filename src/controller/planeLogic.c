@@ -16,7 +16,7 @@ void* planeStart(void* param) {
 		fatal("Error initializing varibles.");
 	}
 	while (1) {
-		semaphore_decrement(planesTurnSemId, me->id);
+		semaphore_decrement(planesTurnSemId, me->id - MIN_PLANE_ID);
 		readMessages(me, ipcId);
 		// updateState(me);
 		writeMessages(me, ipcId);
