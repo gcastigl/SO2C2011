@@ -1,29 +1,41 @@
 #include "main.h"
 #include "parser.h"
 
+void startSimulation();
+void initEnvironment();
+
 int main() {
-    //initSignalHandler();
+    startSimulation();
+    printf("Simulation Done!\n");
+	return 0;
+}
+
+void initEnvironment() {
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
-    companyStart(map->company[0]);
-/*    for (int i = 0; i < numAirlines; i++) {
-        switch(fork()) {
+    childPid = malloc(sizeof(int) * map->companyCount);
+    return;
+}
+
+void startSimulation() {
+    initEnvironment();
+    pid_t pId;
+    initSignalHandler();
+    for (int i = 0; i < map->companyCount; i++) {
+        switch(pId = fork()) {
             case 0:
                 initChildSignalHandler();
-                log_debug("Creating airline...\n");
                 companyStart(map->company[0]);
                 break;
             case ERROR:
                 fatal("Fork Error");
                 break;
             default:
-                wait(NULL);
+                childPid[i] = pId;
                 break;
         }
-    }*/
-    printf("Simulation Done!\n");
-	return 0;
+    }
+    wait(NULL);
 }
-
 
 
