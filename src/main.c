@@ -5,15 +5,15 @@ void initEnvironment();
 void startSimulationDisplayer();
 
 int main() {
+    initEnvironment();
+    startSimulationDisplayer();
     startSimulation();
     printf("Simulation Done!\n");
 	return 0;
 }
 
 void startSimulation() {
-    initEnvironment();
     pid_t pId;
-    initSignalHandler();
     // Initialize companies
     for (int i = 0; i < map->companyCount; i++) {
         switch(pId = fork()) {
@@ -30,27 +30,27 @@ void startSimulation() {
                 break;
         }
     }
-    // Initialize UI thread
-	/* switch(pId = fork()) {
-		case 0:
-			startSimulationDisplayer();
-			exit(0);
-			break;
-		case ERROR:
-			fatal("Fork Error");
-			break;
-	}*/
     wait(NULL);
     printf("\n\nSimulation Done!\n\n\n");
 }
 
 void initEnvironment() {
+    initSignalHandler();
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
-    childPid = malloc(sizeof(int) * map->companyCount);
+    childPid = malloc(sizeof(int) * map->companyCount + 1);
     return;
 }
 
 void startSimulationDisplayer() {
-	displaySimulation();
+    pid_t pId;
+    pId = fork();
+    if (pId == 0) {
+        initChildSignalHandler();
+        displaySimulation();
+    } else if (pId == ERROR) {
+        fatal("Error forking UI");
+    } else {
+        childPid[map->companyCount + 1] = pId;
+    }
 }

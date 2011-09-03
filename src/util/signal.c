@@ -23,7 +23,7 @@ void signalHandler(int sigVal) {
 
 void finishMainProcess(int sigVal) {
     log_debug("Sending SIGUSR1 to %d child%s\n", map->companyCount, map->companyCount > 1  ? "s" : "");
-    for (int i = 0; i < map->companyCount; i++) {
+    for (int i = 0; i <= map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
 }
