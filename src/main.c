@@ -16,7 +16,7 @@ void startSimulation() {
     pid_t pId;
     // Initialize companies
     for (int i = 0; i < map->companyCount; i++) {
-        switch(pId = fork()) {
+        switch((pId = fork())) {
             case 0:
                 createSignalHandlingThread();
                 log_debug("CREATED COMPANY WITH PID %d\n", getpid());
@@ -47,14 +47,17 @@ void initEnvironment() {
 
 void startSimulationDisplayer() {
     pid_t pId;
-    pId = fork();
-    if (pId == 0) {
-        createSignalHandlingThread();
-        log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
-        displaySimulation();
-    } else if (pId == ERROR) {
-        fatal("Error forking UI");
-    } else {
-        childPid[map->companyCount + 1] = pId;
+    switch (pId = fork()) {
+        case 0:
+            createSignalHandlingThread();
+            log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
+            displaySimulation();
+            break;
+        case ERROR:
+            fata("Error forking UI");
+            break;
+        default:
+            childPid[map->companyCount + 1] = pId;
+            break;
     }
 }
