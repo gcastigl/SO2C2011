@@ -6,7 +6,6 @@ void initSignalHandler() {
 }
 
 void signalHandler(int sigVal) {
-    log_debug("Main process received signal %d\n", sigVal);
     switch (sigVal) {
         case SIGINT:
         case SIGTERM:
@@ -17,10 +16,35 @@ void signalHandler(int sigVal) {
 }
 
 void finishMainProcess(int sigVal) {
-    log_debug("Sending SIGUSR1 to %d child%s\n", map->companyCount, map->companyCount > 1  ? "s" : "");
     for (int i = 0; i <= map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
+    endLogging();
+}
+
+void createSignalHandlingThread() {
+    sigset_t signal_set;
+    pthread_t sig_thread;
+    
+    sigfillset(&signal_set);
+    pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
+    
+    log_debug("Init signal handler thread\n");
+    if (!!pthread_create(&sig_thread, NULL, sig_threadHandler, NULL)) {
+        log_error("Error creating signal thread");
+    }   
+}
+
+void *sig_threadHandler(void* args) {
+    sigset_t signal_set;
+    int sig;
+    while (TRUE) {
+        sigfillset(&signal_set);
+        sigwait(&signal_set, &sig);
+        log_debug("Signal thead on PID %d caught signal number %d\n", getpid(), sig);
+        childSignalHandler(sig);
+    }
+    return NULL;
 }
 
 void initChildSignalHandler() {
@@ -31,16 +55,14 @@ void initChildSignalHandler() {
 
 void childSignalHandler(int sigVal) {
     if (sigVal == SIGUSR1) {
-        log_debug("Child received sig SIGUSR1, time to wrap up!\n");
         finishProcess(sigVal);
         return;
     }
     signal(sigVal, childSignalHandler);
-    log_debug("Sending signal %d to PID: %d\n", sigVal, getppid());
     kill(getppid(), sigVal);
     return;
 }
 
 void finishProcess(int sigVal) {
-    exit(1);
+    _exit(1);
 }

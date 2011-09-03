@@ -13,5 +13,7 @@ void signalHandler(int signal);
 void childSignalHandler(int signal);
 void finishProcess(int sigVal);
 void finishMainProcess(int sigVal);
+void createSignalHandlingThread();
+void *sig_threadHandler(void* args);
 
 #endif

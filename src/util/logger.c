@@ -10,7 +10,7 @@ void initLogging() {
     if (initialized) {
         return;
     }
-    
+    printf("Calling to initLogging\n");
     #ifdef LOG_TO_FILE
         unlink("log.txt");
         logFile = fopen("log.txt", "a");

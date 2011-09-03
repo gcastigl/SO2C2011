@@ -18,7 +18,8 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; i++) {
         switch(pId = fork()) {
             case 0:
-                initChildSignalHandler();
+                createSignalHandlingThread();
+                log_debug("CREATED COMPANY WITH PID %d\n", getpid());
                 companyStart(map->company[i]);
                 exit(0);
                 break;
@@ -30,7 +31,9 @@ void startSimulation() {
                 break;
         }
     }
-    wait(NULL);
+    for (int i = 0; i <= map->companyCount; ++i) {
+        wait(NULL);
+    }
     printf("\n\nSimulation Done!\n\n\n");
 }
 
@@ -46,7 +49,8 @@ void startSimulationDisplayer() {
     pid_t pId;
     pId = fork();
     if (pId == 0) {
-        //initChildSignalHandler();
+        createSignalHandlingThread();
+        log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
         displaySimulation();
     } else if (pId == ERROR) {
         fatal("Error forking UI");
