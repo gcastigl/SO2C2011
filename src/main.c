@@ -47,14 +47,14 @@ void initEnvironment() {
 
 void startSimulationDisplayer() {
     pid_t pId;
-    switch (pId = fork()) {
+    switch ((pId = fork())) {
         case 0:
             createSignalHandlingThread();
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
             displaySimulation();
             break;
         case ERROR:
-            fata("Error forking UI");
+            fatal("Error forking UI");
             break;
         default:
             childPid[map->companyCount + 1] = pId;
