@@ -30,7 +30,7 @@ int ipc_get(int key);
 
 int ipc_write(int ipcId, IpcPackage* msg);
 
-IpcPackage* ipc_read(int ipcId, int fromId);
+int ipc_read(int ipcId, int fromId, IpcPackage* msg);
 
 void ipc_close(int ipcId);
 
