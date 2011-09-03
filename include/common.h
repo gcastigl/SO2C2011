@@ -25,11 +25,13 @@ extern int errno;
 #define FALSE 0
 #define TRUE 1
 
+int *childPid;
+
 void fatal(char* err);
 
-int** createIntMatrix(int rows, int columns);
+int **createIntMatrix(int rows, int columns);
 
-float** createFloatMatrix(int rows, int columns);
+float **createFloatMatrix(int rows, int columns);
 
 void printMatrix(int** matrix, int rows, int columns);
 
