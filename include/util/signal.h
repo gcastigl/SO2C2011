@@ -3,6 +3,9 @@
 
 #include <signal.h>
 #include <unistd.h>
+#include "map.h"
+#include "common.h"
+#include "util/logger.h"
 
 void initSignalHandler();
 void initChildSignalHandler();
