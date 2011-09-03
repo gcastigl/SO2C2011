@@ -1,8 +1,10 @@
 #include "communicator.h"
 
+#define MSG_SIZE (sizeof(IpcPackage) - sizeof(long int))
+
 int ipc_init(int key, int flags) {
 	key_t ipcId;
-	ipcId = ftok("/tmp", key);
+	ipcId = ftok(TMP_FOLDER, key);
 	if (ipcId == (key_t)-1) {
 		return -1;
 	}
@@ -14,26 +16,16 @@ int ipc_init(int key, int flags) {
 }
 
 int ipc_get(int key) {
-	return ipc_init(key, 0666);
+	return ipc_init(key, IPC_CREAT | 0666);
 }
 
 int ipc_write(int ipcId, IpcPackage* msg) {
-	int result = msgsnd(ipcId, (void *) msg, sizeof(msg->data) + sizeof(msg->sender), IPC_NOWAIT);
-	if (result == -1) {
-		perror("msgsnd failed @msjQueue/write");
-	}
-	return result;
+	return msgsnd(ipcId, msg, MSG_SIZE, IPC_NOWAIT);
 }
 
-IpcPackage* ipc_read(int ipcId, int fromId) {
-	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	int result = msgrcv(ipcId, msg, sizeof(msg->data)+ sizeof(msg->sender), fromId, IPC_NOWAIT);
-	if (result < 0) {
-		free(msg);
-		perror("msgrcv() failed @msjQueue/read, retuning NULL...");
-		return NULL;
-	}
-	return msg;
+int ipc_read(int ipcId, int fromId, IpcPackage* msg) {
+	int result = msgrcv(ipcId, (void *) msg, MSG_SIZE, fromId, IPC_NOWAIT);
+	return result;
 }
 
 void ipc_close(int ipcId) {
