@@ -8,7 +8,6 @@ void finishMainProcess(int sigVal);
 void initSignalHandler() {
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
-    signal(SIGSEGV, signalHandler);
 }
 
 void signalHandler(int sigVal) {
