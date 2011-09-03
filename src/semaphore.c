@@ -8,14 +8,11 @@ int semaphore_create(int key, int semSize, int flags) {
 		return -1;
 	}
 	// fails if semaphore set already exists.
-	int semId = semget(semKey, semSize, 0666 | IPC_CREAT | IPC_EXCL);
+	int semId = semget(semKey, semSize, 0666 | IPC_CREAT);
 	if (semId == -1) {
-		if (errno == EEXIST) {
-			return semget(semKey, semSize, 0666 | IPC_CREAT);
-		}
 		return -1;
 	}
-	// Set all semaphores to 0 id semaphore did not exist.
+	// Set all semaphores to 0
 	semaphore_setAll(semId, semSize, 0);
 	return semId;
 }
