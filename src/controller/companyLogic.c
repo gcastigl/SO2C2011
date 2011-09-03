@@ -55,26 +55,21 @@ void readAndProcessMessages(Company *company) {
 	for (int i = 0; i < company->planeCount; i++) {
 		int msgRead = ipc_read(ipcId, company->id, msg);
 		if (msgRead != -1) {
-			sprintf(auxBuffer, "[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
-			log_debug(auxBuffer);
-			sprintf(auxBuffer, "[Company %d] writing response to: %ld\n", company->id, msg->sender);
-			log_debug(auxBuffer);
+			log_debug("[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
+			log_debug("[Company %d] writing response to: %ld\n", company->id, msg->sender);
 			// Set un msg with the new data to be sent
 			msg->addressee = msg->sender;
 			msg->sender = company->id;
 			strcpy(msg->data, "This is a response with data from the company\n");
 			int writeReturn = ipc_write(ipcId, msg);
 			if (writeReturn != -1) {
-				sprintf(auxBuffer, "[Message sent OK]\n");
-				log_debug(auxBuffer);
+				log_debug("[Message sent OK]\n");
 			} else {
-				sprintf(auxBuffer, "[Company %d] ERROR writing to plane...\n", company->id);
-				log_debug(auxBuffer);
+				log_debug("[Company %d] ERROR writing to plane...\n", company->id);
 				perror("");
 			}
 		} else {
-			sprintf(auxBuffer, "[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
-			log_debug(auxBuffer);
+			log_debug("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
 		}
 	}
 }
