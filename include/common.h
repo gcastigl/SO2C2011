@@ -25,6 +25,10 @@ extern int errno;
 #define FALSE 0
 #define TRUE 1
 
+// Base Ids
+#define MIN_PLANE_ID	100
+#define MIN_COMPANY_ID	1000
+
 void fatal(char* err);
 
 int** createIntMatrix(int rows, int columns);
