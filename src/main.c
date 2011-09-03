@@ -18,7 +18,7 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; i++) {
         switch(pId = fork()) {
             case 0:
-                initChildSignalHandler();
+                //initChildSignalHandler();
                 companyStart(map->company[i]);
                 exit(0);
                 break;
@@ -46,7 +46,7 @@ void startSimulationDisplayer() {
     pid_t pId;
     pId = fork();
     if (pId == 0) {
-        initChildSignalHandler();
+        //initChildSignalHandler();
         displaySimulation();
     } else if (pId == ERROR) {
         fatal("Error forking UI");

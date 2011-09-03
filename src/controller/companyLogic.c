@@ -3,6 +3,8 @@
 void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 void readAndProcessMessages(Company *company);
+void sig_threadHandler();
+
 //TODO: when everything is working as it should be, all the sprnfs calls should be removed from the code
 
 /*
@@ -10,6 +12,11 @@ void readAndProcessMessages(Company *company);
  * 2 - Read & process plane messages.
  */
 void companyStart(Company* company) {
+    sigset_t signal_set;
+    pthread_t sig_thread;
+    
+    sigfillset(&signal_set);
+    pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
 	int ipcId = ipc_init(IPC_KEY, IPC_CREAT | 0666);
@@ -19,6 +26,7 @@ void companyStart(Company* company) {
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
+    pthread_create(&sig_thread, NULL, sig_threadHandler, NULL);
 	for (int i = 0; i < 5; i++) {
 		wakeUpPlanes(company, planesTurnSemId);
 		waitUntilPlanesReady(company, companyTurnSemId);
@@ -71,14 +79,13 @@ void readAndProcessMessages(Company *company) {
 	}
 }
 
-/*
-FakeIPC fake_ipc;
-fake_ipc.buffer = malloc(sizeof(int) * fake_ipc.bufferSize);
-pthread_mutex_init(&fake_ipc.mutexCounter, NULL);
-pthread_mutex_init(&fake_ipc.finished_thinking_mutex, NULL);
-pthread_create(&idHilo, NULL, planeStart, &fake_ipc);
-while (1) {
-	pthread_mutex_lock(&fake_ipc.mutexCounter);
-	...
-	pthread_mutex_unlock(&fake_ipc.mutexCounter);
-}*/
+void sig_threadHandler() {
+    sigset_t signal_set;
+    int sig;
+    for (;;) {
+        sigfillset(&signal_set);
+        sigwait(&signal_set, &sig);
+        log_debug("Signal thead caught signal number %d\n", sig);
+        childSignalHandler(sig);
+    }
+}

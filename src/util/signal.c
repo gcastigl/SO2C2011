@@ -1,10 +1,5 @@
 #include "util/signal.h"
 
-void signalHandler(int signal);
-void childSignalHandler(int signal);
-void finishProcess(int sigVal);
-void finishMainProcess(int sigVal);
-
 void initSignalHandler() {
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);

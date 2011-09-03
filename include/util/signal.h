@@ -9,5 +9,9 @@
 
 void initSignalHandler();
 void initChildSignalHandler();
+void signalHandler(int signal);
+void childSignalHandler(int signal);
+void finishProcess(int sigVal);
+void finishMainProcess(int sigVal);
 
 #endif
