@@ -27,28 +27,36 @@ void* planeStart(void* param) {
 }
 
 void readMessages(Plane* plane, int ipcId) {
+	char auxBuffer[100];
 	IpcPackage msg;
-	printf("[Plane %d] Reading from company...\n", plane->id);
+	sprintf(auxBuffer, "[Plane %d] Reading from company...\n", plane->id);
+	log_debug(auxBuffer);
 	int msgRead = ipc_read(ipcId, plane->id, &msg);
 	if (msgRead != -1) {
-		printf("[Plane %d] Response response from company: %s", plane->id, msg.data);
+		sprintf(auxBuffer, "[Plane %d] Response response from company: %s", plane->id, msg.data);
+		log_debug(auxBuffer);
 	} else {
-		printf("[Plane %d] NO messages from company\n", plane->id);
+		sprintf(auxBuffer, "[Plane %d] NO messages from company\n", plane->id);
+		log_debug(auxBuffer);
 		perror("");
 	}
 }
 
 void writeMessages(Plane* plane, int ipcId) {
 	IpcPackage* msg = malloc(sizeof(IpcPackage));
+	char auxBuffer[100];
 	msg->addressee = plane->ownerCompanyId;
 	msg->sender = plane->id;
 	sprintf(msg->data, "plane %d needs some information\n", plane->id);
-	printf("[Plane %d] Writing to company...\n", plane->id);
+	sprintf(auxBuffer, "[Plane %d] Writing to company...\n", plane->id);
+	log_debug(auxBuffer);
 	int writeReturn = ipc_write(ipcId, msg);
 	if (writeReturn != -1) {
-		printf("[Message sent OK]\n");
+		sprintf(auxBuffer, "[Message sent OK]\n");
+		log_debug(auxBuffer);
 	} else {
-		printf("[Plane %d] ERROR writing to company...\n", plane->id);
+		printf(auxBuffer, "[Plane %d] ERROR writing to company...\n", plane->id);
+		log_debug(auxBuffer);
 	}
 }
 
