@@ -1,5 +1,5 @@
-#ifndef SIGNAL_H_
-#define SIGNAL_H_
+#ifndef SIGNALHANDLING_H_
+#define SIGNALHANDLING_H_
 
 #include <signal.h>
 #include <unistd.h>
