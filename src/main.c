@@ -57,7 +57,7 @@ void startSimulationDisplayer() {
             fatal("Error forking UI");
             break;
         default:
-            childPid[map->companyCount + 1] = pId;
+            childPid[map->companyCount] = pId;
             break;
     }
 }
