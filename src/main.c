@@ -3,6 +3,8 @@
 void startSimulation();
 void initEnvironment();
 void startSimulationDisplayer();
+void main_endSimulation();
+static pid_t uiPid;
 
 int main() {
     initEnvironment();
@@ -32,7 +34,7 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; ++i) {
         wait(NULL);
     }
-    signal_abortSimulation(1);
+    main_endSimulation();
 }
 
 void initEnvironment() {
@@ -55,7 +57,15 @@ void startSimulationDisplayer() {
             fatal("Error forking UI");
             break;
         default:
-            childPid[map->companyCount] = pId;
+            childPid[map->companyCount] = uiPid = pId;
             break;
     }
+}
+
+void main_endSimulation() {
+    kill(uiPid, SIGUSR1);
+    for (int i = 0; i < map->companyCount; i++) {
+        kill(childPid[i], SIGUSR1);
+    }
+    logger_end();
 }

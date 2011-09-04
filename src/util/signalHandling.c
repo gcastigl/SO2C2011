@@ -15,7 +15,7 @@ void signal_abortSimulation(int sigVal) {
     for (int i = 0; i <= map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
-    endLogging();
+    logger_end();
     exit(1);
 }
 

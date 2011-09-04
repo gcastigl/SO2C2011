@@ -3,6 +3,7 @@
 void map_init(int maxCityCount) {
 	map = malloc(sizeof(Map));
 	map->cityCount = 0;
+    map->companyCount = 0;
 	map->itemCount = 0;
 }
 
