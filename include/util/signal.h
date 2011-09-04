@@ -3,6 +3,8 @@
 
 #include <signal.h>
 #include <unistd.h>
+#include <sys/signal.h>
+#include <signal.h>
 #include "map.h"
 #include "common.h"
 #include "util/logger.h"

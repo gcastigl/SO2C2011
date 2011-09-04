@@ -66,3 +66,4 @@ void childSignalHandler(int sigVal) {
 void finishProcess(int sigVal) {
     _exit(1);
 }
+
