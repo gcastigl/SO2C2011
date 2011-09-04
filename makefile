@@ -1,12 +1,15 @@
 # Binary Name
 BINARY := bin/tp1.out
 
+#IPC := msgQueue.c
+IPC := pipe.c
+
 CFLAGS := -Wall -g -lpthread -lm -lncurses -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
 INCLUDE_DIR = include
 # Directories belonging to the project
 PROJDIRS := src include
 # All source files of the project
-CSRCS := $(shell find -L $(PROJDIRS) -type f -name "*.c")
+CSRCS := $(shell find -L $(PROJDIRS) -type f -name "*.c" | grep -v "src/ipcs/") src/ipcs/$(IPC)
 
 # All object files in the library
 OBJS := $(patsubst src/%.c,bin/%.o,$(CSRCS))
