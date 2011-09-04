@@ -8,7 +8,8 @@ int main() {
     initEnvironment();
     startSimulationDisplayer();
     startSimulation();
-    printf("Simulation Done!\n");
+    printf("\n\nSimulation Done!\n\n");
+    finishMainProcess(1);
 	return 0;
 }
 
@@ -21,7 +22,6 @@ void startSimulation() {
                 createSignalHandlingThread();
                 log_debug("CREATED COMPANY WITH PID %d\n", getpid());
                 companyStart(map->company[i]);
-                exit(0);
                 break;
             case ERROR:
                 fatal("Fork Error");
@@ -31,7 +31,7 @@ void startSimulation() {
                 break;
         }
     }
-    for (int i = 0; i <= map->companyCount; ++i) {
+    for (int i = 0; i < map->companyCount; ++i) {
         wait(NULL);
     }
 }
@@ -51,6 +51,7 @@ void startSimulationDisplayer() {
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
             createSignalHandlingThread();
             displaySimulation();
+            exit(0);
             break;
         case ERROR:
             fatal("Error forking UI");
