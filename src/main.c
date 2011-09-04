@@ -51,7 +51,7 @@ void startSimulationDisplayer() {
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
             signal_createHandlerThread(FALSE);
             displaySimulation();
-            exit(0);
+            _exit(0);
             break;
         case ERROR:
             fatal("Error forking UI");
