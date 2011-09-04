@@ -49,7 +49,6 @@ void startSimulationDisplayer() {
     pid_t pId;
     switch ((pId = fork())) {
         case 0:
-            createSignalHandlingThread();
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
             displaySimulation();
             break;
