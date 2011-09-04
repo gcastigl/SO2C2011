@@ -1,8 +1,8 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-#IPC := msgQueue.c
-IPC := pipe.c
+IPC := msgQueue.c
+#IPC := pipe.c
 
 LIBS := -lpthread -lm -lncurses -pthread
 CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
