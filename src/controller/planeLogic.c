@@ -1,51 +1,48 @@
 #include "controller/planeLogic.h"
 
-void readMessages(Plane* plane, int ipcId);
-void writeMessages(Plane* plane, int ipcId);
+void readMessages(Plane* plane);
+void writeMessages(Plane* plane);
 void updateState(Plane* plane);
 void setNewTarget(Plane* plane);
 int canSupplyCity(Plane* plane, City* city);
 int getScore(Plane* plane, int originCityIndex, City* destination);
 
 void* planeStart(void* param) {
-	Plane* me = (Plane*) param;
+	Plane* plane = (Plane*) param;
     log_debug("Plane started\n");
-	int ipcId = ipc_get(IPC_KEY);
 	int planesTurnSemId = semaphore_get(SEM_PLANE_KEY);
 	int companyTurnSemId = semaphore_get(SEM_COMPANY_KEY);
-	if (planesTurnSemId < 0 || companyTurnSemId < 0 || ipcId < 0) {
+	if (planesTurnSemId < 0 || companyTurnSemId < 0) {
 		fatal("Error initializing varibles.");
 	}
 	while (1) {
-		semaphore_decrement(planesTurnSemId, me->id - MIN_PLANE_ID);
-		readMessages(me, ipcId);
-		// updateState(me);
-		writeMessages(me, ipcId);
+		semaphore_decrement(planesTurnSemId, PLANE_INDEX(plane->id));
+		readMessages(plane);
+		updateState(plane);
+		writeMessages(plane);
 		sleep(1);
 		semaphore_increment(companyTurnSemId, 0);
 	}
 	exit(0);
 }
 
-void readMessages(Plane* plane, int ipcId) {
-	IpcPackage msg;
+void readMessages(Plane* plane) {
+	char msg[DATA_SIZE];
 	log_debug("[Plane %d] Reading from company...\n", plane->id);
-	int msgRead = ipc_read(ipcId, plane->id, &msg);
+	int msgRead = ipc_read(PLANE_COMANY_ID(plane->id), plane->id, msg);
 	if (msgRead != -1) {
-		log_debug("[Plane %d] Response response from company: %s", plane->id, msg.data);
+		log_debug("[Plane %d] Response response from company: %s", plane->id, msg);
 	} else {
 		log_debug("[Plane %d] NO messages from company\n", plane->id);
 		perror("");
 	}
 }
 
-void writeMessages(Plane* plane, int ipcId) {
-	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	msg->addressee = plane->ownerCompanyId;
-	msg->sender = plane->id;
-	sprintf(msg->data, "plane %d needs some information\n", plane->id);
+void writeMessages(Plane* plane) {
+	char msg[DATA_SIZE];
+	sprintf(msg, "plane %d needs some information\n", plane->id);
 	log_debug("[Plane %d] Writing to company...\n", plane->id);
-	int writeReturn = ipc_write(ipcId, msg);
+	int writeReturn = ipc_write(plane->id, PLANE_COMANY_ID(plane->id), msg);
 	if (writeReturn != -1) {
 		log_debug("[Message sent OK]\n");
 	} else {
@@ -55,24 +52,27 @@ void writeMessages(Plane* plane, int ipcId) {
 
 void updateState(Plane* plane) {
 	plane->distanceToDestination--;
+	log_debug("[Plane %d] Distance left: %d\n", plane->id, plane->distanceToDestination);
 	if (plane->distanceToDestination <= 0) {
 		plane->cityIdFrom = plane->cityIdTo;
 		plane->cityIdTo = NO_TARGET;
-		setNewTarget(plane);
+		// setNewTarget(plane);
 	}
 }
 
 void setNewTarget(Plane* plane) {
 	int i, bestCityScore = -1, bestCityindex = NO_TARGET, newTargetScore;
-	City newCity;
+	City* newCity;
 	for (i = 0; i < map->cityCount; i++) {
-		if (i == plane->cityIdFrom) {
-			// Skip current city...
+		int routeLength = map->city[plane->cityIdFrom]->cityDistance[i];
+		if (i == plane->cityIdFrom || routeLength <= 0) {
+			// Skip if current city or route does not exists
 			continue;
 		}
-		newCity = *map->city[i];
-		if (canSupplyCity(plane, &newCity)) {
-			newTargetScore = getScore(plane, plane->cityIdFrom, &newCity);
+		newCity = map->city[i];
+		printf("Pasando por la ciduad...\n");
+		if (canSupplyCity(plane, newCity)) {
+			newTargetScore = getScore(plane, plane->cityIdFrom, newCity);
 			if (bestCityScore < newTargetScore) {
 				bestCityScore = newTargetScore;
 				bestCityindex = i;
@@ -82,11 +82,13 @@ void setNewTarget(Plane* plane) {
 
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		pthread_exit(NULL);
+		//pthread_exit(NULL);
+		printf("Me muero\n\n");
+		return;
 	}
 	// Set new distance from currentTargetId to newTaget
 	plane->cityIdTo = bestCityindex;
-	plane->distanceToDestination = map->city[plane->cityIdFrom]->cityDistance[bestCityindex];
+	//plane->distanceToDestination = map->city[plane->cityIdFrom]->cityDistance[bestCityindex];
 }
 
 int canSupplyCity(Plane* plane, City* city) {

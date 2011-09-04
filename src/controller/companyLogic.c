@@ -15,10 +15,7 @@ void companyStart(Company* company) {
     log_debug("Creating company...\n");
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
-	int ipcId = ipc_init(IPC_KEY, IPC_CREAT | 0666);
-	if (planesTurnSemId < 0 || companyTurnSemId < 0 || ipcId < 0) {
-		fatal("Error creating semaphore");
-	}
+
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
@@ -33,7 +30,7 @@ void companyStart(Company* company) {
 
 void wakeUpPlanes(Company* company, int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_increment(semId, company->plane[i]->id - MIN_PLANE_ID);
+		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id));
 	}
 }
 
@@ -45,18 +42,15 @@ void waitUntilPlanesReady(Company* company, int semId) {
 }
 
 void readAndProcessMessages(Company *company) {
-	IpcPackage* msg = malloc(sizeof(IpcPackage));
-	int ipcId = ipc_get(IPC_KEY);
+	char* msg = malloc(sizeof(DATA_SIZE));
 	for (int i = 0; i < company->planeCount; i++) {
-		int msgRead = ipc_read(ipcId, company->id, msg);
+		int msgRead = ipc_read(company->id, company->plane[i]->id, msg);
 		if (msgRead != -1) {
-			log_debug("[Company %d] Message from child %ld -> %s", company->id, msg->sender, msg->data);
-			log_debug("[Company %d] writing response to: %ld\n", company->id, msg->sender);
+			log_debug("[Company %d] Message from child %ld -> %s", company->id, company->plane[i]->id, msg);
+			log_debug("[Company %d] writing response to: %ld\n", company->id, company->plane[i]->id);
 			// Set un msg with the new data to be sent
-			msg->addressee = msg->sender;
-			msg->sender = company->id;
-			strcpy(msg->data, "This is a response with data from the company\n");
-			int writeReturn = ipc_write(ipcId, msg);
+			strcpy(msg, "This is a response with data from the company\n");
+			int writeReturn = ipc_write(company->id, company->plane[i]->id, msg);
 			if (writeReturn != -1) {
 				log_debug("[Message sent OK]\n");
 			} else {
