@@ -1,4 +1,4 @@
-#include "util/signal.h"
+#include "util/signalHandling.h"
 
 void initSignalHandler() {
     signal(SIGINT, signalHandler);
