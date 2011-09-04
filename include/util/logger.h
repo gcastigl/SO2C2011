@@ -4,6 +4,7 @@
 #include "semaphore.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/sem.h>
 
 #define L_DEBUG 0
 #define L_ERROR 1
