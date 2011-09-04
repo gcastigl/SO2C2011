@@ -47,12 +47,6 @@ void *sig_threadHandler(void* args) {
     return NULL;
 }
 
-void initChildSignalHandler() {
-    signal(SIGINT, childSignalHandler);
-    signal(SIGTERM, childSignalHandler);
-    signal(SIGUSR1, childSignalHandler);
-}
-
 void childSignalHandler(int sigVal) {
     if (sigVal == SIGUSR1) {
         finishProcess(sigVal);
