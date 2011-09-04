@@ -28,6 +28,7 @@ void** createMatrix(int elemSize, int rows, int columns) {
 
 void fatal(char* err) {
 	perror(err);
+	log_error(err);
 	exit(1);
 }
 
