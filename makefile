@@ -1,7 +1,7 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-CFLAGS := -Wall -g -lpthread -lm -lncurses -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
+CFLAGS := -Wall -g -lpthread -pthread -lm -lncurses -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
 INCLUDE_DIR = include
 # Directories belonging to the project
 PROJDIRS := src include
