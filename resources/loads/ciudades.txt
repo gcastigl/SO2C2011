@@ -23,6 +23,8 @@ Paracetamol 50
 
 Rosario Cordoba 10
 Rosario BuenosAires 15
+Rosario SantaFe 25
+Rosario Parana 40
 
 Cordoba BuenosAires 20
 Cordoba SantaFe 10

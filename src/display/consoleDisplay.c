@@ -21,21 +21,21 @@ void displaySimulation() {
 }
 
 void displayCities() {
-	for(int i = 0; i < map->companyCount; i++) {
+	printf("********************************************\n");
+	for(int i = 0; i < map->cityCount; i++) {
 		displayCity(i);
 	}
 }
 
 void displayCity(int index) {
+	printf("City %d ", index);
 	City* city = map->city[index];
-	printf("********** City number: %d -- name: %s **********\n", index, city->name);
-	printf("*Distance to city ");
 	for(int i = 0; i < map->cityCount; i++) {
 		if (i != index) {
-			printf("%d => %d    ", i , city->cityDistance[i]);
+			printf("%2d => %2d    ", i , city->cityDistance[i]);
 		}
 	}
-	printf("\n**********************************\n");
+	printf("\n");
 }
 
 void displayCompanies() {
