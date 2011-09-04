@@ -4,13 +4,13 @@ void signal_handler(int sigVal) {
     switch (sigVal) {
         case SIGINT:
         case SIGTERM:
-            signal_endSimulation(sigVal);
+            signal_abortSimulation(sigVal);
         default:
             break;
     }
 }
 
-void signal_endSimulation(int sigVal) {
+void signal_abortSimulation(int sigVal) {
     for (int i = 0; i <= map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
