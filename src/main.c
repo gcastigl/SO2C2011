@@ -9,7 +9,6 @@ int main() {
     startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
-    signal_abortSimulation(1);
 	return 0;
 }
 
@@ -20,7 +19,6 @@ void startSimulation() {
         switch((pId = fork())) {
             case 0:
                 signal_createHandlerThread(FALSE);
-                log_debug("CREATED COMPANY WITH PID %d\n", getpid());
                 companyStart(map->company[i]);
                 break;
             case ERROR:
@@ -34,6 +32,7 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; ++i) {
         wait(NULL);
     }
+    signal_abortSimulation(1);
 }
 
 void initEnvironment() {
@@ -48,7 +47,6 @@ void startSimulationDisplayer() {
     pid_t pId;
     switch ((pId = fork())) {
         case 0:
-            log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
             signal_createHandlerThread(FALSE);
             displaySimulation();
             exit(0);
