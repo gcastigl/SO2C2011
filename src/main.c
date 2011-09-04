@@ -9,7 +9,7 @@ int main() {
     startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
-    finishMainProcess(1);
+    signal_endSimulation(1);
 	return 0;
 }
 
