@@ -25,9 +25,10 @@ extern int errno;
 #define FALSE 0
 #define TRUE 1
 
-// Base Ids
-#define MIN_PLANE_ID	100
-#define MIN_COMPANY_ID	1000
+//
+#define PLANE_ID(companyId, index)		((companyId << 16) + index)
+#define PLANE_INDEX(planeId)			(planeId & 0xFFFF)
+#define PLANE_COMANY_ID(planeId)		(planeId >> 16)
 
 int *childPid;
 
