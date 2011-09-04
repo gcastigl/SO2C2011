@@ -7,7 +7,7 @@
 
 #define L_DEBUG 0
 #define L_ERROR 1
-void endLogging();
+void logger_end();
 void _log(int logLevel, const char *file, int line, const char *fmt, ...);
 
 #define log_debug(...)  _log(L_DEBUG, __FILE__, __LINE__, __VA_ARGS__)

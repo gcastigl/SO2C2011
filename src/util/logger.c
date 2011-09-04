@@ -6,11 +6,10 @@ int semKey = 0x20605202;
 int semId;
 static char *logLevelString[] = { "DEBUG", "ERROR" };
 
-void initLogging() {
+void logger_init() {
     if (initialized) {
         return;
     }
-    
     #ifdef LOG_TO_FILE
         unlink("log.txt");
         logFile = fopen("log.txt", "a");
@@ -23,7 +22,7 @@ void initLogging() {
     initialized = 1;
 }
 
-void endLogging() {
+void logger_end() {
     #ifdef LOG_TO_FILE
         fclose(logFile);
     #endif
@@ -34,7 +33,7 @@ void endLogging() {
 }
 
 void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
-    initLogging();
+    logger_init();
     va_list ap;
     va_start(ap, fmt);
     

@@ -5,7 +5,7 @@
 #include "map.h"
 #include "parser.h"
 #include "display/consoleDisplay.h"
-#include "util/signal.h"
+#include "util/signalHandling.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 

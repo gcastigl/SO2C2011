@@ -6,7 +6,6 @@
 #include "plane.h"
 #include "communicator.h"
 #include "semaphore.h"
-#include "util/signal.h"
 #include <string.h>
 #include <pthread.h>
 #include <stdlib.h>

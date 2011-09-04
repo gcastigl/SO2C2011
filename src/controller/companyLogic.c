@@ -3,7 +3,6 @@
 void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 void readAndProcessMessages(Company *company);
-void *sig_threadHandler(void *);
 
 //TODO: when everything is working as it should be, all the sprnfs calls should be removed from the code
 
@@ -12,11 +11,8 @@ void *sig_threadHandler(void *);
  * 2 - Read & process plane messages.
  */
 void companyStart(Company* company) {
-    sigset_t signal_set;
-    pthread_t sig_thread;
-    
-    sigfillset(&signal_set);
-    pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
+    printf("Creating company...\n");
+    log_debug("Creating company...\n");
 	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
 	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
 	int ipcId = ipc_init(IPC_KEY, IPC_CREAT | 0666);
@@ -26,7 +22,7 @@ void companyStart(Company* company) {
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
-    pthread_create(&sig_thread, NULL, sig_threadHandler, NULL);
+
 	for (int i = 0; i < 5; i++) {
 		wakeUpPlanes(company, planesTurnSemId);
 		waitUntilPlanesReady(company, companyTurnSemId);
@@ -71,18 +67,6 @@ void readAndProcessMessages(Company *company) {
 			log_debug("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
 		}
 	}
-}
-
-void *sig_threadHandler(void *inf) {
-    sigset_t signal_set;
-    int sig;
-    for (;;) {
-        sigfillset(&signal_set);
-        sigwait(&signal_set, &sig);
-        log_debug("Signal thead caught signal number %d\n", sig);
-        childSignalHandler(sig);
-    }
-    return NULL;
 }
 
 

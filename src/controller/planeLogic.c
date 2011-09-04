@@ -9,6 +9,7 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 
 void* planeStart(void* param) {
 	Plane* me = (Plane*) param;
+    log_debug("Plane started\n");
 	int ipcId = ipc_get(IPC_KEY);
 	int planesTurnSemId = semaphore_get(SEM_PLANE_KEY);
 	int companyTurnSemId = semaphore_get(SEM_COMPANY_KEY);
@@ -27,10 +28,8 @@ void* planeStart(void* param) {
 }
 
 void readMessages(Plane* plane, int ipcId) {
-	char auxBuffer[100];
 	IpcPackage msg;
-	sprintf(auxBuffer, "[Plane %d] Reading from company...\n", plane->id);
-	log_debug(auxBuffer);
+	log_debug("[Plane %d] Reading from company...\n", plane->id);
 	int msgRead = ipc_read(ipcId, plane->id, &msg);
 	if (msgRead != -1) {
 		log_debug("[Plane %d] Response response from company: %s", plane->id, msg.data);

@@ -14,9 +14,9 @@ extern int errno;
 
 #define TMP_FOLDER	"/tmp/"
 // Semaphore keys
-#define SEM_PLANE_KEY 	11220
-#define SEM_COMPANY_KEY	22130
-#define IPC_KEY			0x12340
+#define SEM_PLANE_KEY 	10220
+#define SEM_COMPANY_KEY	20130
+#define IPC_KEY			0x12310
 
 // Status defines
 #define OP_OK	0

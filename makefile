@@ -4,7 +4,8 @@ BINARY := bin/tp1.out
 #IPC := msgQueue.c
 IPC := pipe.c
 
-CFLAGS := -Wall -g -lpthread -lm -lncurses -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
+LIBS := -lpthread -lm -lncurses -pthread
+CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
 INCLUDE_DIR = include
 # Directories belonging to the project
 PROJDIRS := src include
@@ -26,10 +27,10 @@ $(OBJDIRS):
 	mkdir -p $@
 
 $(BINARY): $(OBJS)
-	gcc $(CFLAGS) $(OBJS) -o $@
+	gcc $(CFLAGS) $(LIBS) $(OBJS) -o $@
 
 clean:
 	-@$(RM) -rf $(OBJDIRS)
 
 $(OBJS): bin/%.o : src/%.c
-	gcc $(CFLAGS) -I $(INCLUDE_DIR) -MMD -MP -c $< -o $@
+	gcc $(CFLAGS) $(LIBS) -I $(INCLUDE_DIR) -MMD -MP -c $< -o $@
