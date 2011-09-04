@@ -9,12 +9,11 @@
 #include "common.h"
 #include "util/logger.h"
 
-void initSignalHandler();
-void signalHandler(int signal);
-void childSignalHandler(int signal);
-void finishProcess(int sigVal);
-void finishMainProcess(int sigVal);
-void createSignalHandlingThread();
-void *sig_threadHandler(void* args);
+void signal_handler(int signal);
+void signal_childHandler(int signal);
+void signal_endChildProcess(int sigVal);
+void signal_endSimulation(int sigVal);
+void signal_createHandlerThread(int isMainProcess);
+void *signal_threadHandler(void* isMainProcess);
 
 #endif

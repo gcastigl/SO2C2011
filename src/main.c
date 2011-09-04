@@ -19,7 +19,7 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; i++) {
         switch((pId = fork())) {
             case 0:
-                createSignalHandlingThread();
+                signal_createHandlerThread(FALSE);
                 log_debug("CREATED COMPANY WITH PID %d\n", getpid());
                 companyStart(map->company[i]);
                 break;
@@ -37,7 +37,7 @@ void startSimulation() {
 }
 
 void initEnvironment() {
-    initSignalHandler();
+    signal_createHandlerThread(TRUE);
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
     childPid = malloc(sizeof(int) * (map->companyCount + 1));
@@ -49,7 +49,7 @@ void startSimulationDisplayer() {
     switch ((pId = fork())) {
         case 0:
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
-            createSignalHandlingThread();
+            signal_createHandlerThread(FALSE);
             displaySimulation();
             exit(0);
             break;
