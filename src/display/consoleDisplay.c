@@ -7,7 +7,6 @@ void displayCompany(Company* company);
 void displayPlane(Plane *plane);
 
 void displaySimulation() {
-    log_debug("Starting simulation display");
 	while(1) {
 		printf("\n-----------------------------------------------\n");
 		displayCompanies();
