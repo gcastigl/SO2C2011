@@ -73,7 +73,7 @@ Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
 		switch (status) {
 			case S0:
 				if (!isNewLine(line)) {
-					plane = newPlane(id, owenerCompanyId, map_getCityId(line));
+					plane = newPlane(PLANE_ID(owenerCompanyId, id), map_getCityId(line));
 					status = S1;
 				}
 				break;
@@ -140,7 +140,7 @@ Company *parseCompany(char *fileName, int companyId) {
 		maxPlaneCount = parseInt(file);
 		Company *company = newCompany(companyId, fileName, maxPlaneCount);
 		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, parsePlane(file, company->id, MIN_PLANE_ID + i));
+			addPlane(company, parsePlane(file, company->id, i));
 		}
 		fclose(file);
 		return company;
