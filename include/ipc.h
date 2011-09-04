@@ -2,7 +2,6 @@
 #define IPC_H_
 
 #include "common.h"
-#define DATA_SIZE 128
 #define READ 0
 #define WRITE 1
 
