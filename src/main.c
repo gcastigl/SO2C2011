@@ -50,6 +50,7 @@ void startSimulationDisplayer() {
     switch ((pId = fork())) {
         case 0:
             log_debug("CREATED DISPLAY WITH PID %d\n", getpid());
+            createSignalHandlingThread();
             displaySimulation();
             break;
         case ERROR:

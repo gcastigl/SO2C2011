@@ -7,7 +7,7 @@ void displayCompany(Company* company);
 void displayPlane(Plane *plane);
 
 void displaySimulation() {
-	createSignalHandlingThread();
+	initChildSignalHandler();
 	while(1) {
 		printf("\n-----------------------------------------------\n");
 		displayCompanies();
