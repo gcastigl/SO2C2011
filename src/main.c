@@ -41,7 +41,7 @@ void initEnvironment() {
     initSignalHandler();
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
-    childPid = malloc(sizeof(int) * map->companyCount + 1);
+    childPid = malloc(sizeof(int) * (map->companyCount + 1));
     return;
 }
 
