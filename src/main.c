@@ -34,7 +34,6 @@ void startSimulation() {
     for (int i = 0; i <= map->companyCount; ++i) {
         wait(NULL);
     }
-    printf("\n\nSimulation Done!\n\n\n");
 }
 
 void initEnvironment() {
