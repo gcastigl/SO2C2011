@@ -68,4 +68,5 @@ void main_endSimulation() {
         kill(childPid[i], SIGUSR1);
     }
     logger_end();
+    exit(0);
 }
