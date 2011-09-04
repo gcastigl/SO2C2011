@@ -1,5 +1,12 @@
 #include "main.h"
 
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/wait.h>
+
+
 void startSimulation();
 void initEnvironment();
 void startSimulationDisplayer();
@@ -12,6 +19,14 @@ int main() {
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
+}
+
+void initEnvironment() {
+    signal_createHandlerThread(TRUE);
+    parseMap("resources/loads/ciudades.txt");
+    map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
+    childPid = malloc(sizeof(int) * (map->companyCount + 1));
+    return;
 }
 
 void startSimulation() {
@@ -37,21 +52,12 @@ void startSimulation() {
     main_endSimulation();
 }
 
-void initEnvironment() {
-    signal_createHandlerThread(TRUE);
-    parseMap("resources/loads/ciudades.txt");
-    map_addCompany(parseCompany("resources/loads/empresa.txt", 123456));
-    childPid = malloc(sizeof(int) * (map->companyCount + 1));
-    return;
-}
-
 void startSimulationDisplayer() {
     pid_t pId;
     switch ((pId = fork())) {
         case 0:
             signal_createHandlerThread(FALSE);
             displaySimulation();
-            _exit(0);
             break;
         case ERROR:
             fatal("Error forking UI");
