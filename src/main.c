@@ -10,8 +10,8 @@ void startSimulation();
 void initEnvironment();
 void startMapAndDisplayProcess();
 void main_endSimulation();
-static pid_t uiPid;
 static Map *map;
+static int processCount;
 
 int main() {
     initEnvironment();
@@ -23,10 +23,11 @@ int main() {
 
 void initEnvironment() {
     log_debug("Starting simulation...\n");
-    signal_createHandlerThread(TRUE);
     map = parseMap("resources/loads/ciudades.txt");
     map_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
-    childPid = malloc(sizeof(int) * (map->companyCount));
+    processCount = map->companyCount;
+    signal_createHandlerThread(TRUE);
+    childPid = malloc(sizeof(int) * (processCount));
     return;
 }
 
@@ -54,12 +55,12 @@ void startSimulation() {
 
 // Also acts as a map information hub
 void startMapAndDisplayProcess() {
-	display_start();
-	map_start();
+	display_start(map);
+	map_start(map);
 }
 
 void main_endSimulation() {
-    for (int i = 0; i < map->companyCount; i++) {
+    for (int i = 0; i < processCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
     logger_end();

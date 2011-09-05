@@ -7,8 +7,9 @@ void displayCompany(Company* company);
 void displayPlane(Plane *plane);
 void *displaySimulation(void *arg);
 
-void display_start() {
+void display_start(Map *mapArg) {
 	int semId;
+	map = mapArg;
 	pthread_t display_thread;
 	semctl(semId, 0, SETVAL, 1);
 	if (!!pthread_create(&display_thread, NULL, displaySimulation, NULL)) {

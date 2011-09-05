@@ -4,6 +4,6 @@
 #include "../common.h"
 #include "../map.h"
 
-void display_start();
+void display_start(Map *map);
 
 #endif

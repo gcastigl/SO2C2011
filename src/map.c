@@ -43,7 +43,7 @@ int map_getStockId(Map *map, char* name) {
 	return i;
 }
 
-int map_start() {
+int map_start(Map *map) {
     int semId;
 	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
 	if (semId == -1) {
