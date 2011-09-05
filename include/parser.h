@@ -5,7 +5,7 @@
 #include "company.h"
 #include "map.h"
 
-void parseMap(char *fileName);
-Company *parseCompany(char *fileName, int companyId);
+Map *parseMap(char *fileName);
+Company *parseCompany(Map *map, char *fileName, int companyId);
 
 #endif /* HEADER_H_ */

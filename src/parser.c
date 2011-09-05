@@ -5,6 +5,8 @@
 typedef enum {S0 = 0, S1 = 1} Status;
 int isNewLine(char *line);
 
+void parseCityStock(Map *map, char *line, City* city);
+
 char *fgetstr(char *string, int n, FILE *stream) {
 	char *result;
 	result = fgets(string, n, stream);
@@ -20,17 +22,17 @@ char *fgetstr(char *string, int n, FILE *stream) {
 	return (string);
 }
 
-void parseCityStock(char *line, City* city) {
+void parseCityStock(Map *map, char *line, City* city) {
 	char itemName[MAX_NAME];
 	int stock;
 	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
-		city->itemStock[map_getStockId(itemName)] = stock;
+		city->itemStock[map_getStockId(map, itemName)] = stock;
 		return;
 	}
-	fatal("Invalid City stock");
+	log_error("Invalid City stock");
 }
 
-City *parseCity(FILE *stream) {
+City *parseCity(Map *map, FILE *stream) {
 	Status status = S0;
 	City *city;
 	char line[BUFSIZ];
@@ -46,26 +48,26 @@ City *parseCity(FILE *stream) {
 				if (isNewLine(line)) {
 					return city;
 				} else {
-					parseCityStock(line, city);
+					parseCityStock(map, line, city);
 				}
 				break;
 		}
 	}
-	fatal("city not found");
+	log_error("city not found");
 	return NULL;
 }
 
-void parsePlaneStock(char *line, Plane* plane) {
+void parsePlaneStock(Map *map, char *line, Plane* plane) {
 	char itemName[MAX_NAME];
 	int stock;
 	if (sscanf(line, "%s %d", itemName, &stock) == 2) {
-		plane->itemStock[map_getStockId(itemName)] = stock;
+		plane->itemStock[map_getStockId(map, itemName)] = stock;
 		return;
 	}
-	fatal("Invalid City stock");
+	log_error("Invalid City stock");
 }
 
-Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
+Plane *parsePlane(Map *map, FILE *stream, int owenerCompanyId, int id) {
 	Status status = S0;
 	Plane *plane;
 	char line[BUFSIZ];
@@ -73,7 +75,7 @@ Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
 		switch (status) {
 			case S0:
 				if (!isNewLine(line)) {
-					plane = newPlane(PLANE_ID(owenerCompanyId, id), map_getCityId(line));
+					plane = newPlane(PLANE_ID(owenerCompanyId, id), map_getCityId(map, line));
 					status = S1;
 				}
 				break;
@@ -81,7 +83,7 @@ Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
 				if (isNewLine(line)) {
 					return plane;
 				} else {
-					parsePlaneStock(line, plane);
+					parsePlaneStock(map, line, plane);
 				}
 				break;
 		}
@@ -89,7 +91,7 @@ Plane *parsePlane(FILE *stream, int owenerCompanyId, int id) {
 	return plane;
 }
 
-void parseCityDistances(FILE *stream) {
+void parseCityDistances(Map *map, FILE *stream) {
 	char line[BUFSIZ];
 	while (fgetstr(line, sizeof line, stream)) {
 		if (isNewLine(line)) {
@@ -99,7 +101,7 @@ void parseCityDistances(FILE *stream) {
 			char cityName1[MAX_NAME];
 			char cityName2[MAX_NAME];
 			if (sscanf(line, "%s %s %d", cityName1, cityName2, &distance) == 3) {
-				map->city[map_getCityId(cityName1)]->cityDistance[map_getCityId(cityName2)] = distance;
+				map->city[map_getCityId(map, cityName1)]->cityDistance[map_getCityId(map, cityName2)] = distance;
 			}
 		}
 	}
@@ -113,39 +115,41 @@ int parseInt(FILE *stream) {
 			return integer;
 		}
 	}
-	fatal("integer not found");
+	log_error("integer not found");
 	return 0;
 }
 
-void parseMap(char *fileName) {
+Map *parseMap(char *fileName) {
+	Map *map = NULL;
 	FILE *file = fopen(fileName, "r");
 	int maxCityCount;
 	if (file) {
 		maxCityCount = parseInt(file);
-		map_init(maxCityCount);
+		map = newMap();
 		for(int i = 0; i < maxCityCount; i++) {
-			map_addCity(parseCity(file));
+			map_addCity(map, parseCity(map, file));
 		}
-		parseCityDistances(file);
+		parseCityDistances(map, file);
 		fclose(file);
 	} else {
-		fatal("Error loading map file.");
+		log_error("Error loading map file.");
 	}
+	return map;
 }
 
-Company *parseCompany(char *fileName, int companyId) {
+Company *parseCompany(Map *map, char *fileName, int companyId) {
 	FILE *file = fopen(fileName, "r");
 	int maxPlaneCount;
 	if (file) {
 		maxPlaneCount = parseInt(file);
 		Company *company = newCompany(companyId, fileName, maxPlaneCount);
 		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, parsePlane(file, company->id, i));
+			addPlane(company, parsePlane(map, file, company->id, i));
 		}
 		fclose(file);
 		return company;
 	} else {
-		fatal("Error loading company file.");
+		log_error("Error loading company file.");
 		return (Company *)NULL;
 	}
 }

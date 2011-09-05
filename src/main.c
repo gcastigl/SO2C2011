@@ -6,26 +6,26 @@
 #include <time.h>
 #include <sys/wait.h>
 
-
 void startSimulation();
 void initEnvironment();
 void startMapAndDisplayProcess();
 void main_endSimulation();
+static pid_t uiPid;
+static Map *map;
 
 int main() {
     initEnvironment();
     startMapAndDisplayProcess();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
-    main_endSimulation();
 	return 0;
 }
 
 void initEnvironment() {
     log_debug("Starting simulation...\n");
     signal_createHandlerThread(TRUE);
-    parseMap("resources/loads/ciudades.txt");
-    map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
+    map = parseMap("resources/loads/ciudades.txt");
+    map_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
     childPid = malloc(sizeof(int) * (map->companyCount));
     return;
 }

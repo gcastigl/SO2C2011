@@ -2,10 +2,10 @@
 
 typedef struct {
 	long fromId;
-	char data[DATA_SIZE];
+	char* data;
 } MsgQueuePackage;
 
-#define MSG_SIZE (sizeof(MsgQueuePackage) - sizeof(long int))
+#define MSG_SIZE (DATA_SIZE - sizeof(long int))
 
 int ipc_get(int id);
 
@@ -31,9 +31,9 @@ int ipc_get(int key) {
 }
 
 int ipc_write(int myId, int toId, char *data) {
-	int myIpcId = ipc_get(myId);
+	int toIpcId = ipc_get(toId);
 	MsgQueuePackage *msg = newMsgQueuePackage(myId, data);
-	return msgsnd(myIpcId, (void*) msg, MSG_SIZE, IPC_NOWAIT);
+	return msgsnd(toIpcId, (void*) msg, MSG_SIZE, IPC_NOWAIT);
 }
 
 int ipc_read(int myId, int fromId, char *data) {
@@ -47,7 +47,7 @@ int ipc_read(int myId, int fromId, char *data) {
 	return result;
 }
 
-int ipc_close(int id){
+int ipc_close(int id) {
 	int ipcId = ipc_get(id);
 	return msgctl(ipcId, IPC_RMID, (struct msqid_ds *) NULL);
 }
@@ -55,6 +55,6 @@ int ipc_close(int id){
 MsgQueuePackage *newMsgQueuePackage(int id, char* data) {
 	MsgQueuePackage* msg = malloc(sizeof(MsgQueuePackage));
 	msg->fromId = id;
-	strcpy(msg->data, data);
+	msg->data = data;
 	return msg;
 }
