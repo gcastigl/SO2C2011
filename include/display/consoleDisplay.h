@@ -4,6 +4,6 @@
 #include "../common.h"
 #include "../map.h"
 
-void displaySimulation();
+void display_start();
 
 #endif

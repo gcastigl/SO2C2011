@@ -11,7 +11,6 @@ void startSimulation();
 void initEnvironment();
 void startMapAndDisplayProcess();
 void main_endSimulation();
-static pid_t uiPid;
 
 int main() {
     initEnvironment();
@@ -55,14 +54,8 @@ void startSimulation() {
 
 // Also acts as a map information hub
 void startMapAndDisplayProcess() {
-    int semId;
-	signal_createHandlerThread(FALSE);
-	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
-	if (semId == -1) {
-		fatal("Error creating map semaphore");
-	}
-	semctl(semId, 0, SETVAL, 1);
-	displaySimulation();
+	display_start();
+	map_start();
 }
 
 void main_endSimulation() {

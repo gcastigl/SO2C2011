@@ -49,7 +49,7 @@ void map_addCity(City *city);
 void map_addCompany(Company *company);
 int map_getCityId(char* name);
 int map_getStockId(char* name);
-
+int map_start();
 Map *map;
 
 #endif
