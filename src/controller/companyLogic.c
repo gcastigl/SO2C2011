@@ -55,7 +55,7 @@ void readAndProcessMessages(Company *company) {
 				log_debug("[Message sent OK]\n");
 			} else {
 				log_debug("[Company %d] ERROR writing to plane...\n", company->id);
-				perror("");
+				perror("readAndProcessMessages");
 			}
 		} else {
 			log_debug("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);

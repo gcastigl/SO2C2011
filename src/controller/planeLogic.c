@@ -34,7 +34,7 @@ void readMessages(Plane* plane) {
 		log_debug("[Plane %d] Response response from company: %s", plane->id, msg);
 	} else {
 		log_debug("[Plane %d] NO messages from company\n", plane->id);
-		perror("");
+		perror("readMessages");
 	}
 }
 
