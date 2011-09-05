@@ -1,16 +1,23 @@
 #include "display/consoleDisplay.h"
 Map* map;
 void displayCities();
-
 void displayCity(int index);
-
 void displayCompanies();
-
 void displayCompany(Company* company);
-
 void displayPlane(Plane *plane);
+void *displaySimulation(void *arg);
 
-void displaySimulation() {
+void display_start(Map *mapArg) {
+	int semId;
+	map = mapArg;
+	pthread_t display_thread;
+	semctl(semId, 0, SETVAL, 1);
+	if (!!pthread_create(&display_thread, NULL, displaySimulation, NULL)) {
+		fatal("Error creating display thread");
+	}
+}
+
+void *displaySimulation(void *arg) {
 	while(1) {
 		printf("\n<--------------------------------------------------\
 ----------------------------------------------->\n");

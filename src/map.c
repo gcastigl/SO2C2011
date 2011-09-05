@@ -42,3 +42,15 @@ int map_getStockId(Map *map, char* name) {
 	mstrcpy(&(map->itemName[map->itemCount++]), name);
 	return i;
 }
+
+int map_start(Map *map) {
+    int semId;
+	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
+	if (semId == -1) {
+		fatal("Error creating map semaphore");
+	}
+	while(1) {
+		// Should read and wait for info, and later send info
+		sleep(1);
+	}
+}

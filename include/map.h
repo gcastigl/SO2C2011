@@ -49,6 +49,7 @@ void map_addCity(Map *map, City *city);
 void map_addCompany(Map *map, Company *company);
 int map_getCityId(Map *map, char* name);
 int map_getStockId(Map *map, char* name);
+int map_start(Map *map);
 
 #endif
 

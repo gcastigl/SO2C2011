@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <signal.h>
 
+void signal_setProcessCount(int count);
 void signal_handler(int signal);
 void signal_childHandler(int signal);
 void signal_endChildProcess(int sigVal);

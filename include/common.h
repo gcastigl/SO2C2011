@@ -13,7 +13,7 @@
 extern int errno;
 
 #define TMP_FOLDER	"/tmp/"
-
+#define MAP_SEM_KEY 0x5F4D4150 // _MAP
 // Status defines
 #define OP_OK	0
 #define ERROR	-1
