@@ -8,20 +8,19 @@ int canSupplyCity(Plane* plane, City* city);
 int getScore(Plane* plane, int originCityIndex, City* destination);
 
 void* planeStart(void* param) {
-	Plane* plane = (Plane*) param;
     log_debug("Plane started\n");
-	int planesTurnSemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
-	int companyTurnSemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
-	if (planesTurnSemId < 0 || companyTurnSemId < 0) {
-		fatal("Error initializing varibles.");
+	Plane* plane = (Plane*) param;
+	int turnSemId = semaphore_get(PLANE_COMPANY_ID(plane->id) + 100);
+	if (turnSemId < 0) {
+		fatal("Error initializing semaphore");
 	}
 	while (1) {
-		semaphore_decrement(planesTurnSemId, PLANE_INDEX(plane->id));
-		readMessages(plane);
-		updateState(plane);
+		semaphore_decrement(turnSemId, PLANE_INDEX(plane->id) + 1);
+		// readMessages(plane);
+		// updateState(plane);
 		writeMessages(plane);
 		sleep(1);
-		semaphore_increment(companyTurnSemId, 0);
+		semaphore_increment(turnSemId, 0);
 	}
 	exit(0);
 }

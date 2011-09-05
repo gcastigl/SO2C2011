@@ -9,25 +9,27 @@ void readAndProcessMessages(Company *company);
  * 2 - Read & process plane messages.
  */
 void companyStart(Company* company) {
-    log_debug("Creating company...\n");
-	int planesTurnSemId = semaphore_create(company->id, company->planeCount, 0666);
-	int companyTurnSemId = semaphore_create(company->id, 1, 0666);
-
+    printf("Creating company...\n");
+	int turnsSemId = semaphore_create(company->id + 100, (company->planeCount) + 1, FLAGS);
+	if (turnsSemId < 0) {
+		fatal("Company - Error initializing semaphore.");
+	}
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
-
 	for (int i = 0; i < 5; i++) {
-		wakeUpPlanes(company, planesTurnSemId);
-		waitUntilPlanesReady(company, companyTurnSemId);
-		readAndProcessMessages(company);
+		wakeUpPlanes(company, turnsSemId);
+		waitUntilPlanesReady(company, turnsSemId);
+		// readAndProcessMessages(company);
 	}
     exit(0);
 }
 
 void wakeUpPlanes(Company* company, int semId) {
+	printf("Planes wake up!\n");
+	log_debug("Planes wake up!\n");
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id));
+		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
 	}
 }
 

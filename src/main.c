@@ -15,9 +15,10 @@ static pid_t uiPid;
 
 int main() {
     initEnvironment();
-    startSimulationDisplayer();
+    // startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
+    main_endSimulation();
 	return 0;
 }
 
@@ -49,7 +50,6 @@ void startSimulation() {
     for (int i = 0; i < map->companyCount; ++i) {
         wait(NULL);
     }
-    main_endSimulation();
 }
 
 void startSimulationDisplayer() {
