@@ -2,7 +2,6 @@
 
 void wakeUpPlanes(int semId);
 void waitUntilPlanesReady(int semId);
-
 void updateDestinations();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
@@ -25,6 +24,7 @@ void companyStart(Company* cmp) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
 	for (int i = 0; i < 5; i++) {
+		log_debug("company turn");
 		wakeUpPlanes(turnsSemId);
 		waitUntilPlanesReady(turnsSemId);
 		updateDestinations();
@@ -67,6 +67,7 @@ void updateMapItems(Map* map, Plane* plane) {
 			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
 		}
 	}
+	log_debug("[Company %d] updating items for plane %d\n", company->id, plane->id);
 }
 
 void setNewTarget(Map* map, Plane* plane) {
@@ -78,13 +79,13 @@ void setNewTarget(Map* map, Plane* plane) {
 
 	for (i = 0; i < map->cityCount; i++) {
 		int routeLength = map->city[plane->cityIdFrom]->cityDistance[i];
-		if (i == plane->cityIdFrom) {
+		if (i == plane->cityIdFrom || routeLength == 0) {
 			// Skip if current city or route does not exists
 			continue;
 		}
 		newCity = map->city[i];
 		printf("Pasando por la ciduad...\n");
-		newTargetScore = getScore(plane, plane->cityIdFrom, newCity);
+		newTargetScore = getScore(map, i, plane);
 		if (bestCityScore < newTargetScore) {
 			bestCityScore = newTargetScore;
 			bestCityindex = i;
