@@ -12,8 +12,8 @@ void signal_handler(int sigVal) {
 }
 
 void signal_abortSimulation(int sigVal) {
-    log_debug("Received signal. Aborting simulation\n");
-    for (int i = 0; i <= map->companyCount; i++) {
+    log_debug("Received signal %d. Aborting simulation\n", sigVal);
+    for (int i = 0; i < map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
     logger_end();

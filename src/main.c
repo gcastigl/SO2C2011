@@ -9,13 +9,13 @@
 
 void startSimulation();
 void initEnvironment();
-void startSimulationDisplayer();
+void startMapAndDisplayProcess();
 void main_endSimulation();
 static pid_t uiPid;
 
 int main() {
     initEnvironment();
-    startSimulationDisplayer();
+    startMapAndDisplayProcess();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
     main_endSimulation();
@@ -27,7 +27,7 @@ void initEnvironment() {
     signal_createHandlerThread(TRUE);
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
-    childPid = malloc(sizeof(int) * (map->companyCount + 1));
+    childPid = malloc(sizeof(int) * (map->companyCount));
     return;
 }
 
@@ -53,24 +53,19 @@ void startSimulation() {
     }
 }
 
-void startSimulationDisplayer() {
-    pid_t pId;
-    switch ((pId = fork())) {
-        case 0:
-            signal_createHandlerThread(FALSE);
-            displaySimulation();
-            break;
-        case ERROR:
-            fatal("Error forking UI");
-            break;
-        default:
-            childPid[map->companyCount] = uiPid = pId;
-            break;
-    }
+// Also acts as a map information hub
+void startMapAndDisplayProcess() {
+    int semId;
+	signal_createHandlerThread(FALSE);
+	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
+	if (semId == -1) {
+		fatal("Error creating map semaphore");
+	}
+	semctl(semId, 0, SETVAL, 1);
+	displaySimulation();
 }
 
 void main_endSimulation() {
-    kill(uiPid, SIGUSR1);
     for (int i = 0; i < map->companyCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
