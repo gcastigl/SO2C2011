@@ -1,5 +1,8 @@
 #include "map.h"
 
+static Map *map;
+void *map_service(void *args);
+
 Map *newMap() {
 	Map *map = malloc(sizeof(Map));
 	map->cityCount = 0;
@@ -43,16 +46,27 @@ int map_getStockId(Map *map, char* name) {
 	return i;
 }
 
-int map_start(Map *map) {
+int map_start(Map *mapArg) {
     int semId;
+	pthread_t display_thread;
+
+	map = mapArg;
 	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
 	semctl(semId, 0, SETVAL, 1);
 	if (semId == -1) {
 		fatal("Error creating map semaphore");
 	}
+	if (!!pthread_create(&display_thread, NULL, map_service, NULL)) {
+		fatal("Error creating display thread");
+	}
+	return TRUE;
+}
+
+void *map_service(void *args) {
+
 	while(1) {
 		// Should read and wait for info, and later send info
 		sleep(1);
 	}
-	return TRUE;
+	return NULL;
 }

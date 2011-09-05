@@ -17,7 +17,7 @@ int main() {
     initEnvironment();
     startMapAndDisplayProcess();
     startSimulation();
-    printf("\n\nSimulation Done!\n\n");
+    main_endSimulation();
 	return 0;
 }
 
@@ -64,5 +64,6 @@ void main_endSimulation() {
         kill(childPid[i], SIGUSR1);
     }
     logger_end();
+    printf("\n\nSimulation Done!\n\n");
     exit(0);
 }
