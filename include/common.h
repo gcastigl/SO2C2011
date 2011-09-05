@@ -28,7 +28,7 @@ extern int errno;
 //
 #define PLANE_ID(companyId, index)		((companyId << 16) + index)
 #define PLANE_INDEX(planeId)			(planeId & 0xFFFF)
-#define PLANE_COMANY_ID(planeId)		(planeId >> 16)
+#define PLANE_COMPANY_ID(planeId)		(planeId >> 16)
 
 int *childPid;
 
