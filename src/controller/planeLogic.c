@@ -29,12 +29,12 @@ void* planeStart(void* param) {
 void readMessages(Plane* plane) {
 	char msg[DATA_SIZE];
 	log_debug("[Plane %d] Reading from company...\n", plane->id);
-	int msgRead = ipc_read(PLANE_COMANY_ID(plane->id), plane->id, msg);
+	int msgRead = ipc_read(plane->id, PLANE_COMPANY_ID(plane->id), msg);
 	if (msgRead != -1) {
 		log_debug("[Plane %d] Response response from company: %s", plane->id, msg);
 	} else {
 		log_debug("[Plane %d] NO messages from company\n", plane->id);
-		perror("");
+		perror("readMessages");
 	}
 }
 
@@ -42,7 +42,7 @@ void writeMessages(Plane* plane) {
 	char msg[DATA_SIZE];
 	sprintf(msg, "plane %d needs some information\n", plane->id);
 	log_debug("[Plane %d] Writing to company...\n", plane->id);
-	int writeReturn = ipc_write(plane->id, PLANE_COMANY_ID(plane->id), msg);
+	int writeReturn = ipc_write(plane->id, PLANE_COMPANY_ID(plane->id), msg);
 	if (writeReturn != -1) {
 		log_debug("[Message sent OK]\n");
 	} else {

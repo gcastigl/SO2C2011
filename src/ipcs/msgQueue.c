@@ -31,15 +31,15 @@ int ipc_get(int key) {
 }
 
 int ipc_write(int myId, int toId, char *data) {
-	int fromIpcId = ipc_get(myId);
+	int myIpcId = ipc_get(myId);
 	MsgQueuePackage *msg = newMsgQueuePackage(myId, data);
-	return msgsnd(fromIpcId, (void*) msg, MSG_SIZE, IPC_NOWAIT);
+	return msgsnd(myIpcId, (void*) msg, MSG_SIZE, IPC_NOWAIT);
 }
 
 int ipc_read(int myId, int fromId, char *data) {
-	int toIdIpc = ipc_get(myId);
+	int myIpcId = ipc_get(myId);
 	MsgQueuePackage msg;
-	int result = msgrcv(toIdIpc, (void *)&msg, MSG_SIZE, fromId, IPC_NOWAIT);
+	int result = msgrcv(myIpcId, (void *)&msg, MSG_SIZE, fromId, IPC_NOWAIT);
 	if (result == -1) {
 		return -1;
 	}

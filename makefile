@@ -4,7 +4,7 @@ BINARY := bin/tp1.out
 IPC := msgQueue.c
 #IPC := pipe.c
 
-LIBS := -lpthread -lm -lncurses -pthread
+LIBS := -lm -lncurses -pthread -lpthread
 CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
 INCLUDE_DIR = include
 # Directories belonging to the project

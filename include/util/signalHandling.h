@@ -1,13 +1,12 @@
 #ifndef SIGNALHANDLING_H_
 #define SIGNALHANDLING_H_
 
-#include <signal.h>
 #include <unistd.h>
-#include <sys/signal.h>
-#include <signal.h>
 #include "map.h"
 #include "common.h"
 #include "util/logger.h"
+#include <pthread.h>
+#include <signal.h>
 
 void signal_handler(int signal);
 void signal_childHandler(int signal);
