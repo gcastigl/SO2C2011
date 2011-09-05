@@ -46,6 +46,7 @@ int map_getStockId(Map *map, char* name) {
 int map_start(Map *map) {
     int semId;
 	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
+	semctl(semId, 0, SETVAL, 1);
 	if (semId == -1) {
 		fatal("Error creating map semaphore");
 	}
@@ -53,4 +54,5 @@ int map_start(Map *map) {
 		// Should read and wait for info, and later send info
 		sleep(1);
 	}
+	return TRUE;
 }
