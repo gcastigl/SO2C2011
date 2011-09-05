@@ -1,4 +1,6 @@
 #include "util/signalHandling.h"
+// FIXME:
+Map *map;
 
 void signal_handler(int sigVal) {
     switch (sigVal) {

@@ -6,26 +6,25 @@
 #include <time.h>
 #include <sys/wait.h>
 
-
 void startSimulation();
 void initEnvironment();
 void startSimulationDisplayer();
 void main_endSimulation();
 static pid_t uiPid;
+static Map *map;
 
 int main() {
     initEnvironment();
     // startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
-    main_endSimulation();
 	return 0;
 }
 
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
-    parseMap("resources/loads/ciudades.txt");
-    map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
+    map = parseMap("resources/loads/ciudades.txt");
+    map_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
     childPid = malloc(sizeof(int) * (map->companyCount + 1));
     return;
 }
@@ -57,7 +56,7 @@ void startSimulationDisplayer() {
     switch ((pId = fork())) {
         case 0:
             signal_createHandlerThread(FALSE);
-            displaySimulation();
+            //displaySimulation();
             break;
         case ERROR:
             fatal("Error forking UI");

@@ -43,14 +43,12 @@ typedef struct {
 	Company *company[MAX_COMPANY_COUNT];
 } Map;
 
-void map_init(int maxCityCount);
+Map *newMap();
 City *newCity(char* name);
-void map_addCity(City *city);
-void map_addCompany(Company *company);
-int map_getCityId(char* name);
-int map_getStockId(char* name);
-
-Map *map;
+void map_addCity(Map *map, City *city);
+void map_addCompany(Map *map, Company *company);
+int map_getCityId(Map *map, char* name);
+int map_getStockId(Map *map, char* name);
 
 #endif
 

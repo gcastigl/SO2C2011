@@ -21,7 +21,7 @@ extern int errno;
 #define FALSE 	0
 #define TRUE 	1
 
-#define MAP_SHM_KEY  5678
+#define MAP_KEY  5678
 
 //
 #define PLANE_ID(companyId, index)		((companyId << 16) + index)

@@ -1,16 +1,23 @@
 #include "controller/companyLogic.h"
 
-void wakeUpPlanes(Company* company, int semId);
-void waitUntilPlanesReady(Company* company, int semId);
-void readAndProcessMessages(Company *company);
+void wakeUpPlanes(int semId);
+void waitUntilPlanesReady(int semId);
+
+void updateDestinations();
+void updateMapItems(Map* map, Plane* plane);
+void setNewTarget(Map* map, Plane* plane);
+int getScore(Map* map, int cityId, Plane* plane);
+
+static Company* company;
 
 /*
  * 1 - Wake up planes.
  * 2 - Read & process plane messages.
  */
-void companyStart(Company* company) {
+void companyStart(Company* cmp) {
     printf("Creating company...\n");
-	int turnsSemId = semaphore_create(company->id + 100, (company->planeCount) + 1, FLAGS);
+    company = cmp;
+	int turnsSemId = semaphore_create(company->id, (company->planeCount) + 1, FLAGS);
 	if (turnsSemId < 0) {
 		fatal("Company - Error initializing semaphore.");
 	}
@@ -18,14 +25,14 @@ void companyStart(Company* company) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
 	}
 	for (int i = 0; i < 5; i++) {
-		wakeUpPlanes(company, turnsSemId);
-		waitUntilPlanesReady(company, turnsSemId);
-		// readAndProcessMessages(company);
+		wakeUpPlanes(turnsSemId);
+		waitUntilPlanesReady(turnsSemId);
+		updateDestinations();
 	}
     exit(0);
 }
 
-void wakeUpPlanes(Company* company, int semId) {
+void wakeUpPlanes(int semId) {
 	printf("Planes wake up!\n");
 	log_debug("Planes wake up!\n");
 	for(int i = 0; i < company->planeCount; i++) {
@@ -33,33 +40,74 @@ void wakeUpPlanes(Company* company, int semId) {
 	}
 }
 
-void waitUntilPlanesReady(Company* company, int semId) {
+void waitUntilPlanesReady(int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_decrement(semId, 0);
 	}
 	printf("[Company %d] Waiting done!...\n", company->id);
 }
 
-void readAndProcessMessages(Company *company) {
-	char* msg = malloc(sizeof(DATA_SIZE));
-	for (int i = 0; i < company->planeCount; i++) {
-		int msgRead = ipc_read(company->id, company->plane[i]->id, msg);
-		if (msgRead != -1) {
-			log_debug("[Company %d] Message from child %ld -> %s", company->id, company->plane[i]->id, msg);
-			log_debug("[Company %d] writing response to: %ld\n", company->id, company->plane[i]->id);
-			// Set un msg with the new data to be sent
-			strcpy(msg, "This is a response with data from the company\n");
-			int writeReturn = ipc_write(company->id, company->plane[i]->id, msg);
-			if (writeReturn != -1) {
-				log_debug("[Message sent OK]\n");
-			} else {
-				log_debug("[Company %d] ERROR writing to plane...\n", company->id);
-				perror("readAndProcessMessages");
-			}
-		} else {
-			log_debug("[Company %d] No message from child: %d\n", company->id, company->plane[i]->id);
+void updateDestinations() {
+	Map *map = readMap();
+	for(int i = 0; i < company->planeCount; i++) {
+		if (company->plane[i]->distanceToDestination == 0) {
+			updateMapItems(map, company->plane[i]);
+			setNewTarget(map, company->plane[i]);
 		}
 	}
 }
 
+void updateMapItems(Map* map, Plane* plane) {
+	for (int i = 0; i < map->itemCount; ++i) {
+		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
+		int planeStock = plane->itemStock[i];
+		if ( cityStock < 0 && planeStock > 0) {
+			int supplies = min(-cityStock, planeStock);
+			plane->itemStock[i] -= supplies;
+			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
+		}
+	}
+}
+
+void setNewTarget(Map* map, Plane* plane) {
+	int i;
+	int newTargetScore;
+	int bestCityScore = 0;
+	int bestCityindex = NO_TARGET;
+	City* newCity;
+
+	for (i = 0; i < map->cityCount; i++) {
+		int routeLength = map->city[plane->cityIdFrom]->cityDistance[i];
+		if (i == plane->cityIdFrom) {
+			// Skip if current city or route does not exists
+			continue;
+		}
+		newCity = map->city[i];
+		printf("Pasando por la ciduad...\n");
+		newTargetScore = getScore(plane, plane->cityIdFrom, newCity);
+		if (bestCityScore < newTargetScore) {
+			bestCityScore = newTargetScore;
+			bestCityindex = i;
+		}
+	}
+	if (bestCityindex == NO_TARGET) {
+		// No more cities can be supplied
+		log_debug("Avion %d tiene q morir\n", plane->id);
+		//TODO: KILL THIS MOTHERFUCKER!!
+		return;
+	}
+	// Set new distance from currentTargetId to newTaget
+	plane->cityIdTo = bestCityindex;
+	plane->distanceToDestination = map->city[plane->cityIdFrom]->cityDistance[bestCityindex];
+}
+
+int getScore(Map* map, int cityId, Plane* plane) {
+	int score = 0;
+	for (int i = 0; i < map->itemCount; i++) {
+		if (plane->itemStock[i] > 0 && map->city[cityId]->itemStock[i] < 0) {
+			score += min(plane->itemStock[i], -map->city[cityId]->itemStock[i]);
+		}
+	}
+	return score;
+}
 

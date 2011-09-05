@@ -1,5 +1,5 @@
 #include "display/consoleDisplay.h"
-
+Map* map;
 void displayCities();
 
 void displayCity(int index);
