@@ -5,7 +5,6 @@ Map *map;
 void signal_handler(int sigVal) {
     switch (sigVal) {
         case SIGINT:
-        	break;
         case SIGTERM:
             signal_abortSimulation(sigVal);
             break;

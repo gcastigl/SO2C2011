@@ -15,13 +15,14 @@ static Map *map;
 
 int main() {
     initEnvironment();
-    // startSimulationDisplayer();
+    startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
 }
 
 void initEnvironment() {
+    log_debug("Starting simulation...\n");
     signal_createHandlerThread(TRUE);
     map = parseMap("resources/loads/ciudades.txt");
     map_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
