@@ -15,7 +15,7 @@ static pid_t uiPid;
 
 int main() {
     initEnvironment();
-    // startSimulationDisplayer();
+    startSimulationDisplayer();
     startSimulation();
     printf("\n\nSimulation Done!\n\n");
     main_endSimulation();
@@ -23,6 +23,7 @@ int main() {
 }
 
 void initEnvironment() {
+    log_debug("Starting simulation...\n");
     signal_createHandlerThread(TRUE);
     parseMap("resources/loads/ciudades.txt");
     map_addCompany(parseCompany("resources/loads/empresa.txt", 1));
