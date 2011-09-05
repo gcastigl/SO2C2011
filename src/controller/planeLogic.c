@@ -10,8 +10,8 @@ int getScore(Plane* plane, int originCityIndex, City* destination);
 void* planeStart(void* param) {
 	Plane* plane = (Plane*) param;
     log_debug("Plane started\n");
-	int planesTurnSemId = semaphore_get(SEM_PLANE_KEY);
-	int companyTurnSemId = semaphore_get(SEM_COMPANY_KEY);
+	int planesTurnSemId = semaphore_get(PLANE_COMANY_ID(plane->id));
+	int companyTurnSemId = semaphore_get(PLANE_COMANY_ID(plane->id));
 	if (planesTurnSemId < 0 || companyTurnSemId < 0) {
 		fatal("Error initializing varibles.");
 	}

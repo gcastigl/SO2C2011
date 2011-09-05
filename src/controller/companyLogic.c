@@ -4,17 +4,14 @@ void wakeUpPlanes(Company* company, int semId);
 void waitUntilPlanesReady(Company* company, int semId);
 void readAndProcessMessages(Company *company);
 
-//TODO: when everything is working as it should be, all the sprnfs calls should be removed from the code
-
 /*
  * 1 - Wake up planes.
  * 2 - Read & process plane messages.
  */
 void companyStart(Company* company) {
-    printf("Creating company...\n");
     log_debug("Creating company...\n");
-	int planesTurnSemId = semaphore_create(SEM_PLANE_KEY, company->planeCount, 0666);
-	int companyTurnSemId = semaphore_create(SEM_COMPANY_KEY, 1, 0666);
+	int planesTurnSemId = semaphore_create(company->id, company->planeCount, 0666);
+	int companyTurnSemId = semaphore_create(company->id, 1, 0666);
 
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(&(company->plane[i]->thread), NULL, planeStart, company->plane[i]);
