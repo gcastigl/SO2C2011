@@ -20,12 +20,12 @@ void* planeStart(void* param) {
 }
 
 void updateState(Plane* plane) {
-	plane->distanceToDestination--;
-	if (plane->distanceToDestination <= 0) {
+	plane->distanceLeft--;
+	if (plane->distanceLeft <= 0) {
 		plane->cityIdFrom = plane->cityIdTo;
 		plane->cityIdTo = NO_TARGET;
 	}
-	log_debug("[Plane %d] Distance left: %d\n", plane->id, plane->distanceToDestination);
+	log_debug("[Plane %d] Distance left: %d\n", plane->id, plane->distanceLeft);
 }
 
 
