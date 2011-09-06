@@ -17,7 +17,6 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
-void companyStart(Company* company);
-
+void companyStart(Map* initialMap, Company* company);
 
 #endif
