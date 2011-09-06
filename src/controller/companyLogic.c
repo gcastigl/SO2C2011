@@ -1,6 +1,7 @@
 #include "controller/companyLogic.h"
 
 int initializeCompany();
+void updateMap();
 void wakeUpPlanes(int semId);
 void waitUntilPlanesReady(int semId);
 void updateDestinations();
@@ -26,6 +27,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 	int turnsSemId = initializeCompany();
 	for (int i = 0; i < 5; i++) {
 		log_debug("[Company %d] Playing one turn\n", company->id);
+		updateMap();
 		wakeUpPlanes(turnsSemId);
 		waitUntilPlanesReady(turnsSemId);
 		updateDestinations();
@@ -46,6 +48,10 @@ int initializeCompany() {
 	return turnsSemId;
 }
 
+void updateMap() {
+	//TODO: read all updates from the serializer
+}
+
 void wakeUpPlanes(int semId) {
 	printf("Planes wake up!\n");
 	log_debug("Planes wake up!\n");
@@ -62,7 +68,6 @@ void waitUntilPlanesReady(int semId) {
 }
 
 void updateDestinations() {
-	Map *map = readMap();
 	for(int i = 0; i < company->planeCount; i++) {
 		if (company->plane[i]->distanceLeft == 0) {
 			updateMapItems(map, company->plane[i]);
