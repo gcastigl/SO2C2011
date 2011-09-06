@@ -70,6 +70,7 @@ void endSimulation() {
     }
     log_debug("\n\nSimulation Done!\n\n");
     logger_end();
+    printf("\n\nSimulation Done!\n\n");
     exit(0);
 }
 
