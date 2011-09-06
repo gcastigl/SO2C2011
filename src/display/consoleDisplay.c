@@ -1,5 +1,5 @@
 #include "display/consoleDisplay.h"
-Map* map;
+/*
 void displayCities();
 void displayCity(int index);
 void displayCompanies();
@@ -70,4 +70,4 @@ void displayPlane(Plane *plane) {
 	}
 	printf("\t\tDistance left: %d\n", plane->distanceToDestination);
 	printf("\t\t-------------------------------\n");
-}
+}*/
