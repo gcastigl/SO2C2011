@@ -2,13 +2,8 @@
 #define MAP_H_
 
 #include "common.h"
-#include <pthread.h>
 
-//FIXME: remove all this values
-#define MAX_CITY_COUNT 64
-#define MAX_COMPANY_COUNT 64
-#define MAX_ITEM_COUNT 128
-#define MAX_PLANE_COUNT 32
+#define MAX_NAME_LENGTH 100
 
 typedef struct {
 	int id;
@@ -16,45 +11,38 @@ typedef struct {
 	int cityIdTo;
 	int distanceLeft;
 	int itemCount;
-	int itemStock[MAX_ITEM_COUNT];
+	int *itemStock;
 } Plane;
 
 typedef struct {
 	int id;
-	char *name;
+	char name[MAX_NAME_LENGTH];
 	int itemCount;
-	int itemStock[MAX_ITEM_COUNT];
+	int *itemStock;
 } City;
 
 typedef struct {
 	int id;
-	char *name;
+	char name[MAX_NAME_LENGTH];
 	int planeCount;
-	Plane *plane[MAX_PLANE_COUNT];
+	Plane **plane;
 } Company;
 
 typedef struct {
 	int cityCount;
-	int cityDistance[MAX_CITY_COUNT][MAX_CITY_COUNT];
-	City *city[MAX_CITY_COUNT];
+	int **cityDistance;
+	City **city;
 } Map;
 
-typedef struct {
-	int turn;
-	int companyCount;
-	char *itemName[MAX_ITEM_COUNT];
-	Company *company[MAX_COMPANY_COUNT];
-} Server;
+Map *newMap(int maxCityCount);
 
-Map *newMap();
-
-City *newCity(char* name);
-
-void map_addCity(Map *map, City *city);
+void map_setCity(Map *map, City *city, int index);
 
 int map_getCityId(Map *map, char* name);
 
 int map_start(Map *map);
+
+City *newCity(char* name);
 
 #endif
 

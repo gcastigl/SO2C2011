@@ -1,23 +1,25 @@
 #include "map.h"
 
-static Map *map;
-void *map_service(void *args);
-
-Map *newMap() {
+Map *newMap(int maxCityCount) {
 	Map *map = malloc(sizeof(Map));
-	map->cityCount = 0;
-	// TODO: for the distances matrix, make the array dinamic and make a malloc
+	map->city = malloc(sizeof(City*) * maxCityCount);
+	map->cityCount = maxCityCount;
+	map->cityDistance = malloc(sizeof(int*) * maxCityCount);
+	for (int i = 0; i < maxCityCount; ++i) {
+		map->cityDistance[i] = malloc(sizeof(int) * maxCityCount);
+		for (int j = 0; j < maxCityCount; ++j) {
+			map->cityDistance[i][j] = 0;
+		}
+	}
 	return map;
 }
 
-City *newCity(char* name) {
-	City* city = malloc(sizeof(City));
-	mstrcpy(&(city->name), name);
-	return city;
-}
-
-void map_addCity(Map *map, City *city) {
-	map->city[map->cityCount++] = city;
+void map_setCity(Map *map, City *city, int index) {
+	if (0 < index && index < map->cityCount) {
+		map->city[index] = city;
+	} else {
+		log_error("Trying to append city to invalid index, %d\n", index);
+	}
 }
 
 int map_getCityId(Map *map, char *name) {
@@ -26,31 +28,21 @@ int map_getCityId(Map *map, char *name) {
 			return i;
 		}
 	}
-	fatal("Invalid city id");
-	return 0;
+	log_error("Invalid city name %s\n", name);
+	return -1;
 }
 
-int map_start(Map *mapArg) {
-    int semId;
-	pthread_t display_thread;
+// ====================================
+//	functions to work with cities
+// ====================================
 
-	map = mapArg;
-	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
-	semctl(semId, 0, SETVAL, 1);
-	if (semId == -1) {
-		fatal("Error creating map semaphore");
-	}
-	if (!!pthread_create(&display_thread, NULL, map_service, NULL)) {
-		fatal("Error creating display thread");
-	}
-	return TRUE;
+City *newCity(char* name) {
+	City* city = malloc(sizeof(City));
+	city->id = -1;
+	int len = strlen(name);
+	memcpy(city->name, name, len);
+	city->itemStock = NULL;
+	city->itemCount = 0;
+	return city;
 }
 
-void *map_service(void *args) {
-
-	while(1) {
-		// Should read and wait for info, and later send info
-		sleep(1);
-	}
-	return NULL;
-}

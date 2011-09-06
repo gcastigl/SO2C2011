@@ -7,7 +7,10 @@
 #include "display/consoleDisplay.h"
 #include "util/signalHandling.h"
 #include <sys/types.h>
-#include <sys/wait.h>
-
+#include <wait.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 
 #endif

@@ -23,6 +23,8 @@ extern int errno;
 
 #define MAP_KEY  5678
 
+#define BLOCK_SIZE	10
+
 //
 #define PLANE_ID(companyId, index)		((companyId << 16) + index)
 #define PLANE_INDEX(planeId)			(planeId & 0xFFFF)
@@ -37,7 +39,5 @@ int **createIntMatrix(int rows, int columns);
 float **createFloatMatrix(int rows, int columns);
 
 void printMatrix(int** matrix, int rows, int columns);
-
-char *mstrcpy(char **to, char *from);
 
 #endif

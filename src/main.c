@@ -1,19 +1,14 @@
 #include "main.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/wait.h>
 
 void initEnvironment();
 void initializeServer();
 void initializeCompanies();
 void endSimulation();
 
-static Map *map;
 static int processCount;
 static Server server;
+static Map map;
 
 /*
  * 1 - Initialize Environment
@@ -25,10 +20,10 @@ static Server server;
 int main() {
 	log_debug("Starting simulation...\n");
     initEnvironment();
-    initializeServer();
+    /*initializeServer();
     initializeCompanies();
-    server_start();
-    endSimulation();
+    server_start(server);
+    endSimulation();*/
     printf("\n\nSimulation Done!\n\n");
 	return 0;
 }
@@ -36,23 +31,22 @@ int main() {
 
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
-    map = parseMap("resources/loads/ciudades.txt");
+    parser_parseCitiesFile("resources/loads/", &server, &map);
     childPid = malloc(sizeof(int) * (processCount));
 }
 //TODO: initializer server
 void initializeServer() {
-	server = NULL;
 	// server_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
-	processCount = server->companyCount;
+	processCount = server.companyCount;
 }
 
 void initializeCompanies() {
     pid_t pId;
-    for (int i = 0; i < server->companyCount; i++) {
+    for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {
             case 0:
                 signal_createHandlerThread(FALSE);
-                companyStart(map, server->company[i]);
+                companyStart(map, server.company[i]);
                 break;
             case ERROR:
                 fatal("Fork Error");

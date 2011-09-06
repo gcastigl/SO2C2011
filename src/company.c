@@ -3,12 +3,17 @@
 Company *newCompany(int id, char* name, int maxPlaneCount) {
 	Company* company = malloc(sizeof(Company));
 	company->id = id;
-	mstrcpy(&(company->name), name);
-	company->planeCount = 0;
+	company->planeCount = maxPlaneCount;
+	company->plane = malloc(sizeof(Plane) * maxPlaneCount);
+	strcpy(company->name, name);
 	return company;
 }
 
-void addPlane(Company *company, Plane *plane) {
-	company->plane[company->planeCount++] = plane;
+void company_setPlane(Company *company, Plane *plane, int index) {
+	if (0 < index && index < company->planeCount) {
+		company->plane[index] = plane;
+	} else {
+		log_error("Trying to append plane to invalid index, %d\n", index);
+	}
 }
 

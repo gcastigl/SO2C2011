@@ -8,7 +8,5 @@
 
 Plane *newPlane(int id, int cityIdFrom);
 
-void *planeStart(void* param);
-
 #endif
 

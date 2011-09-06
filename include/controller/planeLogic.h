@@ -6,4 +6,6 @@
 #include "communicator.h"
 #include <string.h>
 
+void* planeStart(void* param);
+
 #endif
