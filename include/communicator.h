@@ -7,8 +7,8 @@
 #include <sys/msg.h>
 #include <errno.h>
 
-#define FLAGS	0666
-#define DATA_SIZE 128
+#define SEM_FLAGS	0666
+#define DATA_SIZE	128
 
 void ipc_init(int id);
 

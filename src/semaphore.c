@@ -2,6 +2,10 @@
 
 int semaphore_operation(int id, int op, int semnum);
 
+/*
+ * Gets the semaphore for the key specified and initializes
+ * all places with 0.
+ */
 int semaphore_create(int key, int semSize, int flags) {
 	key_t semKey = ftok(TMP_FOLDER, key);
 	if (semKey == (key_t)-1) {
