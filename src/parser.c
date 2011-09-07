@@ -130,9 +130,10 @@ Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, M
 	int numberOfPlanes = parseInt(stream);
 	log_debug("Company %d has %d planes\n", id, numberOfPlanes);
 	Company* company = newCompany(id, name, numberOfPlanes);
+	lastLine[0] = '\0';
 	for (int i = 0; i < numberOfPlanes; ++i) {
-		lastLine[0] = '\0';
 		company->plane[i] = parser_parsePlane(stream, server, map, PLANE_ID(id, i));
+		log_debug("Plane parsed!\n");
 	}
 	return company;
 }
@@ -141,6 +142,7 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	char cityName[MAX_NAME_LENGTH];
 	int itemCount, planeItemsDim = 0;
 	Plane *plane;
+	log_debug("starting plane parse\n");
 	if (lastLine[0]!='\0') {
 		strcpy(cityName, lastLine);
 	} else {
@@ -173,7 +175,7 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 			plane->itemStock = realloc(plane->itemStock, (planeItemsDim + BLOCK_SIZE) * sizeof(int));
 			planeItemsDim += BLOCK_SIZE;
 		}
-		plane->itemStock[id]-= itemCount;
+		plane->itemStock[id] += itemCount;
 		plane->itemCount++;
 	}
 	//TODO: de reallocs!!
@@ -217,98 +219,5 @@ int parseInt(FILE *stream) {
 int isNewLine(char *line) {
 	return !strcmp("", line);
 }
-	}
-	log_error("Invalid City stock");
-}
 
-Plane *parsePlane(Map *map, FILE *stream, int owenerCompanyId, int id) {
-	Status status = S0;
-	Plane *plane;
-	char line[BUFSIZ];
-	while (fgetstr(line, sizeof line, stream)) {
-		switch (status) {
-			case S0:
-				if (!isNewLine(line)) {
-					plane = newPlane(PLANE_ID(owenerCompanyId, id), map_getCityId(map, line));
-					status = S1;
-				}
-				break;
-			case S1:
-				if (isNewLine(line)) {
-					return plane;
-				} else {
-					parsePlaneStock(map, line, plane);
-				}
-				break;
-		}
-	}
-	return plane;
-}
-
-void parseCityDistances(Map *map, FILE *stream) {
-	char line[BUFSIZ];
-	while (fgetstr(line, sizeof line, stream)) {
-		if (isNewLine(line)) {
-			continue;
-		} else {
-			int distance;
-			char cityName1[MAX_NAME];
-			char cityName2[MAX_NAME];
-			if (sscanf(line, "%s %s %d", cityName1, cityName2, &distance) == 3) {
-				map->city[map_getCityId(map, cityName1)]->cityDistance[map_getCityId(map, cityName2)] = distance;
-			}
-		}
-	}
-}
-
-int parseInt(FILE *stream) {
-	char line[BUFSIZ];
-	int integer;
-	while (fgetstr(line, sizeof line, stream)) {
-		if (sscanf(line, "%d", &integer) == 1) {
-			return integer;
-		}
-	}
-	log_error("integer not found");
-	return 0;
-}
-
-Map *parseMap(char *fileName) {
-	Map *map = NULL;
-	FILE *file = fopen(fileName, "r");
-	int maxCityCount;
-	if (file) {
-		maxCityCount = parseInt(file);
-		map = newMap();
-		for(int i = 0; i < maxCityCount; i++) {
-			map_addCity(map, parseCity(map, file));
-		}
-		parseCityDistances(map, file);
-		fclose(file);
-	} else {
-		log_error("Error loading map file.");
-	}
-	return map;
-}
-
-Company *parseCompany(Map *map, char *fileName, int companyId) {
-	FILE *file = fopen(fileName, "r");
-	int maxPlaneCount;
-	if (file) {
-		maxPlaneCount = parseInt(file);
-		Company *company = newCompany(companyId, fileName, maxPlaneCount);
-		for(int i = 0; i < maxPlaneCount; i++) {
-			addPlane(company, parsePlane(map, file, company->id, i));
-		}
-		fclose(file);
-		return company;
-	} else {
-		log_error("Error loading company file.");
-		return (Company *)NULL;
-	}
-}
-
-int isNewLine(char *line) {
-	return !strcmp("", line);
-}
 

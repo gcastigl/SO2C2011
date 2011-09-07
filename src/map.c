@@ -23,7 +23,9 @@ void map_setCity(Map *map, City *city, int index) {
 
 int map_getCityId(Map *map, char *name) {
 	for (int i = 0; map->cityCount; i++) {
+		printf("comparo %s contra %s\n", map->city[i]->name, name);
 		if (!strcmp(map->city[i]->name, name)) {
+			printf("match!\n");
 			return i;
 		}
 	}
