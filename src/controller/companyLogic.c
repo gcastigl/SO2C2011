@@ -25,15 +25,18 @@ void companyStart(Map* initialMap, Company* cmp) {
 	company = cmp;
 	map = initialMap;
 	int turnsSemId = initializeCompany();
-	for (int i = 0; i < 5; i++) {
+	int serverSemId = semaphore_get(SERVER_SEM_KEY);
+	while(1) {
 		log_debug("[Company %d] Playing one turn", company->id);
 		updateMap();
 		wakeUpPlanes(turnsSemId);
 		waitUntilPlanesReady(turnsSemId);
 		updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
+		sleep(2);
+		semaphore_increment(serverSemId, 0);
+		semaphore_decrement(serverSemId, company->id + 1);
 	}
-    exit(0);
 }
 
 int initializeCompany() {

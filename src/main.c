@@ -43,6 +43,7 @@ void initializeServer() {
 }
 
 void initializeCompanies() {
+	server.companyCount = 1;
     pid_t pId;
     for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {

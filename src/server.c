@@ -1,5 +1,7 @@
 #include "server.h"
 
+void broadcastUpdateMessages();
+
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
@@ -10,9 +12,17 @@ Server* newServer(int maxCompanyCount) {
 }
 
 void server_start(Server* server) {
-    for (int i = 0; i < server->companyCount; ++i) {
-        wait(NULL);
-    }
+	int semId = semaphore_create(SERVER_SEM_KEY, server->companyCount + 1, 0666);
+	for(int i = 0; i < 5; ++i) {
+		for(int j = 0; j < server->companyCount; ++j) {
+			log_debug("[Server] %d plays turn %i", j, i);
+			//Give each company one turn...
+			semaphore_increment(semId, j + 1);
+			semaphore_decrement(semId, 0);
+			broadcastUpdateMessages();
+			sleep(1);
+		}
+	}
 }
 
 int server_getItemId(Server *server, char* itemName) {
@@ -28,33 +38,6 @@ int server_getItemId(Server *server, char* itemName) {
 }
 
 
-/*
- *
- *
- *
- *
-int map_start(Map *mapArg) {
-    int semId;
-	pthread_t display_thread;
-
-	map = mapArg;
-	semId = semaphore_create(MAP_SEM_KEY, 1, 0666);
-	semctl(semId, 0, SETVAL, 1);
-	if (semId == -1) {
-		fatal("Error creating map semaphore");
-	}
-	if (!!pthread_create(&display_thread, NULL, map_service, NULL)) {
-		fatal("Error creating display thread");
-	}
-	return TRUE;
+void broadcastUpdateMessages() {
+	printf("This is a broad cast!!\n");
 }
-
-void *map_service(void *args) {
-
-	while(1) {
-		// Should read and wait for info, and later send info
-		sleep(1);
-	}
-	return NULL;
-}
- */
