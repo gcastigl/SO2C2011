@@ -12,10 +12,11 @@ Server* newServer(int maxCompanyCount) {
 }
 
 void server_start(Server* server) {
-	int semId = semaphore_create(SERVER_SEM_KEY, server->companyCount + 1, 0666);
+	int semId = semaphore_get(SERVER_SEM_KEY);
 	for(int i = 0; i < 5; ++i) {
+		log_debug("------------------------TURN %d--------------------------", i);
 		for(int j = 0; j < server->companyCount; ++j) {
-			log_debug("[Server] %d plays turn %i", j, i);
+			log_debug("[Server] Company %d plays turn %i", j, i);
 			//Give each company one turn...
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
@@ -39,5 +40,5 @@ int server_getItemId(Server *server, char* itemName) {
 
 
 void broadcastUpdateMessages() {
-	printf("This is a broad cast!!\n");
+	log_debug("This is a broad cast!!\n");
 }

@@ -22,7 +22,7 @@ int ipc_get(int key) {
 		fatal("Error writing msg - ftok");
 		return -1;
 	}
-	int id = msgget(ipcId, IPC_CREAT | FLAGS);
+	int id = msgget(ipcId, IPC_CREAT | SEM_FLAGS);
 	if (id < 0) {
 		fatal("Error writing msg - msgget");
 		return -1;

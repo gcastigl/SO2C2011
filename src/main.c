@@ -21,8 +21,8 @@ int main() {
 	log_debug("Starting simulation...\n");
     initEnvironment();
     initializeServer();
-    //initializeCompanies();
-    //server_start(&server);
+    initializeCompanies();
+    server_start(&server);
     endSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
@@ -39,11 +39,18 @@ void initEnvironment() {
 
 //This is used to setup configuration for the server
 void initializeServer() {
-
+	// Initialize server semaphore.
+	log_debug("[Main] Server has %d compaies", server.companyCount);
+	log_debug("[Main] Server has %d items", server.itemCount);
+	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
+	log_debug("[Main] Initialized semaphore for server (key = %d)", semId);
+	for (int i = 0; i < server.companyCount; ++i) {
+		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
+		log_debug("[Main] Initialized semaphore for company %d (key = %d)", server.company[i]->id, semId);
+	}
 }
 
 void initializeCompanies() {
-	server.companyCount = 1;
     pid_t pId;
     for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {

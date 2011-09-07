@@ -24,24 +24,25 @@ void companyStart(Map* initialMap, Company* cmp) {
     printf("Creating company...\n");
 	company = cmp;
 	map = initialMap;
-	int turnsSemId = initializeCompany();
+	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
 	while(1) {
 		log_debug("[Company %d] Playing one turn", company->id);
 		updateMap();
-		wakeUpPlanes(turnsSemId);
-		waitUntilPlanesReady(turnsSemId);
+		wakeUpPlanes(planesSemId);
+		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
 		sleep(2);
 		semaphore_increment(serverSemId, 0);
+		sleep(1);
 		semaphore_decrement(serverSemId, company->id + 1);
 	}
 }
 
 int initializeCompany() {
 	planeThreadId = malloc(sizeof(pthread_t) * company->planeCount);
-	int turnsSemId = semaphore_create(company->id, (company->planeCount) + 1, FLAGS);
+	int turnsSemId = semaphore_get(company->id);
 	if (turnsSemId < 0) {
 		fatal("Company - Error initializing semaphore.");
 	}
@@ -68,6 +69,7 @@ void waitUntilPlanesReady(int semId) {
 		semaphore_decrement(semId, 0);
 	}
 	printf("[Company %d] Waiting done!...", company->id);
+	log_debug("[Company %d] Waiting done!...", company->id);
 }
 
 void updateDestinations() {
