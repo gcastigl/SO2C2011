@@ -20,10 +20,10 @@ static Map map;
 int main() {
 	log_debug("Starting simulation...\n");
     initEnvironment();
-    /*initializeServer();
+    initializeServer();
     initializeCompanies();
-    server_start(server);
-    endSimulation();*/
+    server_start(&server);
+    endSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
 }
@@ -33,12 +33,13 @@ void initEnvironment() {
     parser_parseCitiesFile("resources/loads/", &server, &map);
     log_debug("[Main] Cities file parsed correctly");
     parser_parseCompanies("resources/loads/companies/", &server, &map);
+    processCount = server.companyCount;
     childPid = malloc(sizeof(int) * (processCount));
 }
-//TODO: initializer server
+
+//This is used to setup configuration for the server
 void initializeServer() {
-	// server_addCompany(map, parseCompany(map, "resources/loads/empresa.txt", 1));
-	processCount = server.companyCount;
+
 }
 
 void initializeCompanies() {
@@ -63,7 +64,7 @@ void endSimulation() {
     for (int i = 0; i < processCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
-    log_debug("\n\nSimulation Done!\n");
+    log_debug("Simulation Done!");
     logger_end();
     printf("\n\nSimulation Done!\n\n");
     exit(0);
