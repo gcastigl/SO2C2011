@@ -144,10 +144,12 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	        }
 	    }
 	}
-    companies = realloc(companies, numberOfCompanies);
     log_debug("Read %d companies", numberOfCompanies);
+    
+    companies = realloc(companies, numberOfCompanies);
     server->companyCount = numberOfCompanies;
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
+	
 	for (int i = 0; i < numberOfCompanies; ++i) {
 	    sprintf(fileName, "%s%s", dir, companies[i]);
     	log_debug("[Parser] opening file %s\n", fileName);
