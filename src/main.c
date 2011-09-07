@@ -34,6 +34,7 @@ void initEnvironment() {
     log_debug("[Main] Cities file parsed correctly");
     parser_parseCompanies("./resources/loads/companies/", &server, &map);
     processCount = server.companyCount;
+    signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
 }
 
