@@ -111,34 +111,51 @@ void parseCityDistances(FILE *stream, Map *map) {
 
 //TODO: this function is juat a mockup, needs to be re-done...
 int parser_parseCompanies(char *dir, Server *server, Map *map) {
-	//system("/bin/sh -c str");
 	char fileName[MAX_NAME_LENGTH];
-	int numberOfCompanies = 1;
-	int status = 0;
-
-	sprintf(fileName, "%s%s", dir, COMPANY_FILE_NAME);
-	log_debug("[Parser] opening file %s\n", fileName);
-	
+	int numberOfCompanies = 0;
+    int status = 0;
     DIR *dp;
     struct dirent *ep;
-    log_debug("Dir: %s", dir);
+    
     dp = opendir(dir);
     if (dp == NULL) {
         fatal("Error reading directory");
     }
     
+    int reservedSlots = 0;
+    char **companies = NULL;
+    
 	while (ep = readdir(dp)) {
 	    if (ep->d_type != DT_DIR) {
-            log_debug("String cut: %s", &ep->d_name[ep->d_namlen-4]);
-	        if ((ep->d_namlen > 4) && (strcmp(".txt", &ep->d_name[ep->d_namlen-4]) == 0))
-                printf("%s\n", ep->d_name);
+	        if ((ep->d_namlen > 4) && (ep->d_namlen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[ep->d_namlen-4]) == 0)) {
+                log_error("Read %s", ep->d_name);
+                if (reservedSlots < ++numberOfCompanies) {
+                    reservedSlots += COMPANY_DELTA;
+                    companies = realloc(companies, reservedSlots * sizeof(char**));
+                    if (companies == NULL) {
+                        fatal("Cannot allocate memory for companies parsing");
+                    }
+                }
+                companies[numberOfCompanies - 1] = malloc((ep->d_namlen + 1) * sizeof(char));
+                strcpy(companies[numberOfCompanies - 1], ep->d_name);
+	        }
 	    }
 	}
-	FILE *file = fopen(fileName, "r");
+    companies = realloc(companies, numberOfCompanies);
+    log_debug("Read %d companies", numberOfCompanies);
+    for (int i = 0; i < numberOfCompanies; i++) {
+        log_debug("Company %d filename: %s", i, companies[i]);
+    }
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	for (int i = 0; i < numberOfCompanies; ++i) {
+	    sprintf(fileName, "%s%s", dir, companies[i]);
+    	log_debug("[Parser] opening file %s\n", fileName);
+    	FILE *file = fopen(fileName, "r");
 		server->company[i] = parser_parseCompany(file, fileName, i, server, map);
+        fclose(file);
+        free(companies[i]);
 	}
+    free(companies);
 	return status;
 }
 

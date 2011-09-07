@@ -10,6 +10,8 @@
 
 #define MAP_FILE_NAME	"ciudades.txt"
 #define COMPANY_FILE_NAME	"empresa.txt"
+#define MAX_COMPANY_NAME 40
+#define COMPANY_DELTA 5
 
 int parser_parseCitiesFile(char *dir, Server* server, Map* map);
 
