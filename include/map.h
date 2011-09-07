@@ -34,7 +34,7 @@ typedef struct {
 	City **city;
 } Map;
 
-Map *newMap(int maxCityCount);
+Map *map_initialize(Map* map, int maxCityCount);
 
 void map_setCity(Map *map, City *city, int index);
 

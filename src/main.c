@@ -28,10 +28,11 @@ int main() {
 	return 0;
 }
 
-
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
     parser_parseCitiesFile("resources/loads/", &server, &map);
+    log_debug("[Main] Cities file parsed correctly\n");
+    parser_parseCompanies("resources/loads/", &server, &map);
     childPid = malloc(sizeof(int) * (processCount));
 }
 //TODO: initializer server
@@ -46,7 +47,7 @@ void initializeCompanies() {
         switch((pId = fork())) {
             case 0:
                 signal_createHandlerThread(FALSE);
-                companyStart(map, server.company[i]);
+                companyStart(&map, server.company[i]);
                 break;
             case ERROR:
                 fatal("Fork Error");

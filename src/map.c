@@ -1,7 +1,6 @@
 #include "map.h"
 
-Map *newMap(int maxCityCount) {
-	Map *map = malloc(sizeof(Map));
+Map *map_initialize(Map* map, int maxCityCount) {
 	map->city = malloc(sizeof(City*) * maxCityCount);
 	map->cityCount = maxCityCount;
 	map->cityDistance = malloc(sizeof(int*) * maxCityCount);

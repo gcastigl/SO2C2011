@@ -6,6 +6,7 @@
 #include "parser.h"
 #include "display/consoleDisplay.h"
 #include "util/signalHandling.h"
+#include "controller/companyLogic.h"
 #include <sys/types.h>
 #include <wait.h>
 #include <stdio.h>

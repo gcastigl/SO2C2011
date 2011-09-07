@@ -4,8 +4,14 @@
 #include "common.h"
 #include "company.h"
 #include "map.h"
+#include "server.h"
+#include <string.h>
 
-Map *parseMap(char *fileName);
-Company *parseCompany(Map *map, char *fileName, int companyId);
+#define MAP_FILE_NAME	"ciudades.txt"
+#define COMPANY_FILE_NAME	"empresa.txt"
 
-#endif /* HEADER_H_ */
+int parser_parseCitiesFile(char *dir, Server* server, Map* map);
+
+int parser_parseCompanies(char *dir, Server *server, Map *map);
+
+#endif
