@@ -8,7 +8,7 @@ Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, M
 char *fgetstr(char *string, int n, FILE *stream);
 int parseInt(FILE *stream);
 int isNewLine(char *line);
-
+void fillWithZeros(int* vec, int start, int limit);
 char lastLine[MAX_NAME_LENGTH];
 int serverItemsDim;
 
@@ -210,9 +210,9 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 			server->itemCount++;
 		}
 		// Guardar item en el avion
-
 		if (planeItemsDim <= id) {
 			plane->itemStock = realloc(plane->itemStock, (id + 1) * sizeof(int));
+			fillWithZeros(plane->itemStock, planeItemsDim, id + 1);
 			planeItemsDim = id + 1;
 		}
 		plane->itemStock[id] += itemCount;
@@ -226,6 +226,11 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	return plane;
 }
 
+void fillWithZeros(int* vec, int start, int limit) {
+	for (int i = start; i < limit; ++i) {
+		vec[i] = 0;
+	}
+}
 
 char *fgetstr(char *string, int n, FILE *stream) {
 	char *result;

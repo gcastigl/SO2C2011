@@ -21,8 +21,8 @@ int main() {
 	log_debug("Starting simulation...\n");
     initEnvironment();
     initializeServer();
-    initializeCompanies();
-    server_start(&server);
+    //initializeCompanies();
+    //server_start(&server);
     endSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
@@ -30,9 +30,9 @@ int main() {
 
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
-    parser_parseCitiesFile("resources/loads/", &server, &map);
+    parser_parseCitiesFile("./resources/loads/", &server, &map);
     log_debug("[Main] Cities file parsed correctly");
-    parser_parseCompanies("resources/loads/companies/", &server, &map);
+    parser_parseCompanies("./resources/loads/companies/", &server, &map);
     processCount = server.companyCount;
     childPid = malloc(sizeof(int) * (processCount));
 }
