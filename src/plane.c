@@ -8,6 +8,9 @@ Plane *newPlane(int id, int cityIdFrom, int itemCount) {
 	plane->distanceLeft = 0;
 	plane->itemCount = itemCount;
 	plane->itemStock = malloc(sizeof(int) * itemCount);
+	for (int i = 0; i < itemCount; ++i) {
+		plane->itemStock[i] = 0;
+	}
 	return plane;
 }
 
