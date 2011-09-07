@@ -128,7 +128,7 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
     
 	while ((ep = readdir(dp))) {
 	    stat(ep->d_name, &s);
-	    if ((s.st_mode & S_IFDIR) == 0) {
+	    if (!S_ISDIR(s.st_mode)) {
             int filenameLen = strlen(ep->d_name);
 	        if ((filenameLen > 4) && (filenameLen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[filenameLen - 4]) == 0)) {
                 log_error("Read %s", ep->d_name);
