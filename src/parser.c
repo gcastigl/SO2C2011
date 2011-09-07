@@ -170,12 +170,13 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 			server->itemCount++;
 		}
 		// Guardar item en el avion
-		if (plane->itemCount == planeItemsDim) {
-			plane->itemStock = realloc(plane->itemStock, (planeItemsDim + BLOCK_SIZE) * sizeof(int));
-			planeItemsDim += BLOCK_SIZE;
+
+		if (planeItemsDim <= id) {
+			plane->itemStock = realloc(plane->itemStock, (id + 1) * sizeof(int));
+			planeItemsDim = id + 1;
 		}
 		plane->itemStock[id] += itemCount;
-		plane->itemCount++;
+		plane->itemCount = MAX(plane->itemCount, id + 1);
 	}
 	//TODO: de reallocs!!
 	log_debug("Plane id: %d\n", plane->id);
