@@ -91,6 +91,7 @@ void parseCityDistances(FILE *stream, Map *map) {
 		if (isNewLine(line)) {
 			continue;
 		}
+		
 		int distance;
 		char cityName1[MAX_NAME_LENGTH];
 		char cityName2[MAX_NAME_LENGTH];
@@ -118,6 +119,23 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 
 	sprintf(fileName, "%s%s", dir, COMPANY_FILE_NAME);
 	log_debug("[Parser] opening file %s\n", fileName);
+	
+    DIR *dp;
+    struct dirent *ep;
+    log_debug("Dir: %s", dir);
+    dp = opendir(dir);
+    if (dp == NULL) {
+        fatal("Error reading directory");
+    }
+    
+	while (ep = readdir(dp)) {
+	    if (ep->d_type != DT_DIR) {
+            log_debug("String cut: %s", &ep->d_name[ep->d_namlen-4]);
+	        if ((ep->d_namlen > 4) && (strcmp(".txt", &ep->d_name[ep->d_namlen-4]) == 0))
+                printf("%s\n", ep->d_name);
+	    }
+	}
+	
 	FILE *file = fopen(fileName, "r");
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	for (int i = 0; i < numberOfCompanies; ++i) {
