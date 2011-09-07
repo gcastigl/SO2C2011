@@ -32,7 +32,6 @@ int parser_parseCitiesFile(char *dir, Server* server, Map* map) {
 		lastLine[0] = '\0';
 		for(int i = 0; i < maxCityCount; i++) {
 			map->city[i] = parser_parseCity(file, server, map);
-			log_debug("city[%d] = %s\n", i, map->city[i]->name);
 		}
 		parseCityDistances(file, map);
 		fclose(file);
@@ -69,12 +68,12 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map) {
 			server->itemCount++;
 		}
 		// Guardar item en la city
-		if (city->itemCount == cityItemsDim) {
-			city->itemStock = realloc(city->itemStock, (cityItemsDim + BLOCK_SIZE) * sizeof(int));
-			cityItemsDim += BLOCK_SIZE;
+		if (cityItemsDim <= id) {
+			city->itemStock = realloc(city->itemStock, (id + 1) * sizeof(int));
+			cityItemsDim = id + 1;
 		}
 		city->itemStock[id]-= itemCount;
-		city->itemCount++;
+		city->itemCount = MAX(city->itemCount, id + 1);
 	}
 	//TODO: de reallocs!!
 	log_debug("CityName: %s\n", city->name);
@@ -153,7 +152,7 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 		log_error("%s was not found as a valid city\n", cityName);
 		return NULL;
 	}
-	plane = newPlane(planeId, cityId);
+	plane = newPlane(planeId, planeId);
 	log_debug("Creating plane %d at city %s (id= %d)\n", plane->id, cityName, cityId);
 	while (fscanf(stream, "%s %d", lastLine, &itemCount) == 2) { // Mientras hallan items
 		int id = server_getItemId(server, lastLine);
