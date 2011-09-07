@@ -124,10 +124,13 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
     
     int reservedSlots = 0;
     char **companies = NULL;
+    struct stat s;
     
-	while (ep = readdir(dp)) {
-	    if (ep->d_type != DT_DIR) {
-	        if ((ep->d_namlen > 4) && (ep->d_namlen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[ep->d_namlen-4]) == 0)) {
+	while ((ep = readdir(dp))) {
+	    stat(ep->d_name, &s);
+	    if ((s.st_mode & S_IFDIR) == 0) {
+            int filenameLen = strlen(ep->d_name);
+	        if ((filenameLen > 4) && (filenameLen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[filenameLen - 4]) == 0)) {
                 log_error("Read %s", ep->d_name);
                 if (reservedSlots < ++numberOfCompanies) {
                     reservedSlots += COMPANY_DELTA;
@@ -136,7 +139,7 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
                         fatal("Cannot allocate memory for companies parsing");
                     }
                 }
-                companies[numberOfCompanies - 1] = malloc((ep->d_namlen + 1) * sizeof(char));
+                companies[numberOfCompanies - 1] = malloc((strlen(ep->d_name) + 1) * sizeof(char));
                 strcpy(companies[numberOfCompanies - 1], ep->d_name);
 	        }
 	    }
