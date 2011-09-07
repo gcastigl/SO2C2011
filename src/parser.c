@@ -130,7 +130,7 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
                 log_error("Read %s", ep->d_name);
                 log_debug("Saving %s of %d characters", ep->d_name, strlen(ep->d_name));
                 //companies[numberOfCompanies - 1] = malloc((strlen(ep->d_name) + 1) * sizeof(char));
-                strcpy(companies[numberOfCompanies - 1], ep->d_name);
+                strcpy(companies[numberOfCompanies++], ep->d_name);
 	        }
 	    }
 	}
