@@ -126,14 +126,12 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	    if (!S_ISDIR(s.st_mode)) {
             int filenameLen = strlen(ep->d_name);
 	        if ((filenameLen > 4) && (filenameLen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[filenameLen - 4]) == 0)) {
-                //companies[numberOfCompanies - 1] = malloc((strlen(ep->d_name) + 1) * sizeof(char));
                 strcpy(companies[numberOfCompanies++], ep->d_name);
 	        }
 	    }
 	}
     log_debug("Read %d companies", numberOfCompanies);
     
-    //companies = realloc(companies, numberOfCompanies);
     server->companyCount = numberOfCompanies;
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	
