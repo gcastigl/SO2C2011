@@ -17,7 +17,7 @@ void map_setCity(Map *map, City *city, int index) {
 	if (0 < index && index < map->cityCount) {
 		map->city[index] = city;
 	} else {
-		log_error("Trying to append city to invalid index, %d\n", index);
+		log_error("Trying to append city to invalid index, %d", index);
 	}
 }
 
@@ -27,7 +27,7 @@ int map_getCityId(Map *map, char *name) {
 			return i;
 		}
 	}
-	log_error("Invalid city name %s\n", name);
+	log_error("Invalid city name %s", name);
 	return -1;
 }
 

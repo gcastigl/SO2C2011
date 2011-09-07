@@ -38,9 +38,9 @@ void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
     va_start(ap, fmt);
     
     semaphore_decrement(semKey, 0);
-    
     fprintf(logFile, "[%s] %s:%d: ", logLevelString[logLevel], file, line);
     vfprintf(logFile, fmt, ap);
+    fprintf(logFile, "\n");
     fflush(logFile);
     
     semaphore_increment(semKey, 0);

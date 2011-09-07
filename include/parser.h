@@ -6,6 +6,7 @@
 #include "map.h"
 #include "server.h"
 #include <string.h>
+#include <dirent.h>
 
 #define MAP_FILE_NAME	"ciudades.txt"
 #define COMPANY_FILE_NAME	"empresa.txt"
