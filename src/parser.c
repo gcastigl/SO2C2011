@@ -21,12 +21,12 @@ int parser_parseCitiesFile(char *dir, Server* server, Map* map) {
 	char fileName[MAX_NAME_LENGTH];
 	int status = 0;
 	sprintf(fileName, "%s%s", dir, MAP_FILE_NAME);
-	log_debug("[Parser] opening file %s\n", fileName);
+	log_debug("[Parser] opening file %s", fileName);
 	FILE *file = fopen(fileName, "r");
 	int maxCityCount;
 	if (file) {
 		maxCityCount = parseInt(file);
-		log_debug("parsing %d cities\n", maxCityCount);
+		log_debug("parsing %d cities", maxCityCount);
 		serverItemsDim = 0;
 		map_initialize(map, maxCityCount);
 		lastLine[0] = '\0';
@@ -64,7 +64,7 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map) {
 			server->itemName[server->itemCount] = malloc(MAX_NAME_LENGTH * sizeof(char));
 			memcpy(server->itemName[server->itemCount], lastLine, MAX_NAME_LENGTH);
 			id = server->itemCount;
-			log_debug("Added new item to server: id: %d - name: %s\n", server->itemCount, server->itemName[server->itemCount]);
+			log_debug("Added new item to server: id: %d - name: %s", server->itemCount, server->itemName[server->itemCount]);
 			server->itemCount++;
 		}
 		// Guardar item en la city
@@ -76,16 +76,16 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map) {
 		city->itemCount = MAX(city->itemCount, id + 1);
 	}
 	//TODO: de reallocs!!
-	log_debug("CityName: %s\n", city->name);
+	log_debug("CityName: %s", city->name);
 	for (int i = 0; i < city->itemCount; ++i) {
-		log_debug("itemId: %d cant: %d\n", i, city->itemStock[i]);
+		log_debug("itemId: %d cant: %d", i, city->itemStock[i]);
 	}
 	return city;
 }
 
 void parseCityDistances(FILE *stream, Map *map) {
 	char line[BUFSIZ];
-	log_debug("parsing cities distances\n");
+	log_debug("parsing cities distances");
 	while (fgetstr(line, sizeof(line), stream)) {
 		if (isNewLine(line)) {
 			continue;
@@ -101,7 +101,7 @@ void parseCityDistances(FILE *stream, Map *map) {
 			map->cityDistance[c2][c1] = distance;
 		}
 	}
-	log_debug("cities distances parsed OK\n");
+	log_debug("cities distances parsed OK");
 }
 
 // ======================================
@@ -116,7 +116,7 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	int status = 0;
 
 	sprintf(fileName, "%s%s", dir, COMPANY_FILE_NAME);
-	log_debug("[Parser] opening file %s\n", fileName);
+	log_debug("[Parser] opening file %s", fileName);
 	FILE *file = fopen(fileName, "r");
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	for (int i = 0; i < numberOfCompanies; ++i) {
@@ -127,12 +127,12 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 
 Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, Map* map) {
 	int numberOfPlanes = parseInt(stream);
-	log_debug("Company %d has %d planes\n", id, numberOfPlanes);
+	log_debug("Company %d has %d planes", id, numberOfPlanes);
 	Company* company = newCompany(id, name, numberOfPlanes);
 	lastLine[0] = '\0';
 	for (int i = 0; i < numberOfPlanes; ++i) {
 		company->plane[i] = parser_parsePlane(stream, server, map, PLANE_ID(id, i));
-		log_debug("Plane parsed!\n");
+		log_debug("Plane parsed!");
 	}
 	return company;
 }
@@ -141,7 +141,7 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	char cityName[MAX_NAME_LENGTH];
 	int itemCount, planeItemsDim = 0;
 	Plane *plane;
-	log_debug("starting plane parse\n");
+	log_debug("starting plane parse");
 	if (lastLine[0]!='\0') {
 		strcpy(cityName, lastLine);
 	} else {
@@ -149,11 +149,11 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	}
 	int cityId = map_getCityId(map, cityName);
 	if (cityId == -1) {
-		log_error("%s was not found as a valid city\n", cityName);
+		log_error("%s was not found as a valid city", cityName);
 		return NULL;
 	}
 	plane = newPlane(planeId, planeId);
-	log_debug("Creating plane %d at city %s (id= %d)\n", plane->id, cityName, cityId);
+	log_debug("Creating plane %d at city %s (id= %d)", plane->id, cityName, cityId);
 	while (fscanf(stream, "%s %d", lastLine, &itemCount) == 2) { // Mientras hallan items
 		int id = server_getItemId(server, lastLine);
 		if (id == -1) {
@@ -166,7 +166,7 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 			server->itemName[server->itemCount] = malloc(MAX_NAME_LENGTH * sizeof(char));
 			memcpy(server->itemName[server->itemCount], lastLine, MAX_NAME_LENGTH);
 			id = server->itemCount;
-			log_debug("Added new item to server: id: %d - name: %s\n", server->itemCount, server->itemName[server->itemCount]);
+			log_debug("Added new item to server: id: %d - name: %s", server->itemCount, server->itemName[server->itemCount]);
 			server->itemCount++;
 		}
 		// Guardar item en el avion
@@ -179,9 +179,9 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 		plane->itemCount = MAX(plane->itemCount, id + 1);
 	}
 	//TODO: de reallocs!!
-	log_debug("Plane id: %d\n", plane->id);
+	log_debug("Plane id: %d", plane->id);
 	for (int i = 0; i < plane->itemCount; ++i) {
-		log_debug("itemId: %d cant: %d\n", i, plane->itemStock[i]);
+		log_debug("itemId: %d cant: %d", i, plane->itemStock[i]);
 	}
 	return plane;
 }
