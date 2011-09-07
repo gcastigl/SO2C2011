@@ -127,7 +127,9 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
     struct stat s;
     
 	while ((ep = readdir(dp))) {
-	    stat(ep->d_name, &s);
+	    if (stat(ep->d_name, &s) != 0) {
+            fatal("Error using stat");
+	    }
 	    if (!S_ISDIR(s.st_mode)) {
             int filenameLen = strlen(ep->d_name);
 	        if ((filenameLen > 4) && (filenameLen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[filenameLen - 4]) == 0)) {
