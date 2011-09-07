@@ -114,7 +114,6 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
         fatal("Error reading directory");
     }
     
-    int reservedSlots = 0;
     //  FIXME: this should be dynamic
     char companies[50][50];
     struct stat s;
@@ -127,10 +126,8 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	    if (!S_ISDIR(s.st_mode)) {
             int filenameLen = strlen(ep->d_name);
 	        if ((filenameLen > 4) && (filenameLen < MAX_COMPANY_NAME) && (strcmp(".txt", &ep->d_name[filenameLen - 4]) == 0)) {
-                log_error("Read %s", ep->d_name);
-                log_debug("Saving %s of %d characters", ep->d_name, strlen(ep->d_name));
                 //companies[numberOfCompanies - 1] = malloc((strlen(ep->d_name) + 1) * sizeof(char));
-                strcpy(companies[numberOfCompanies - 1], ep->d_name);
+                strcpy(companies[numberOfCompanies++], ep->d_name);
 	        }
 	    }
 	}
@@ -164,7 +161,7 @@ Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, M
 
 Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	char cityName[MAX_NAME_LENGTH];
-	int itemCount, planeItemsDim = 0;
+    int itemCount;
 	if (lastLine[0]!='\0') {	// if last line, scan it before start reading again from the stream
 		strcpy(cityName, lastLine);
 	} else {
