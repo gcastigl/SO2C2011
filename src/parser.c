@@ -180,9 +180,8 @@ Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, M
 Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 	char cityName[MAX_NAME_LENGTH];
 	int itemCount, planeItemsDim = 0;
-	Plane *plane;
 	log_debug("starting plane parse");
-	if (lastLine[0]!='\0') {
+	if (lastLine[0]!='\0') {	// if last line, scan it before start reading again from the stream
 		strcpy(cityName, lastLine);
 	} else {
 		fscanf(stream, "%s", cityName);
@@ -192,36 +191,20 @@ Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int planeId) {
 		log_error("%s was not found as a valid city", cityName);
 		return NULL;
 	}
-	plane = newPlane(planeId, planeId);
+	Plane* plane = newPlane(planeId, cityId, server->itemCount);
 	log_debug("Creating plane %d at city %s (id= %d)", plane->id, cityName, cityId);
 	while (fscanf(stream, "%s %d", lastLine, &itemCount) == 2) { // Mientras hallan items
 		int id = server_getItemId(server, lastLine);
 		if (id == -1) {
-			// El item es nuevo para el servidor
-			if (server->itemCount == serverItemsDim) {
-				// Asegurar memoria para en el vector de items(ciudad)
-				server->itemName = realloc(server->itemName, (serverItemsDim + BLOCK_SIZE) * sizeof(char*));
-				serverItemsDim += BLOCK_SIZE;
-			}
-			server->itemName[server->itemCount] = malloc(MAX_NAME_LENGTH * sizeof(char));
-			memcpy(server->itemName[server->itemCount], lastLine, MAX_NAME_LENGTH);
-			id = server->itemCount;
-			log_debug("Added new item to server: id: %d - name: %s", server->itemCount, server->itemName[server->itemCount]);
-			server->itemCount++;
-		}
-		// Guardar item en el avion
-		if (planeItemsDim <= id) {
-			plane->itemStock = realloc(plane->itemStock, (id + 1) * sizeof(int));
-			fillWithZeros(plane->itemStock, planeItemsDim, id + 1);
-			planeItemsDim = id + 1;
+			log_error("Item %s was fount in plane but was not found in server.", lastLine);
+			return NULL;
 		}
 		plane->itemStock[id] += itemCount;
-		plane->itemCount = MAX(plane->itemCount, id + 1);
 	}
 	//TODO: de reallocs!!
 	log_debug("Plane id: %d", plane->id);
 	for (int i = 0; i < plane->itemCount; ++i) {
-		log_debug("itemId: %d cant: %d", i, plane->itemStock[i]);
+		log_debug("\titemId: %d cant: %d", i, plane->itemStock[i]);
 	}
 	return plane;
 }
