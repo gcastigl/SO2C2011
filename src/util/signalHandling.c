@@ -18,7 +18,7 @@ void signal_handler(int sigVal) {
 }
 
 void signal_abortSimulation(int sigVal) {
-    log_debug("Received signal %d. Aborting simulation\n", sigVal);
+    log_debug("Received signal %d. Aborting simulation", sigVal);
     for (int i = 0; i < processCount; i++) {
         kill(childPid[i], SIGUSR1);
     }

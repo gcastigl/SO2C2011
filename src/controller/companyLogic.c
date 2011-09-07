@@ -26,12 +26,12 @@ void companyStart(Map* initialMap, Company* cmp) {
 	map = initialMap;
 	int turnsSemId = initializeCompany();
 	for (int i = 0; i < 5; i++) {
-		log_debug("[Company %d] Playing one turn\n", company->id);
+		log_debug("[Company %d] Playing one turn", company->id);
 		updateMap();
 		wakeUpPlanes(turnsSemId);
 		waitUntilPlanesReady(turnsSemId);
 		updateDestinations();
-		log_debug("[Company %d] Finished turn OK\n", company->id);
+		log_debug("[Company %d] Finished turn OK", company->id);
 	}
     exit(0);
 }
@@ -54,7 +54,7 @@ void updateMap() {
 
 void wakeUpPlanes(int semId) {
 	printf("Planes wake up!\n");
-	log_debug("Planes wake up!\n");
+	log_debug("Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
 	}
@@ -64,7 +64,7 @@ void waitUntilPlanesReady(int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_decrement(semId, 0);
 	}
-	printf("[Company %d] Waiting done!...\n", company->id);
+	printf("[Company %d] Waiting done!...", company->id);
 }
 
 void updateDestinations() {
@@ -77,7 +77,7 @@ void updateDestinations() {
 }
 
 void updateMapItems(Map* map, Plane* plane) {
-	log_debug("[Company %d] Updating items for plane %d\n", company->id, plane->id);
+	log_debug("[Company %d] Updating items for plane %d", company->id, plane->id);
 	for (int i = 0; i < plane->itemCount; ++i) {
 		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
 		int planeStock = plane->itemStock[i];
@@ -109,7 +109,7 @@ void setNewTarget(Map* map, Plane* plane) {
 	}
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		log_debug("[Company %d] No more cities can be supplied by %d\n", company->id, plane->id);
+		log_debug("[Company %d] No more cities can be supplied by %d", company->id, plane->id);
 		pthread_kill(planeThreadId + PLANE_INDEX(plane->id), SIGKILL);
 		planeThreadId[PLANE_INDEX(plane->id)] = -1;
 		return;

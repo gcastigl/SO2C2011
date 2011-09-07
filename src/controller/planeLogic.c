@@ -3,14 +3,14 @@
 void updateState(Plane* plane);
 
 void* planeStart(void* param) {
-    log_debug("Plane started\n");
+    log_debug("Plane started");
 	Plane* plane = (Plane*) param;
 	int turnSemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
 	if (turnSemId < 0) {
 		fatal("Error initializing semaphore");
 	}
 	while (1) {
-		log_debug("[Plane %d] plays new turn\n", plane->id);
+		log_debug("[Plane %d] plays new turn", plane->id);
 		semaphore_decrement(turnSemId, PLANE_INDEX(plane->id) + 1);
 		updateState(plane);
 		sleep(1);
@@ -25,7 +25,7 @@ void updateState(Plane* plane) {
 		plane->cityIdFrom = plane->cityIdTo;
 		plane->cityIdTo = NO_TARGET;
 	}
-	log_debug("[Plane %d] Distance left: %d\n", plane->id, plane->distanceLeft);
+	log_debug("[Plane %d] Distance left: %d", plane->id, plane->distanceLeft);
 }
 
 
