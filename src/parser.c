@@ -127,7 +127,8 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
     struct stat s;
     
 	while ((ep = readdir(dp))) {
-	    if (stat(ep->d_name, &s) != 0) {
+	    sprintf(fileName, "%s%s", dir, ep->d_name);
+	    if (stat(fileName, &s) != 0) {
             fatal("Error using stat");
 	    }
 	    if (!S_ISDIR(s.st_mode)) {
