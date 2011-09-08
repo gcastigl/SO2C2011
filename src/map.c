@@ -32,7 +32,7 @@ int map_getCityId(Map *map, char *name) {
 }
 
 void map_update(Map* map, CityUpdatePackage* update) {
-	map->city[update.cityId]->itemStock[update.itemId] += update.amount;
+	map->city[update->cityId]->itemStock[update->itemId] += update->amount;
 }
 
 // ====================================
