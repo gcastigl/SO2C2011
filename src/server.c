@@ -21,6 +21,10 @@ void server_start(Server* server, Map* initialMap) {
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
 		log_debug("------------------------TURN %d--------------------------", server->turn);
+		/*
+		view_renderMap(server, initialMap);
+		sleep(5);
+		*/
 		for(int j = 0; j < server->companyCount; ++j) {
 			log_debug("[Server] Company %d plays turn %i", j, i);
 			//Give each company one turn...
