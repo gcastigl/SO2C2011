@@ -51,6 +51,10 @@ int initializeCompany() {
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(planeThreadId + i, NULL, planeStart, company->plane[i]);
 	}
+	for(int i = 0; i < company->planeCount; i++) {
+		// Wait for all planes to be ready...
+		semaphore_decrement(turnsSemId, 0);
+	}
 	activePlanes = (1 << company->planeCount) - 1;		// There should be no more than 32 planes.
 	return turnsSemId;
 }
