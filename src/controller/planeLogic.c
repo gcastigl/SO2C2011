@@ -3,7 +3,6 @@
 void updateState(Plane* plane);
 
 void* planeStart(void* param) {
-    log_debug("Plane started");
 	Plane* plane = (Plane*) param;
 	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
 	if (companySemId < 0) {
