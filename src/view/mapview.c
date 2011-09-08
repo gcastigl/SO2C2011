@@ -11,6 +11,12 @@ void view_start() {
 	refresh();
 }
 
+void printTurn(Server *server) {
+	attron(COLOR_PAIR(9));
+	mvprintw(1, 1, "TURN: %d", server->turn);
+	attroff(COLOR_PAIR(9));
+}
+
 void printCities(Server *server, Map *map) {
 	int x = 2, y = 2;
 	for (int i = 0; i < map->cityCount; ++i) {
@@ -33,7 +39,11 @@ void printCompanies(Server *server, Map *map) {
 		attroff(COLOR_PAIR(2));
 		for (int j = 0; j < company->planeCount; ++j) {
 			Plane *plane = company->plane[j];
-			mvprintw(x++, y+4, "Plane: %d @ %s", plane->id, map->city[plane->cityIdFrom]->name);
+			mvprintw(x++, y+4, "Plane: %d @ %s -> %d",
+				plane->id,
+				map->city[plane->cityIdFrom]->name,
+				plane->distanceLeft
+			);
 			for (int k = 0; k < plane->itemCount; ++k) {
 				mvprintw(x++, y+8, "%s: %d", server->itemName[k], plane->itemStock[k]);
 			}
@@ -42,6 +52,7 @@ void printCompanies(Server *server, Map *map) {
 }
 
 void view_renderMap(Server *server, Map *map) {
+	printTurn(server);
 	printCities(server, map);
 	printCompanies(server, map);
 	box(stdscr, 0 , 0);
@@ -52,5 +63,9 @@ void view_renderMap(Server *server, Map *map) {
 }
 
 void view_end() {
+	attron(COLOR_PAIR(9));
+	mvprintw(LINES-2, COLS/2, "SIMULATION DONE. Press Any Key To Exit");
+	attroff(COLOR_PAIR(9));
+	getch();
 	endwin();
 }
