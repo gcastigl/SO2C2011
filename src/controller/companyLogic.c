@@ -12,6 +12,7 @@ int getScore(Plane* plane, int cityId);
 static Company *company;
 static Map *map;
 static pthread_t* planeThreadId;
+static int activePlanes;		// each bit in high indicated an active plane
 
 /*
  * 1 - Initialize company.
@@ -26,10 +27,10 @@ void companyStart(Map* initialMap, Company* cmp) {
 	map = initialMap;
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
-	printf("company has sem: %d\n", planesSemId);
-	while(1) {
+	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
+		log_debug("Active planes: %d", activePlanes);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
@@ -38,6 +39,8 @@ void companyStart(Map* initialMap, Company* cmp) {
 		sleep(2);
 		semaphore_increment(serverSemId, 0);
 	}
+	log_debug("[Company %d] I have supplied all the medications I can!", company->id);
+	// Send killmyself package...
 }
 
 int initializeCompany() {
@@ -49,6 +52,7 @@ int initializeCompany() {
 	for(int i = 0; i < company->planeCount; i++) {
 		pthread_create(planeThreadId + i, NULL, planeStart, company->plane[i]);
 	}
+	activePlanes = (1 << company->planeCount) - 1;		// There should be no more than 32 planes.
 	return turnsSemId;
 }
 
@@ -101,7 +105,6 @@ void setNewTarget(Map* map, Plane* plane) {
 	int newTargetScore;
 	int bestCityScore = 0;
 	int bestCityindex = NO_TARGET;
-
 	for (i = 0; i < map->cityCount; i++) {
 		int routeLength = map->cityDistance[plane->cityIdFrom][i];
 		if (i == plane->cityIdFrom || routeLength == 0) {
@@ -117,6 +120,7 @@ void setNewTarget(Map* map, Plane* plane) {
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
 		log_debug("[Company %d] No more cities can be supplied by %d", company->id, plane->id);
+		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
 		pthread_kill(planeThreadId + PLANE_INDEX(plane->id), SIGKILL);
 		planeThreadId[PLANE_INDEX(plane->id)] = -1;
 		return;

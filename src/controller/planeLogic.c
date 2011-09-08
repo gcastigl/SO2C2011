@@ -6,7 +6,6 @@ void* planeStart(void* param) {
     log_debug("Plane started");
 	Plane* plane = (Plane*) param;
 	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
-	printf("plane has sem: %d\n", companySemId);
 	if (companySemId < 0) {
 		fatal("PlaneLogic - Error initializing semaphore");
 	}
