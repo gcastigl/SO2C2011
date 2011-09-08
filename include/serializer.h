@@ -21,7 +21,7 @@ typedef struct {
 	int status;			// ON or OFF
 } CompanyUpdatePackage;
 
-#define MSG "%3d_%3d_%3d"
+#define MSG "%03d_%03d_%03d"
 
 int serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
 
