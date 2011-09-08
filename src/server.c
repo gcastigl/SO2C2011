@@ -1,7 +1,7 @@
 #include "server.h"
 
 void broadcastUpdateMessages();
-int activeCompanies;
+static int activeCompanies;
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
