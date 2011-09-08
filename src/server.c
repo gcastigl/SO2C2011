@@ -56,7 +56,10 @@ void broadcastUpdateMessages(Server* server) {
 	char msg[MAX_NAME_LENGTH];
 	for (int i = 0; i < server->companyCount; ++i) {
 		log_debug("company: %d\n", server->company[i]->id);
-		ipc_read(SERVER_IPC_KEY, server->company[i]->id + 1, msg);
+        CityUpdatePackage cup;
+        cup.cityId = server->company[i]->id;
+        cup.itemId = server->company[i]->id + 1;
+        cup.amount = 312;
+        serializer_write_cityUpdate(&cup, SERVER_SEM_KEY, server->company[i]->id);
 	}
-	log_debug("This is a broad cast!!\n");
 }

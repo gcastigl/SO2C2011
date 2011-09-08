@@ -59,7 +59,8 @@ int initializeCompany() {
  * 1 - for each message in the queue => apply update to map;
  */
 void updateMap() {
-	//TODO: read all updates from the serializer
+    CityUpdatePackage cup;
+    serializer_read_cityUpdate(&cup, SERVER_SEM_KEY, company->id);
 }
 
 void wakeUpPlanes(int semId) {
