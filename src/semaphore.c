@@ -22,6 +22,9 @@ int semaphore_create(int key, int semSize, int flags) {
 
 int semaphore_get(int key) {
 	key_t semKey = ftok(TMP_FOLDER, key);
+	if (semKey == (key_t)-1) {
+		return -1;
+	}
 	return semget(semKey, 1, 0);
 }
 
