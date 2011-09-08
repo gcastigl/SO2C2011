@@ -25,7 +25,9 @@ typedef struct {
 char message[DATA_SIZE];
 
 int serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
+int serializer_read_cityUpdate(CityUpdatePackage* msg, int from, int to);
 
 int serializer_write_companyUpdate(CompanyUpdatePackage* msg, int from, int to);
+int serializer_read_companyUpdate(CompanyUpdatePackage* msg, int from, int to);
 
 #endif
