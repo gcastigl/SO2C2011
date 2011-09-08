@@ -57,7 +57,6 @@ void broadcastUpdateMessages(Server* server) {
 	for (int i = 0; i < server->companyCount; ++i) {
 		log_debug("company: %d\n", server->company[i]->id);
 		ipc_read(SERVER_IPC_KEY, server->company[i]->id + 1, msg);
-		printf("Server read %s from child %d\n", msg, server->company[i]->id);
 	}
 	log_debug("This is a broad cast!!\n");
 }

@@ -22,7 +22,6 @@ static int activePlanes;		// each bit in high indicated an active plane
  * 5 - Send map updates.
  */
 void companyStart(Map* initialMap, Company* cmp) {
-    printf("Creating company %d...\n", cmp->id);
 	company = cmp;
 	map = initialMap;
 	int planesSemId = initializeCompany();
@@ -32,7 +31,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
 		log_debug("[Company %d] Active planes: %d", company->id, activePlanes);
-		//updateMap();
+		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
@@ -61,12 +60,9 @@ int initializeCompany() {
  */
 void updateMap() {
 	//TODO: read all updates from the serializer
-	//CityUpdatePackage update;
-	//map->city[update.cityId]->itemStock[update.itemId] = update.amount;
 }
 
 void wakeUpPlanes(int semId) {
-	printf("Planes wake up!\n");
 	log_debug("Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
 		log_debug("waking up plane: %d", PLANE_INDEX(company->plane[i]->id) + 1);
@@ -78,7 +74,6 @@ void waitUntilPlanesReady(int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_decrement(semId, 0);
 	}
-	printf("[Company %d] Waiting done!...", company->id);
 	log_debug("[Company %d] Waiting done!...", company->id);
 }
 
