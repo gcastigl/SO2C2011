@@ -13,8 +13,7 @@ void* planeStart(void* param) {
 	while (1) {
 		semaphore_decrement(companySemId, PLANE_INDEX(plane->id) + 1);
 		log_debug("[Plane %d] plays new turn", plane->id);
-		//updateState(plane);
-		sleep(10);
+		updateState(plane);
 		log_debug("[Plane %d] end turn", plane->id);
 		semaphore_increment(companySemId, 0);
 	}
@@ -22,8 +21,10 @@ void* planeStart(void* param) {
 }
 
 void updateState(Plane* plane) {
-	plane->distanceLeft--;
-	if (plane->distanceLeft <= 0) {
+	if (plane->distanceLeft > 0) {
+		plane->distanceLeft--;
+	}
+	if (plane->distanceLeft == 0 && plane->cityIdTo != NO_TARGET) {
 		plane->cityIdFrom = plane->cityIdTo;
 		plane->cityIdTo = NO_TARGET;
 	}

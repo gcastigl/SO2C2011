@@ -33,7 +33,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
-		// updateDestinations();
+		updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
 		sleep(2);
 		semaphore_increment(serverSemId, 0);
@@ -76,6 +76,7 @@ void waitUntilPlanesReady(int semId) {
 void updateDestinations() {
 	for(int i = 0; i < company->planeCount; i++) {
 		if (company->plane[i]->distanceLeft == 0) {
+			log_debug("[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
 			updateMapItems(map, company->plane[i]);
 			setNewTarget(map, company->plane[i]);
 		}
@@ -87,7 +88,7 @@ void updateMapItems(Map* map, Plane* plane) {
 	for (int i = 0; i < plane->itemCount; ++i) {
 		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
 		int planeStock = plane->itemStock[i];
-		if ( cityStock < 0 && planeStock > 0) {
+		if (cityStock < 0 && planeStock > 0) {
 			int supplies = min(-cityStock, planeStock);
 			plane->itemStock[i] -= supplies;
 			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
@@ -121,6 +122,8 @@ void setNewTarget(Map* map, Plane* plane) {
 		return;
 	}
 	// Set new distance from currentTargetId to newTaget
+	log_debug("[Company %d] Plane %d has been redirected to city: %d --> distance: %d", company->id, \
+			plane->id, bestCityindex, map->cityDistance[plane->cityIdFrom][bestCityindex]);
 	plane->cityIdTo = bestCityindex;
 	plane->distanceLeft = map->cityDistance[plane->cityIdFrom][bestCityindex];
 }

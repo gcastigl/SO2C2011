@@ -13,7 +13,7 @@ Server* newServer(int maxCompanyCount) {
 
 void server_start(Server* server) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
-	for(int i = 0; i < 5; ++i) {
+	for(int i = 0; i < 25; ++i) {
 		log_debug("------------------------TURN %d--------------------------", i);
 		for(int j = 0; j < server->companyCount; ++j) {
 			log_debug("[Server] Company %d plays turn %i", j, i);
@@ -21,7 +21,6 @@ void server_start(Server* server) {
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
 			broadcastUpdateMessages();
-			sleep(1);
 		}
 	}
 }
