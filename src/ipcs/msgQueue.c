@@ -2,7 +2,7 @@
 
 typedef struct {
 	long fromId;
-	char* data;
+	char data[DATA_SIZE];
 } MsgQueuePackage;
 
 #define MSG_SIZE (DATA_SIZE - sizeof(long int))
@@ -55,6 +55,6 @@ int ipc_close(int id) {
 MsgQueuePackage *newMsgQueuePackage(int id, char* data) {
 	MsgQueuePackage* msg = malloc(sizeof(MsgQueuePackage));
 	msg->fromId = id;
-	msg->data = data;
+	strcpy(msg->data, data);
 	return msg;
 }

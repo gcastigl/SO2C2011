@@ -22,7 +22,7 @@ int main() {
     initEnvironment();
     initializeServer();
     initializeCompanies();
-    server_start(&server);
+    server_start(&server, &map);
     endSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
@@ -67,6 +67,12 @@ void initializeCompanies() {
                 break;
         }
     }
+    int serverSemId = semaphore_get(SERVER_SEM_KEY);
+    for(int i = 0; i < server.companyCount; i++) {
+    	// Wait for all companies to initialize...
+    	semaphore_decrement(serverSemId, 0);
+    }
+    log_debug("[Main] All companies were created correctly");
 }
 
 void endSimulation() {

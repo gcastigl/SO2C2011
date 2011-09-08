@@ -27,16 +27,16 @@ void companyStart(Map* initialMap, Company* cmp) {
 	map = initialMap;
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
+	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
 	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
-		log_debug("Active planes: %d", activePlanes);
-		updateMap();
+		log_debug("[Company %d] Active planes: %d", company->id, activePlanes);
+		//updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
-		sleep(2);
 		semaphore_increment(serverSemId, 0);
 	}
 	log_debug("[Company %d] I have supplied all the medications I can!", company->id);
@@ -56,8 +56,13 @@ int initializeCompany() {
 	return turnsSemId;
 }
 
+/*
+ * 1 - for each message in the queue => apply update to map;
+ */
 void updateMap() {
 	//TODO: read all updates from the serializer
+	//CityUpdatePackage update;
+	//map->city[update.cityId]->itemStock[update.itemId] = update.amount;
 }
 
 void wakeUpPlanes(int semId) {
@@ -121,8 +126,8 @@ void setNewTarget(Map* map, Plane* plane) {
 		// No more cities can be supplied
 		log_debug("[Company %d] No more cities can be supplied by %d", company->id, plane->id);
 		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
-		pthread_kill(planeThreadId + PLANE_INDEX(plane->id), SIGKILL);
-		planeThreadId[PLANE_INDEX(plane->id)] = -1;
+		pthread_kill(planeThreadId[PLANE_INDEX(plane->id)], SIGKILL);
+		planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
 		plane_free(plane);
 		return;
 	}

@@ -1,14 +1,15 @@
-#ifndef MYIPC_H_
-#define MYIPC_H_
+#ifndef COMMUNICATOR_H_
+#define COMMUNICATOR_H_
 
-#include "ipc.h"
 #include "common.h"
-#include "map.h"
 #include <sys/msg.h>
 #include <errno.h>
 
 #define SEM_FLAGS	0666
 #define DATA_SIZE	128
+
+#define READ 0
+#define WRITE 1
 
 void ipc_init(int id);
 
