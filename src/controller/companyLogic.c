@@ -56,8 +56,14 @@ int initializeCompany() {
 	return turnsSemId;
 }
 
+/*
+ * 1 - for each message in the queue => apply update to map;
+ */
 void updateMap() {
+	int ipcId = ipc_get(company->id);
 	//TODO: read all updates from the serializer
+	CityUpdatePackage update;
+	map->city[update.cityId]->itemStock[update.itemId] = update.amount;
 }
 
 void wakeUpPlanes(int semId) {
@@ -121,8 +127,8 @@ void setNewTarget(Map* map, Plane* plane) {
 		// No more cities can be supplied
 		log_debug("[Company %d] No more cities can be supplied by %d", company->id, plane->id);
 		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
-		pthread_kill(planeThreadId + PLANE_INDEX(plane->id), SIGKILL);
-		planeThreadId[PLANE_INDEX(plane->id)] = -1;
+		pthread_kill(planeThreadId[PLANE_INDEX(plane->id)], SIGKILL);
+		planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
 		plane_free(plane);
 		return;
 	}
