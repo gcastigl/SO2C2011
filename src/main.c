@@ -24,7 +24,6 @@ int main() {
     initializeCompanies();
     server_start(&server, &map);
     endSimulation();
-    printf("\n\nSimulation Done!\n\n");
 	return 0;
 }
 
