@@ -81,7 +81,6 @@ void endSimulation() {
     log_debug("Simulation Done!");
     logger_end();
     view_end();
-    log_debug("\n\nSimulation Done!\n\n");
     exit(0);
 }
 
