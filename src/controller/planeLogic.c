@@ -5,16 +5,18 @@ void updateState(Plane* plane);
 void* planeStart(void* param) {
     log_debug("Plane started");
 	Plane* plane = (Plane*) param;
-	int turnSemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
-	if (turnSemId < 0) {
-		fatal("Error initializing semaphore");
+	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
+	printf("plane has sem: %d\n", companySemId);
+	if (companySemId < 0) {
+		fatal("PlaneLogic - Error initializing semaphore");
 	}
 	while (1) {
+		semaphore_decrement(companySemId, PLANE_INDEX(plane->id) + 1);
 		log_debug("[Plane %d] plays new turn", plane->id);
-		semaphore_decrement(turnSemId, PLANE_INDEX(plane->id) + 1);
-		updateState(plane);
-		sleep(1);
-		semaphore_increment(turnSemId, 0);
+		//updateState(plane);
+		sleep(10);
+		log_debug("[Plane %d] end turn", plane->id);
+		semaphore_increment(companySemId, 0);
 	}
 	exit(0);
 }

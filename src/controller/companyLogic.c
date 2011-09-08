@@ -21,22 +21,22 @@ static pthread_t* planeThreadId;
  * 5 - Send map updates.
  */
 void companyStart(Map* initialMap, Company* cmp) {
-    printf("Creating company...\n");
+    printf("Creating company %d...\n", cmp->id);
 	company = cmp;
 	map = initialMap;
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
+	printf("company has sem: %d\n", planesSemId);
 	while(1) {
+		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
-		updateDestinations();
+		// updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
 		sleep(2);
 		semaphore_increment(serverSemId, 0);
-		sleep(1);
-		semaphore_decrement(serverSemId, company->id + 1);
 	}
 }
 
@@ -60,6 +60,7 @@ void wakeUpPlanes(int semId) {
 	printf("Planes wake up!\n");
 	log_debug("Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
+		log_debug("waking up plane: %d", PLANE_INDEX(company->plane[i]->id) + 1);
 		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
 	}
 }
