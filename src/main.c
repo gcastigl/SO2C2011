@@ -24,7 +24,6 @@ int main() {
     initializeCompanies();
     server_start(&server, &map);
     endSimulation();
-    printf("\n\nSimulation Done!\n\n");
 	return 0;
 }
 
@@ -82,7 +81,6 @@ void endSimulation() {
     log_debug("Simulation Done!");
     logger_end();
     view_end();
-    printf("\n\nSimulation Done!\n\n");
     exit(0);
 }
 
