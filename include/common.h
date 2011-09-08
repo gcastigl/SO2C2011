@@ -15,7 +15,8 @@ extern int errno;
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
 #define TMP_FOLDER	"/tmp/"
-#define SERVER_SEM_KEY 0xDEADBEEF
+#define SERVER_SEM_KEY	0xDEADBEEF
+#define SERVER_IPC_KEY	0xCA11AB1E
 
 // Status defines
 #define OP_OK	0
@@ -25,6 +26,7 @@ extern int errno;
 #define TRUE 	1
 
 #define BLOCK_SIZE	10
+#define MAX_NAME_LENGTH 100
 
 //
 #define PLANE_ID(companyId, index)		((companyId << 16) + index)

@@ -2,7 +2,6 @@
 #define SERIALIZER_H_
 
 #include "common.h"
-#include "map.h"
 #include "communicator.h"
 
 typedef enum {

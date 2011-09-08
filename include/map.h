@@ -2,8 +2,7 @@
 #define MAP_H_
 
 #include "common.h"
-
-#define MAX_NAME_LENGTH 100
+#include "serializer.h"
 
 typedef struct {
 	int id;
