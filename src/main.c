@@ -22,7 +22,7 @@ int main() {
     initEnvironment();
     initializeServer();
     initializeCompanies();
-    server_start(&server);
+    server_start(&server, &map);
     endSimulation();
     printf("\n\nSimulation Done!\n\n");
 	return 0;
