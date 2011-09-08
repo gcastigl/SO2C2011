@@ -5,6 +5,7 @@ void view_start() {
 	start_color();
 	init_pair(1, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(5, COLOR_RED, COLOR_BLACK);
 	init_pair(9, COLOR_CYAN, COLOR_BLACK);
 	char *title = "Pharma-Plane Simulation 1.0";
 	mvprintw(1, (COLS-strlen(title))/2, title);
@@ -12,9 +13,9 @@ void view_start() {
 }
 
 void printTurn(Server *server) {
-	attron(COLOR_PAIR(9));
+	attron(COLOR_PAIR(5));
 	mvprintw(1, 1, "TURN: %d", server->turn);
-	attroff(COLOR_PAIR(9));
+	attroff(COLOR_PAIR(5));
 }
 
 void printCities(Server *server, Map *map) {
