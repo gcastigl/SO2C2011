@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "map.h"
-#include <wait.h>
+#include <sys/wait.h>
 
 typedef struct {
 	int turn;

@@ -1,5 +1,5 @@
-#ifndef MYIPC_H_
-#define MYIPC_H_
+#ifndef COMMUNICATOR_H_
+#define COMMUNICATOR_H_
 
 #include "ipc.h"
 #include "common.h"
