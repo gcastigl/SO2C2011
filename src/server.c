@@ -17,7 +17,8 @@ void server_start(Server* server) {
 	for(int i = 0; i < 25; ++i) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
-		log_debug("------------------------TURN %d--------------------------", i);
+		server->turn++;
+		log_debug("------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
 			log_debug("[Server] Company %d plays turn %i", j, i);
 			//Give each company one turn...
@@ -40,7 +41,11 @@ int server_getItemId(Server *server, char* itemName) {
 	return -1;
 }
 
-
+/*
+ * 1 - Read all messages
+ * 2 - if message = kill company => free that memory segment
+ * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
+ */
 void broadcastUpdateMessages() {
 	log_debug("This is a broad cast!!\n");
 }
