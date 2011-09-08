@@ -138,7 +138,7 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	    sprintf(fileName, "%s%s", dir, companies[i]);
     	log_debug("[Parser] opening file %s\n", fileName);
     	FILE *file = fopen(fileName, "r");
-		server->company[i] = parser_parseCompany(file, fileName, i, server, map);
+		server->company[i] = parser_parseCompany(file, fileName + strlen(dir), i, server, map);
         fclose(file);
 	}
 	return status;
