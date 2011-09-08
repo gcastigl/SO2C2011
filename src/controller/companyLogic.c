@@ -37,7 +37,6 @@ void companyStart(Map* initialMap, Company* cmp) {
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
 		log_debug("[Company %d] Finished turn OK", company->id);
-		sleep(2);
 		semaphore_increment(serverSemId, 0);
 	}
 	log_debug("[Company %d] I have supplied all the medications I can!", company->id);
