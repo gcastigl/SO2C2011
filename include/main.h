@@ -13,5 +13,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include "view/mapview.h"
 
 #endif

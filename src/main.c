@@ -36,6 +36,8 @@ void initEnvironment() {
     processCount = server.companyCount;
     signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
+    view_start();
+    view_renderMap(&server, &map);
 }
 
 //This is used to setup configuration for the server
@@ -73,6 +75,7 @@ void endSimulation() {
     }
     log_debug("Simulation Done!");
     logger_end();
+    view_end();
     printf("\n\nSimulation Done!\n\n");
     exit(0);
 }

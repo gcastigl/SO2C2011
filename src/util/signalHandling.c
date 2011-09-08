@@ -24,6 +24,7 @@ void signal_abortSimulation(int sigVal) {
         kill(childPid[i], SIGUSR1);
     }
     logger_end();
+    view_end();
     exit(1);
 }
 
