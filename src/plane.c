@@ -14,3 +14,10 @@ Plane *newPlane(int id, int cityIdFrom, int itemCount) {
 	return plane;
 }
 
+/*
+ * After this call, the pointer becames un-usable.
+ */
+void plane_free(Plane* plane) {
+	free(plane->itemStock);
+	free(plane);
+}

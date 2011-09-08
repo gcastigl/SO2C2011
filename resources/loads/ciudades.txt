@@ -21,14 +21,14 @@ SantaFe
 Ibuprofeno 250
 Paracetamol 50
 
-Rosario Cordoba 10
-Rosario BuenosAires 15
-Rosario SantaFe 25
-Rosario Parana 40
+Rosario Cordoba 1
+Rosario BuenosAires 1
+Rosario SantaFe 2
+Rosario Parana 4
 
-Cordoba BuenosAires 20
-Cordoba SantaFe 10
+Cordoba BuenosAires 2
+Cordoba SantaFe 1
 
-BuenosAires Parana 25
+BuenosAires Parana 2
 
-Parana SantaFe 15
+Parana SantaFe 1

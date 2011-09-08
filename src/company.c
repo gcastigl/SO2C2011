@@ -17,3 +17,16 @@ void company_setPlane(Company *company, Plane *plane, int index) {
 	}
 }
 
+/*
+ * After this call, the pointer becames un-usable.
+ */
+void company_free(Company* company, int freePlanes) {
+	if (freePlanes) {
+		for (int i = 0; i < company->planeCount; ++i) {
+			plane_free(company->plane[i]);
+		}
+	}
+	free(company->plane);
+	free(company);
+}
+

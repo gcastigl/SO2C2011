@@ -123,6 +123,7 @@ void setNewTarget(Map* map, Plane* plane) {
 		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
 		pthread_kill(planeThreadId + PLANE_INDEX(plane->id), SIGKILL);
 		planeThreadId[PLANE_INDEX(plane->id)] = -1;
+		plane_free(plane);
 		return;
 	}
 	// Set new distance from currentTargetId to newTaget
