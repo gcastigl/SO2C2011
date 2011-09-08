@@ -8,6 +8,7 @@ void* planeStart(void* param) {
 	if (companySemId < 0) {
 		fatal("PlaneLogic - Error initializing semaphore");
 	}
+	semaphore_increment(companySemId, 0); // Notify company that this plane is ready.
 	while (1) {
 		semaphore_decrement(companySemId, PLANE_INDEX(plane->id) + 1);
 		log_debug("[Plane %d] plays new turn", plane->id);

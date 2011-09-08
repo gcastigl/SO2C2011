@@ -4,7 +4,6 @@
 #include "company.h"
 #include "map.h"
 #include "parser.h"
-#include "display/consoleDisplay.h"
 #include "util/signalHandling.h"
 #include "controller/companyLogic.h"
 #include <sys/types.h>

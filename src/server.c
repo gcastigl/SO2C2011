@@ -16,21 +16,24 @@ Server* newServer(int maxCompanyCount) {
 void server_start(Server* server, Map* initialMap) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
 	activeCompanies = (1 << server->companyCount) - 1;
+	time_t  currTime, lastUpdate = -1;
 	for(int i = 0; i < 10; ++i) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
 		log_debug("------------------------TURN %d--------------------------", server->turn);
-
-		view_renderMap(server, initialMap);
-		sleep(2);
-
 		for(int j = 0; j < server->companyCount; ++j) {
 			log_debug("[Server] Company %d plays turn %i", j, i);
 			//Give each company one turn...
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
 			broadcastUpdateMessages(server);
+		}
+		currTime = time(NULL);
+		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
+			view_renderMap(server, initialMap);
+			log_debug("Refreshing screen");
+			lastUpdate = time(NULL);
 		}
 	}
 }
