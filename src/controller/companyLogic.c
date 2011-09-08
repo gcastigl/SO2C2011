@@ -31,7 +31,8 @@ void companyStart(Map* initialMap, Company* cmp) {
 	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
-		updateMap();
+		log_debug("[Company %d] Active planes: %d", company->id, activePlanes);
+		//updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
@@ -60,10 +61,9 @@ int initializeCompany() {
  * 1 - for each message in the queue => apply update to map;
  */
 void updateMap() {
-	int ipcId = ipc_get(company->id);
 	//TODO: read all updates from the serializer
-	CityUpdatePackage update;
-	map->city[update.cityId]->itemStock[update.itemId] = update.amount;
+	//CityUpdatePackage update;
+	//map->city[update.cityId]->itemStock[update.itemId] = update.amount;
 }
 
 void wakeUpPlanes(int semId) {
