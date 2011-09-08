@@ -27,10 +27,10 @@ void companyStart(Map* initialMap, Company* cmp) {
 	map = initialMap;
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
+	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
 	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug("[Company %d] Playing one turn", company->id);
-		log_debug("Active planes: %d", activePlanes);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);

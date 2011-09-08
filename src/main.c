@@ -65,6 +65,12 @@ void initializeCompanies() {
                 break;
         }
     }
+    int serverSemId = semaphore_get(SERVER_SEM_KEY);
+    for(int i = 0; i < server.companyCount; i++) {
+    	// Wait for all companies to initialize...
+    	semaphore_decrement(serverSemId, 0);
+    }
+    log_debug("[Main] All companies were created correctly");
 }
 
 void endSimulation() {
