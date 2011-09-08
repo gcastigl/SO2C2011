@@ -31,6 +31,10 @@ int map_getCityId(Map *map, char *name) {
 	return -1;
 }
 
+void map_update(Map* map, CityUpdatePackage* update) {
+	map->city[update.cityId]->itemStock[update.itemId] += update.amount;
+}
+
 // ====================================
 //	functions to work with cities
 // ====================================

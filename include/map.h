@@ -40,7 +40,7 @@ void map_setCity(Map *map, City *city, int index);
 
 int map_getCityId(Map *map, char* name);
 
-int map_start(Map *map);
+void map_update(Map* map, CityUpdatePackage* update);
 
 City *newCity(char* name);
 
