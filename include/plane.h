@@ -8,5 +8,7 @@
 
 Plane *newPlane(int id, int cityIdFrom, int itemCount);
 
+void plane_free(Plane* plane);
+
 #endif
 
