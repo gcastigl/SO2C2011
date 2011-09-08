@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "map.h"
-
+#include "communicator.h"
 
 typedef enum {
 	CITY_STOCK = 0,
@@ -22,6 +22,8 @@ typedef struct {
 } CompanyUpdatePackage;
 
 #define MSG "%03d_%03d_%03d"
+
+char message[DATA_SIZE];
 
 int serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
 
