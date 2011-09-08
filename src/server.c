@@ -1,7 +1,9 @@
 #include "server.h"
 
-void broadcastUpdateMessages();
+void broadcastUpdateMessages(Server* server);
+
 static int activeCompanies;
+
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
@@ -11,10 +13,10 @@ Server* newServer(int maxCompanyCount) {
 	return server;
 }
 
-void server_start(Server* server) {
+void server_start(Server* server, Map* initialMap) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
 	activeCompanies = (1 << server->companyCount) - 1;
-	for(int i = 0; i < 25; ++i) {
+	for(int i = 0; i < 10; ++i) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
@@ -24,7 +26,7 @@ void server_start(Server* server) {
 			//Give each company one turn...
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
-			broadcastUpdateMessages();
+			broadcastUpdateMessages(server);
 		}
 	}
 }
@@ -46,6 +48,12 @@ int server_getItemId(Server *server, char* itemName) {
  * 2 - if message = kill company => free that memory segment
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
-void broadcastUpdateMessages() {
+void broadcastUpdateMessages(Server* server) {
+	char msg[MAX_NAME_LENGTH];
+	for (int i = 0; i < server->companyCount; ++i) {
+		log_debug("company: %d\n", server->company[i]->id);
+		ipc_read(SERVER_IPC_KEY, server->company[i]->id + 1, msg);
+		printf("Server read %s from child %d\n", msg, server->company[i]->id);
+	}
 	log_debug("This is a broad cast!!\n");
 }
