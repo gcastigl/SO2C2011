@@ -1,7 +1,7 @@
 #include "server.h"
 
 void broadcastUpdateMessages();
-
+int activeCompanies;
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
@@ -13,7 +13,10 @@ Server* newServer(int maxCompanyCount) {
 
 void server_start(Server* server) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
+	activeCompanies = (1 << server->companyCount) - 1;
 	for(int i = 0; i < 25; ++i) {
+		// FIXME: when all companies die, the server stays locked forever in the semaphore.
+		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		log_debug("------------------------TURN %d--------------------------", i);
 		for(int j = 0; j < server->companyCount; ++j) {
 			log_debug("[Server] Company %d plays turn %i", j, i);
