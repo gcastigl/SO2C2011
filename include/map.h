@@ -33,6 +33,14 @@ typedef struct {
 	City **city;
 } Map;
 
+typedef struct {
+	int turn;
+	char **itemName;
+	int itemCount;
+	Company **company;
+	int companyCount;
+} Server;
+
 Map *map_initialize(Map* map, int maxCityCount);
 
 void map_setCity(Map *map, City *city, int index);

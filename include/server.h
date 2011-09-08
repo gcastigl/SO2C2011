@@ -5,14 +5,7 @@
 #include "communicator.h"
 #include "map.h"
 #include <sys/wait.h>
-
-typedef struct {
-	int turn;
-	char **itemName;
-	int itemCount;
-	Company **company;
-	int companyCount;
-} Server;
+#include "view/mapview.h"
 
 void server_start(Server* server, Map* initialMap);
 

@@ -3,7 +3,6 @@
 
 #include <ncurses.h>
 #include "map.h"
-#include "server.h"
 
 void view_start();
 void view_end();
