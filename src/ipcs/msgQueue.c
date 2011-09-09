@@ -14,7 +14,7 @@ int ipc_get(int id);
 MsgQueuePackage *newMsgQueuePackage(int id, char* data);
 
 int init_ipc(int myId, int size) {
-	// TODO: ???
+	return 0;
 }
 
 int ipc_get(int key) {
