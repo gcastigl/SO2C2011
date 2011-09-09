@@ -20,7 +20,6 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0];
-	memcpy(&type, package, sizeof(int));
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			log_debug(0, "ENCONTRE UN PACKETE DE TIPO COMPANIA!!");
@@ -39,7 +38,8 @@ int serializer_write_company(Company* company, int from, int to) {
 	memcpy(package, &packageType, sizeof(int));
 	memcpy(package + sizeof(int), serializedcompany, serialLenght);
 	free(serializedcompany);
-	return ipc_write(from, to, serializedcompany);
+	log_debug(0, "asdsaas: %d", ((int*)package)[0]);
+	return ipc_write(from, to, package);
 	/*int err = ipc_write(from, to, "hola this is a test message");
 	log_debug(0, "return status from write = %d", err);
 	char readData[MAX_NAME_LENGTH];
