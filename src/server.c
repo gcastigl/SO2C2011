@@ -1,6 +1,6 @@
 #include "server.h"
 
-void broadcastUpdateMessages(Server* server);
+void broadcastUpdateMessages(Server* server, int companyNumber);
 
 static int activeCompanies;
 
@@ -27,7 +27,7 @@ void server_start(Server* server, Map* initialMap) {
 			//Give each company one turn...
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
-			broadcastUpdateMessages(server);
+			broadcastUpdateMessages(server, j);
 		}
 		currTime = time(NULL);
 		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
@@ -55,13 +55,17 @@ int server_getItemId(Server *server, char* itemName) {
  * 2 - if message = kill company => free that memory segment
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
-void broadcastUpdateMessages(Server* server) {
-	for (int i = 0; i < server->companyCount; ++i) {
-		log_debug(10, "company: %d\n", server->company[i]->id);
-        CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
-        cup->cityId = 12;
-        cup->itemId = 13;
-        cup->amount = 200;
-        serializer_write_cityUpdate(cup, SERVER_SEM_KEY, server->company[i]->id);
-	}
+void broadcastUpdateMessages(Server* server, int companyNumber) {
+    CityUpdatePackage cup;
+    int i = 0;
+    int read = 1;
+    while (read > 0) {
+        read = serializer_read_cityUpdate(&cup, server->company[companyNumber]->id + 1, SERVER_IPC_KEY);
+        if (read != -1) {
+            log_debug(0, "Server received update number %d containing:\ncityId:%d\nitemId:%d\namount:%d\n", i++, cup.cityId, cup.itemId, cup.amount);
+        }
+    }
+/*	for (int i = 0; i < server->companyCount; ++i) {
+        serializer_write_cityUpdate(cup, SERVER_IPC_KEY, server->company[i]->id + 1);
+	} */
 }
