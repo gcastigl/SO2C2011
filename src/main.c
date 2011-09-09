@@ -18,7 +18,7 @@ static Map map;
  * 5 - EndSimulation
  */
 int main() {
-	log_debug("Starting simulation...\n");
+	log_debug(10, "Starting simulation...\n");
     initEnvironment();
     initializeServer();
     initializeCompanies();
@@ -30,7 +30,7 @@ int main() {
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
     parser_parseCitiesFile("./resources/loads/", &server, &map);
-    log_debug("[Main] Cities file parsed correctly");
+    log_debug(10, "[Main] Cities file parsed correctly");
     parser_parseCompanies("./resources/loads/companies/", &server, &map);
     processCount = server.companyCount;
     signal_setProcessCount(processCount);
@@ -43,10 +43,10 @@ void initEnvironment() {
 void initializeServer() {
 	// Initialize server semaphore.
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
-	log_debug("[Main] Initialized semaphore for server (key = %d)", semId);
+	log_debug(10, "[Main] Initialized semaphore for server (key = %d)", semId);
 	for (int i = 0; i < server.companyCount; ++i) {
 		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
-		log_debug("[Main] Initialized semaphore for company %d (key = %d)", server.company[i]->id, semId);
+		log_debug(10, "[Main] Initialized semaphore for company %d (key = %d)", server.company[i]->id, semId);
 	}
 }
 
@@ -71,14 +71,14 @@ void initializeCompanies() {
     	// Wait for all companies to initialize...
     	semaphore_decrement(serverSemId, 0);
     }
-    log_debug("[Main] All companies were created correctly");
+    log_debug(10, "[Main] All companies were created correctly");
 }
 
 void endSimulation() {
     for (int i = 0; i < processCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
-    log_debug("Simulation Done!");
+    log_debug(10, "Simulation Done!");
     logger_end();
     view_end();
     exit(0);

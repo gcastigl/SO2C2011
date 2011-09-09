@@ -8,6 +8,8 @@ void signal_setProcessCount(int count) {
 
 void signal_handler(int sigVal) {
     switch (sigVal) {
+        case SIGSEGV:
+            log_error("Segmentation fault");
         case SIGINT:
         case SIGTERM:
             signal_abortSimulation(sigVal);
@@ -18,9 +20,9 @@ void signal_handler(int sigVal) {
 }
 
 void signal_abortSimulation(int sigVal) {
-    log_debug("Received signal %d. Aborting simulation: Killing %d children", sigVal, processCount);
+    log_debug(10, "Received signal %d. Aborting simulation: Killing %d children", sigVal, processCount);
     for (int i = 0; i < processCount; i++) {
-        log_debug("Killing PID: %d", childPid[i]);
+        log_debug(10, "Killing PID: %d", childPid[i]);
         kill(childPid[i], SIGUSR1);
     }
     logger_end();

@@ -22,6 +22,7 @@ typedef struct {
 
 #define MSG "%03d_%03d_%03d"
 
+// TODO: MOTHAFUKA NEEDS MALLOC
 char message[DATA_SIZE];
 
 int serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
