@@ -35,6 +35,22 @@ extern int errno;
 
 int *childPid;
 
+typedef struct {
+	int id;
+	int cityIdFrom;
+	int cityIdTo;
+	int distanceLeft;
+	int itemCount;
+	int *itemStock;
+} Plane;
+
+typedef struct {
+	int id;
+	char name[MAX_NAME_LENGTH];
+	int planeCount;
+	Plane **plane;
+} Company;
+
 void fatal(char* err);
 
 int **createIntMatrix(int rows, int columns);
