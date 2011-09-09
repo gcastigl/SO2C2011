@@ -1,5 +1,7 @@
 #include "communicator.h"
 
+#include <sys/msg.h>
+
 typedef struct {
 	long fromId;
 	char data[DATA_SIZE];
@@ -11,7 +13,7 @@ int ipc_get(int id);
 
 MsgQueuePackage *newMsgQueuePackage(int id, char* data);
 
-void ipc_init(int id) {
+int init_ipc(int myId, int size) {
 	// TODO: ???
 }
 
