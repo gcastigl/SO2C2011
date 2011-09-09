@@ -16,7 +16,7 @@ extern int errno;
 
 #define TMP_FOLDER	"/tmp/"
 #define SERVER_SEM_KEY	0xDEADBEEF
-#define SERVER_IPC_KEY	0xCA11AB1E
+#define SERVER_IPC_KEY	0x0A11AB1E
 
 // Status defines
 #define OP_OK	0
