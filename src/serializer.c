@@ -23,7 +23,7 @@ void* serializer_read(int myId, int from, int* packageType) {
 		case PACKAGE_TYPE_COMPANY:
 			log_debug(0, "ENCONTRE UN PACKETE DE TIPO COMPANIA!!");
 			*packageType = PACKAGE_TYPE_COMPANY;
-			return _unserialize_company(package);
+			return _unserialize_company(package + sizeof(int));
 	}
 	return NULL;
 }
