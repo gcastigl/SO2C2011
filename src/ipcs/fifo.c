@@ -1,7 +1,31 @@
 #include "communicator.h"
 
-#define MSG_SIZE (sizeof(IpcPackage) - sizeof(long int))
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
+void ipc_init(int id) {
+	// Read, write, and execute by owner
+	mkfifo(TMP_FOLDER, S_IRWXU);
+}
+
+int ipc_write(int myId, int toId, char *msg) {
+	char filename[MAX_NAME_LENGTH];
+	sprintf(filename, "%sfifo_%d_%d", TMP_FOLDER,myId, toId);
+	log_debug("filename: %s", filename);
+	return -1;
+}
+
+int ipc_read(int myId, int fromId, char *msg) {
+	return -1;
+}
+
+int ipc_close(int id) {
+	return -1;
+}
+
+/*
 int ipc_init(int key, int flags) {
 	key_t ipcId;
 	ipcId = ftok(TMP_FOLDER, key);
@@ -30,4 +54,4 @@ int ipc_read(int ipcId, int fromId, IpcPackage* msg) {
 
 void ipc_close(int ipcId) {
 	msgctl(ipcId, IPC_RMID, (struct msqid_ds *) NULL);
-}
+}*/

@@ -1,5 +1,7 @@
 #include "communicator.h"
 
+#include <sys/msg.h>
+
 typedef struct {
 	long fromId;
 	char data[DATA_SIZE];

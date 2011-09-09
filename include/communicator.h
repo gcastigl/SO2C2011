@@ -2,7 +2,6 @@
 #define COMMUNICATOR_H_
 
 #include "common.h"
-#include <sys/msg.h>
 #include <errno.h>
 
 #define SEM_FLAGS	0666
