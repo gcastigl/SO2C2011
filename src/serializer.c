@@ -3,6 +3,8 @@
 void _serializer_serializeMessage(int param1, int param2, int param3);
 void _serializer_unserializeMessage(int *param1, int *param2, int *param3);
 
+char package[DATA_SIZE];
+
 char* _serialize_company(Company* company, int* finalDim);
 char* _serialize_plane(Plane* plane, int* finalDim);
 char* _serialize_intVector(int* vec, int lenght, int* finalDim);
@@ -11,7 +13,6 @@ Company* _unserialize_company(char* serializedMsg);
 Plane* _unserialize_plane(char* serializedMsg, int* charsRead);
 
 void* serializer_read(int myId, int from, int* packageType) {
-	char package[DATA_SIZE];
 	int read = ipc_read(myId, from, package);
 	if (read < 0) {
 		*packageType = -1;
@@ -30,7 +31,6 @@ void* serializer_read(int myId, int from, int* packageType) {
 int serializer_write_company(Company* company, int from, int to) {
 	int serialLenght;
 	char* serializedcompany = _serialize_company(company, &serialLenght);
-	char* package = malloc(serialLenght + sizeof(int));
 	int packageType = PACKAGE_TYPE_COMPANY;
 	memcpy(package, &packageType, sizeof(int));
 	memcpy(package + sizeof(int), serializedcompany, serialLenght);
@@ -39,41 +39,43 @@ int serializer_write_company(Company* company, int from, int to) {
 }
 
 int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
+    int retVal;
     _serializer_serializeMessage(pkg->cityId, pkg->itemId, pkg->amount);
-    log_debug(8, "Serialized message: %s", message);
-    ipc_write(from, to, message);
-	return -1;
+    retVal = ipc_write(from, to, package);
+    if (retVal < 0) {
+        perror("Error writing serializer");
+    }
+	return retVal;
 }
 
 int serializer_read_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
-    ipc_read(to, from, message);
-    log_debug(8, "Read message: %s", message);
+    int retVal;
+    retVal = ipc_read(to, from, package);
     _serializer_unserializeMessage(&(pkg->cityId), &(pkg->itemId), &(pkg->amount));
-    log_debug(8, "Read city update: \ncityId: %d\nitemId: %d\namount: %d", pkg->cityId, pkg->itemId, pkg->amount);
-    return -1;
+    return retVal;
 }
 
 int serializer_write_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
+    int retVal;
     _serializer_serializeMessage(-1, pkg->companyId, pkg->status);
-    ipc_write(from, to, message);
-	return -1;
+    retVal = ipc_write(from, to, package);
+	return retVal;
 }
 
 int serializer_read_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
-    int unused;
-    ipc_read(to, from, message);
+    int unused, retVal;
+    retVal = ipc_read(to, from, package);
     _serializer_unserializeMessage(&unused, &(pkg->companyId), &(pkg->status));
-    log_debug(8, "Read company update: \ncompanyId: %d\nstatus: %d", pkg->companyId, pkg->status);
-    return -1;
+    return retVal;
 }
 
 // Private functions
 void _serializer_unserializeMessage(int *param1, int *param2, int *param3) {
-    sscanf(message, MSG, param1, param2, param3);
+    sscanf(package, MSG, param1, param2, param3);
 }
 
 void _serializer_serializeMessage(int param1, int param2, int param3) {
-    sprintf(message, MSG, param1, param2, param3);
+    sprintf(package, MSG, param1, param2, param3);
 }
 
 // TODO: this is a little inneficient... it could be improved;

@@ -1,6 +1,6 @@
 #include "server.h"
 
-void broadcastUpdateMessages(Server* server, int fromCompanyId) ;
+void broadcastUpdateMessages(Server* server, int companyNumber);
 
 static int activeCompanies;
 

@@ -26,9 +26,6 @@ typedef struct {
 
 #define MSG "%03d_%03d_%03d"
 
-// TODO: MOTHAFUKA NEEDS MALLOC
-char message[DATA_SIZE];
-
 void* serializer_read(int myId, int from, int* packageType);
 
 int serializer_read_company(Company* company, int from, int to);
