@@ -4,10 +4,11 @@ int initializeCompany();
 void updateMap();
 void wakeUpPlanes(int semId);
 void waitUntilPlanesReady(int semId);
-void updateDestinations();
-void updateMapItems(Map* map, Plane* plane);
+void updateDestinations(ItemChange *ic);
+void updateMapItems(Map* map, Plane* plane, ItemChange *ic);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
+void updateServer(ItemChange *);
 
 static Company *company;
 static Map *map;
@@ -26,6 +27,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 	map = initialMap;
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
+    ItemChange ic;
 	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
 	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
@@ -34,9 +36,12 @@ void companyStart(Map* initialMap, Company* cmp) {
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
-		updateDestinations();
+        updateDestinations(&ic);
 		sleep(1);
-		log_debug(10, "[Company %d] Finished turn OK", company->id);
+		if (ic.amount > 0) {
+		    updateServer(&ic);
+		}
+		log_debug(8, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
 	}
 	log_debug(10, "[Company %d] I have supplied all the medications I can!", company->id);
@@ -60,12 +65,22 @@ int initializeCompany() {
 	return turnsSemId;
 }
 
+void updateServer(ItemChange *ic) {
+    log_debug(8, "[Company %d]Sending %d messages", company->id, ic->amount);
+    for (int i = 0; i < ic->amount; i++) {
+        log_debug(8, "Sending message number %d", i);
+        CityUpdatePackage *cup;
+        cup = ic->update[i];
+        serializer_write_cityUpdate(cup, company->id + 1, SERVER_IPC_KEY);
+    }
+    log_debug(0, "Wrote %d updates to server", ic->amount);
+    
+}
+
 /*
  * 1 - for each message in the queue => apply update to map;
  */
 void updateMap() {
-    CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
-    serializer_read_cityUpdate(cup, SERVER_SEM_KEY, company->id);
 }
 
 void wakeUpPlanes(int semId) {
@@ -83,27 +98,35 @@ void waitUntilPlanesReady(int semId) {
 	log_debug(10, "[Company %d] Waiting done!...", company->id);
 }
 
-void updateDestinations() {
+void updateDestinations(ItemChange *ic) {
 	for(int i = 0; i < company->planeCount; i++) {
 		if (company->plane[i]->distanceLeft == 0) {
 			log_debug(10, "[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
-			updateMapItems(map, company->plane[i]);
+			updateMapItems(map, company->plane[i], ic);
 			setNewTarget(map, company->plane[i]);
 		}
 	}
 }
 
-void updateMapItems(Map* map, Plane* plane) {
+void  updateMapItems(Map* map, Plane* plane, ItemChange *ic) {
+    ic->amount = 0;
+    ic->update = calloc(plane->itemCount, sizeof(CityUpdatePackage*));
 	log_debug(10, "[Company %d] Updating items for plane %d", company->id, plane->id);
 	for (int i = 0; i < plane->itemCount; ++i) {
 		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
 		int planeStock = plane->itemStock[i];
 		if (cityStock < 0 && planeStock > 0) {
+            CityUpdatePackage* update = ic->update[i] = calloc(1, sizeof(CityUpdatePackage));
 			int supplies = min(-cityStock, planeStock);
 			plane->itemStock[i] -= supplies;
 			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
+			update->cityId = plane->cityIdFrom;
+            update->itemId = i;
+            update->amount = supplies;
+            ic->amount++;
 		}
 	}
+    ic->update = realloc(ic->update, sizeof(CityUpdatePackage*) * ic->amount);
 }
 
 void setNewTarget(Map* map, Plane* plane) {
