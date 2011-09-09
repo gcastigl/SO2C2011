@@ -29,17 +29,17 @@ void companyStart(Map* initialMap, Company* cmp) {
 	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
 	while (activePlanes != 0) {
 		semaphore_decrement(serverSemId, company->id + 1);
-		log_debug("[Company %d] Playing one turn", company->id);
-		log_debug("[Company %d] Active planes: %d", company->id, activePlanes);
+		log_debug(10, "[Company %d] Playing one turn", company->id);
+		log_debug(10, "[Company %d] Active planes: %d", company->id, activePlanes);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
 		sleep(1);
-		log_debug("[Company %d] Finished turn OK", company->id);
+		log_debug(10, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
 	}
-	log_debug("[Company %d] I have supplied all the medications I can!", company->id);
+	log_debug(10, "[Company %d] I have supplied all the medications I can!", company->id);
 	// Send killmyself package...
 }
 
@@ -64,14 +64,14 @@ int initializeCompany() {
  * 1 - for each message in the queue => apply update to map;
  */
 void updateMap() {
-    CityUpdatePackage cup;
-    serializer_read_cityUpdate(&cup, SERVER_SEM_KEY, company->id);
+    CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
+    serializer_read_cityUpdate(cup, SERVER_SEM_KEY, company->id);
 }
 
 void wakeUpPlanes(int semId) {
-	log_debug("Planes wake up!");
+	log_debug(10, "Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
-		log_debug("waking up plane: %d", PLANE_INDEX(company->plane[i]->id) + 1);
+		log_debug(10, "waking up plane: %d", PLANE_INDEX(company->plane[i]->id) + 1);
 		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
 	}
 }
@@ -80,13 +80,13 @@ void waitUntilPlanesReady(int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
 		semaphore_decrement(semId, 0);
 	}
-	log_debug("[Company %d] Waiting done!...", company->id);
+	log_debug(10, "[Company %d] Waiting done!...", company->id);
 }
 
 void updateDestinations() {
 	for(int i = 0; i < company->planeCount; i++) {
 		if (company->plane[i]->distanceLeft == 0) {
-			log_debug("[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
+			log_debug(10, "[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
 			updateMapItems(map, company->plane[i]);
 			setNewTarget(map, company->plane[i]);
 		}
@@ -94,7 +94,7 @@ void updateDestinations() {
 }
 
 void updateMapItems(Map* map, Plane* plane) {
-	log_debug("[Company %d] Updating items for plane %d", company->id, plane->id);
+	log_debug(10, "[Company %d] Updating items for plane %d", company->id, plane->id);
 	for (int i = 0; i < plane->itemCount; ++i) {
 		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
 		int planeStock = plane->itemStock[i];
@@ -125,7 +125,7 @@ void setNewTarget(Map* map, Plane* plane) {
 	}
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		log_debug("[Company %d] No more cities can be supplied by %d", company->id, plane->id);
+		log_debug(10, "[Company %d] No more cities can be supplied by %d", company->id, plane->id);
 		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
 		pthread_kill(planeThreadId[PLANE_INDEX(plane->id)], SIGKILL);
 		planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
@@ -133,7 +133,7 @@ void setNewTarget(Map* map, Plane* plane) {
 		return;
 	}
 	// Set new distance from currentTargetId to newTaget
-	log_debug("[Company %d] Plane %d has been redirected to city: %d --> distance: %d", company->id, \
+	log_debug(10, "[Company %d] Plane %d has been redirected to city: %d --> distance: %d", company->id, \
 			plane->id, bestCityindex, map->cityDistance[plane->cityIdFrom][bestCityindex]);
 	plane->cityIdTo = bestCityindex;
 	plane->distanceLeft = map->cityDistance[plane->cityIdFrom][bestCityindex];

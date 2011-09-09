@@ -94,7 +94,7 @@ void parseCityDistances(FILE *stream, Map *map) {
 			map->cityDistance[c2][c1] = distance;
 		}
 	}
-	log_debug("cities distances parsed OK");
+	log_debug(10, "cities distances parsed OK");
 }
 
 // ======================================
@@ -129,14 +129,14 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	        }
 	    }
 	}
-    log_debug("Read %d companies", numberOfCompanies);
+    log_debug(10, "Read %d companies", numberOfCompanies);
     
     server->companyCount = numberOfCompanies;
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	
 	for (int i = 0; i < numberOfCompanies; ++i) {
 	    sprintf(fileName, "%s%s", dir, companies[i]);
-    	log_debug("[Parser] opening file %s\n", fileName);
+    	log_debug(10, "[Parser] opening file %s\n", fileName);
     	FILE *file = fopen(fileName, "r");
 		server->company[i] = parser_parseCompany(file, fileName + strlen(dir), i, server, map);
         fclose(file);
@@ -146,12 +146,12 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 
 Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, Map* map) {
 	int numberOfPlanes = parseInt(stream);
-	log_debug("Company %d has %d planes", id, numberOfPlanes);
+	log_debug(10, "Company %d has %d planes", id, numberOfPlanes);
 	Company* company = newCompany(id, name, numberOfPlanes);
 	lastLine[0] = '\0';
 	for (int i = 0; i < numberOfPlanes; ++i) {
 		company->plane[i] = parser_parsePlane(stream, server, map, PLANE_ID(id, i));
-		log_debug("Plane parsed!");
+		log_debug(10, "Plane parsed!");
 	}
 	return company;
 }
