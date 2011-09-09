@@ -8,7 +8,7 @@
 
 #define L_DEBUG 0
 #define L_ERROR 1
-#define VERBOSITY 5
+#define VERBOSITY 9
 
 
 void logger_end();

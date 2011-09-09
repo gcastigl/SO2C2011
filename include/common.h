@@ -16,7 +16,7 @@ extern int errno;
 
 #define TMP_FOLDER	"/tmp/"
 #define SERVER_SEM_KEY	0xDEADBEEF
-#define SERVER_IPC_KEY	0xCA11AB1E
+#define SERVER_IPC_KEY	0x0A11AB1E
 
 // Status defines
 #define OP_OK	0
@@ -34,6 +34,22 @@ extern int errno;
 #define PLANE_COMPANY_ID(planeId)		(planeId >> 16)
 
 int *childPid;
+
+typedef struct {
+	int id;
+	int cityIdFrom;
+	int cityIdTo;
+	int distanceLeft;
+	int itemCount;
+	int *itemStock;
+} Plane;
+
+typedef struct {
+	int id;
+	char name[MAX_NAME_LENGTH];
+	int planeCount;
+	Plane **plane;
+} Company;
 
 void fatal(char* err);
 

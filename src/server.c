@@ -1,6 +1,6 @@
 #include "server.h"
 
-void broadcastUpdateMessages(Server* server);
+void broadcastUpdateMessages(Server* server, int companyNumber);
 
 static int activeCompanies;
 
@@ -23,16 +23,15 @@ void server_start(Server* server, Map* initialMap) {
 		server->turn++;
 		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
-			log_debug(10, "[Server] Company %d plays turn %i", j, i);
+			log_debug(0, "[Server] Company %d plays turn %i", j, i);
 			//Give each company one turn...
 			semaphore_increment(semId, j + 1);
 			semaphore_decrement(semId, 0);
-			broadcastUpdateMessages(server);
+			broadcastUpdateMessages(server, server->company[j]->id);
 		}
 		currTime = time(NULL);
 		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
 			view_renderMap(server, initialMap);
-			log_debug(10, "Refreshing screen");
 			lastUpdate = time(NULL);
 		}
 	}
@@ -55,13 +54,14 @@ int server_getItemId(Server *server, char* itemName) {
  * 2 - if message = kill company => free that memory segment
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
-void broadcastUpdateMessages(Server* server) {
-	for (int i = 0; i < server->companyCount; ++i) {
-		log_debug(10, "company: %d\n", server->company[i]->id);
-        CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
-        cup->cityId = 12;
-        cup->itemId = 13;
-        cup->amount = 200;
-        serializer_write_cityUpdate(cup, SERVER_SEM_KEY, server->company[i]->id);
-	}
+void broadcastUpdateMessages(Server* server, int fromCompanyId) {
+	int packageType;
+	void* package;
+	do {
+		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
+		switch(packageType) {
+			case PACKAGE_TYPE_COMPANY:
+				log_debug(0, "PACKETE DE TIPO COMPANIA: %d", packageType);
+		}
+	} while (package != NULL);
 }
