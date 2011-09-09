@@ -5,12 +5,13 @@
 #include <errno.h>
 
 #define SEM_FLAGS	0666
+#define IPC_FLAGS	0666
 #define DATA_SIZE	128
 
 #define READ 0
 #define WRITE 1
 
-void ipc_init(int id);
+int init_ipc(int myId, int size);
 
 int ipc_write(int myId, int toId, char *msg);
 

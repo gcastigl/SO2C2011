@@ -5,15 +5,20 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-void ipc_init(int id) {
-	// Read, write, and execute by owner
-	mkfifo(TMP_FOLDER, S_IRWXU);
+int init_ipc(int myId, int size) {
+	return 0;
 }
 
 int ipc_write(int myId, int toId, char *msg) {
 	char filename[MAX_NAME_LENGTH];
-	sprintf(filename, "%sfifo_%d_%d", TMP_FOLDER,myId, toId);
-	log_debug("filename: %s", filename);
+	sprintf(filename, "%sfifo_%d_%d", TMP_FOLDER, myId, toId);
+	//log_debug(0, "filename: %s", filename);
+	int error = mkfifo(filename, IPC_FLAGS);
+	log_debug(0, "fifo returned %d", error);
+	if (error < 0) {
+		//log_error("Error opening mkfifo.");
+		return -1;
+	}
 	return -1;
 }
 
