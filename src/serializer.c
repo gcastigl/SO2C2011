@@ -21,9 +21,8 @@ void* serializer_read(int myId, int from, int* packageType) {
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			log_debug(0, "ENCONTRE UN PACKETE DE TIPO COMPANIA!!");
-			break;
-		default:
-			log_debug(0, "FUCKIT! => %d", type);
+			*packageType = PACKAGE_TYPE_COMPANY;
+			return _unserialize_company(package);
 	}
 	return NULL;
 }
@@ -36,29 +35,7 @@ int serializer_write_company(Company* company, int from, int to) {
 	memcpy(package, &packageType, sizeof(int));
 	memcpy(package + sizeof(int), serializedcompany, serialLenght);
 	free(serializedcompany);
-	log_debug(0, "asdsaas: %d", ((int*)package)[0]);
 	return ipc_write(from, to, package);
-	/*int err = ipc_write(from, to, "hola this is a test message");
-	log_debug(0, "return status from write = %d", err);
-	char readData[MAX_NAME_LENGTH];
-	ipc_read(to, from, readData);
-	log_debug(0, "reding from the ipc: %s", readData);
-	*/
-	//log_debug(0, "final size: %d", dim);
-	//Company* newCompany = _unserialize_company(serializedcompany);
-	/*log_debug(0, "id=%d", newCompany->id);
-	log_debug(0, "name=%s", newCompany->name);
-	log_debug(0, "planes=%d", newCompany->planeCount);
-	for(int i = 0; i < company->planeCount; i++) {
-		log_debug(0, "plane %d id=%d", i, newCompany->plane[i]->id);
-		log_debug(0, "plane %d cityIdFrom=%d", i, newCompany->plane[i]->cityIdFrom);
-		log_debug(0, "plane %d cityIdTo=%d", i, newCompany->plane[i]->cityIdTo);
-		log_debug(0, "plane %d itemcount=%d", i, newCompany->plane[i]->itemCount);
-		for(int j = 0; j < newCompany->plane[i]->itemCount; j++) {
-			log_debug(0, "item plane %d itemcount=%d", i, newCompany->plane[i]->itemStock[j]);
-		}
-	}
-	log_debug(0, "dasdsadjasldjkasdjasd asljdkasjdaldasjldjlaskd");*/
 }
 
 int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {

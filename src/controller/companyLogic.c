@@ -63,9 +63,9 @@ int initializeCompany() {
 /*
  * 1 - for each message in the queue => apply update to map;
  */
-void updateMap() {
-    CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
-    serializer_read_cityUpdate(cup, SERVER_SEM_KEY, company->id);
+void updateMap(int serverSemId) {
+    //CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
+    serializer_write_company(company, company->id + 1, SERVER_IPC_KEY);
 }
 
 void wakeUpPlanes(int semId) {
