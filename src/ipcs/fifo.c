@@ -5,6 +5,8 @@
 #include <dirent.h>
 #include <fcntl.h>
 
+#define MSG "%03d_%03d_%03d\n"
+#define MSG_LEN 3+1+3+1+3+1+1
 #define IPC_FIFO_DIR "/tmp/sofifo/"
 
 int init_ipc(int myId, int size) {
