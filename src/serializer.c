@@ -8,6 +8,7 @@ char package[DATA_SIZE];
 char* _serialize_company(Company* company, int* finalDim);
 char* _serialize_plane(Plane* plane, int* finalDim);
 char* _serialize_intVector(int* vec, int lenght, int* finalDim);
+int _serialize_buildTypedPackage(int type, char* data, int dataSize);
 
 Company* _unserialize_company(char* serializedMsg);
 Plane* _unserialize_plane(char* serializedMsg, int* charsRead);
@@ -30,11 +31,13 @@ void* serializer_read(int myId, int from, int* packageType) {
 
 int serializer_write_company(Company* company, int from, int to) {
 	int serialLenght;
-	char* serializedcompany = _serialize_company(company, &serialLenght);
+	char* serializedCompany = _serialize_company(company, &serialLenght);
 	int packageType = PACKAGE_TYPE_COMPANY;
-	memcpy(package, &packageType, sizeof(int));
-	memcpy(package + sizeof(int), serializedcompany, serialLenght);
-	free(serializedcompany);
+    int ok = _serialize_buildTypedPackage(packageType, serializedCompany, serialLength);
+    if (!ok) {
+        perror("Package is TOO big!!!");
+    }
+	free(serializedCompany);
 	return ipc_write(from, to, package);
 }
 
@@ -113,6 +116,17 @@ char* _serialize_plane(Plane* plane, int* finalDim) {
 	free(planeItemsAsChars);
 	*finalDim = lenght;
 	return planeToChar;
+}
+
+int _serialize_buildTypedPackage(int packageType, char* data, int dataSize) {
+    if ((dataSize + sizeof(int)) > DATA_SIZE) {
+        //The serialized company is bigger than the allowed
+        return FALSE
+    }
+    memcpy(package, &packageType, sizeof(int));
+	memcpy(package + sizeof(int), data, dataSize);
+	
+    return TRUE;
 }
 
 char* _serialize_intVector(int* vec, int lenght, int* finalDim) {
