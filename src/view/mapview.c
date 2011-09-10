@@ -27,7 +27,7 @@ void printCities(Server *server, Map *map) {
 		mvprintw(x++, y, "City: %s\n", city->name);
 		attroff(COLOR_PAIR(1));
 		for (int j = 0; j < city->itemCount; ++j) {
-			mvprintw(x++, y+4, "%15s: %3d", server->itemName[j], city->itemStock[j]);
+			mvprintw(x++, y+4, "%15s: %5d", server->itemName[j], city->itemStock[j]);
 		}
 	}
 }

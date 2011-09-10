@@ -75,8 +75,20 @@ int initializeCompany() {
  * Reads all the updates bnroadcasted by the server and updates the company's map
  * 1 - for each message in the queue => apply update to map;
  */
-void updateMap(int serverSemId) {
-
+void updateMap() {
+    void* package;
+    int packageType;
+    CityUpdatePackage *update;
+    do
+    {
+        package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
+        if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
+            update = (CityUpdatePackage*) package;
+            log_debug(5, "City %d receiving update on item %d of %d", update->cityId, update->itemId, update->amount);
+            City *city = map->city[update->cityId];
+            city->itemStock[update->itemId] += update->amount;
+        }
+    } while(package != NULL);
 }
 
 void wakeUpPlanes(int semId) {
@@ -131,9 +143,8 @@ void  updateMapItems(Map* map, Plane* plane) {
 			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
-            update.amount = -supplies;
-            // sends the update package
-            //serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
+            update.amount = supplies;
+            serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
 		}
 	}
 }
