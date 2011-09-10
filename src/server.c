@@ -19,11 +19,11 @@ void server_start(Server* server, Map* initialMap) {
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
-	while(TRUE) {
+	while(activeCompanies != 0) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
-		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
+		log_debug(LOG_JP, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
 			if (activeCompanies & (1 << j)) { // if company i is active
 				log_debug(7, "[Server] Company %d plays turn %i", j, server->turn);
@@ -86,7 +86,7 @@ void server_readMessages(Server* server, int fromCompanyId) {
 }
 
 void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
-    log_debug(5, "City %d receiving update on item %d of %d", cityUpdate->cityId, cityUpdate->itemId, cityUpdate->amount);
+    log_debug(LOG_JP, "City %d receiving update on item %d of %d", cityUpdate->cityId, cityUpdate->itemId, cityUpdate->amount);
     City *city = serverMap->city[cityUpdate->cityId];
     city->itemStock[cityUpdate->itemId] += cityUpdate->amount;
 }
@@ -99,6 +99,7 @@ void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
 
 void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage* update) {
     Company* company;
+    log_debug(LOG_JP, "Server broadcasting update of city %d", update->cityId);
     for (int i = 0; i < server->companyCount; i++) {
         company = server->company[i];
         if (company->id != fromCompanyId) {

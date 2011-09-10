@@ -17,6 +17,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
+void company_closeIpc();
 void companyStart(Map* initialMap, Company* cmp);
 
 #endif

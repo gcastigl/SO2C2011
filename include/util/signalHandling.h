@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include "view/mapview.h"
+#include "controller/companyLogic.h"
 
 void signal_setProcessCount(int count);
 void signal_handler(int signal);

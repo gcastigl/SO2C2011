@@ -80,7 +80,7 @@ void server_updateMap() {
         package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
         if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
             update = (CityUpdatePackage*) package;
-            log_debug(5, "City %d receiving update on item %d of %d", update->cityId, update->itemId, update->amount);
+            log_debug(LOG_JP, "City %d receiving update on item %d of %d", update->cityId, update->itemId, update->amount);
             City *city = map->city[update->cityId];
             city->itemStock[update->itemId] += update->amount;
         }
@@ -137,6 +137,7 @@ void  updateMapItems(Map* map, Plane* plane) {
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
             update.amount = supplies;
+            log_debug(LOG_JP, "Company sending update of \ncity: %d\nitem: %d\namount: %d", update.cityId, i, supplies);
             serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
 		}
 	}
@@ -191,3 +192,6 @@ int getScore(Plane* plane, int cityId) {
 	return score;
 }
 
+void company_closeIpc() {
+    ipc_close(company->id + 1);
+}

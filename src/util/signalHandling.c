@@ -10,6 +10,8 @@ void signal_handler(int sigVal) {
     switch (sigVal) {
         case SIGSEGV:
             log_error("Segmentation fault");
+            signal_abortSimulation(sigVal);
+            kill(getppid(), SIGSEGV);
         case SIGINT:
         case SIGTERM:
             signal_abortSimulation(sigVal);
@@ -70,6 +72,7 @@ void signal_childHandler(int sigVal) {
 }
 
 void signal_endChildProcess(int sigVal) {
+    company_closeIpc();
     _exit(1);
 }
 
