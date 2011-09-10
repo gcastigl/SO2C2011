@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 #include "map.h"
+#include "plane.h"
 
 void view_start();
 void view_end();
