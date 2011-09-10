@@ -61,7 +61,8 @@ void broadcastUpdateMessages(Server* server, int fromCompanyId) {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		switch(packageType) {
 			case PACKAGE_TYPE_COMPANY:
-				log_debug(0, "PACKETE DE TIPO COMPANIA: %d", packageType);
+				free(server->company[fromCompanyId]);
+				server->company[fromCompanyId] = (Company*) package;
 		}
 	} while (package != NULL);
 }
