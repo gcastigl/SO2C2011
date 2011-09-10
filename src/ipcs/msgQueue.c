@@ -13,7 +13,7 @@ int ipc_get(int id);
 
 MsgQueuePackage *newMsgQueuePackage(int id, char* data);
 
-int init_ipc(int myId, int size) {
+int ipc_init(int myId, int size) {
 	return 0;
 }
 
