@@ -48,7 +48,7 @@ void printCompanies(Server *server, Map *map) {
 				plane->distanceLeft
 			);
 			for (int k = 0; k < plane->itemCount; ++k) {
-				mvprintw(x++, y+8, "%-15s: %-3d", server->itemName[k], plane->itemStock[k]);
+				mvprintw(x++, y+8, "%-15s: %-5d", server->itemName[k], plane->itemStock[k]);
 			}
 		}
 	}
