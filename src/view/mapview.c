@@ -7,12 +7,13 @@ void view_start() {
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
 	init_pair(5, COLOR_RED, COLOR_BLACK);
 	init_pair(9, COLOR_CYAN, COLOR_BLACK);
-	char *title = "Pharma-Plane Simulation 1.0";
-	mvprintw(1, (COLS-strlen(title))/2, title);
 	refresh();
 }
 
 void printTurn(Server *server) {
+	wclear(stdscr);
+	char *title = "Pharma-Plane Simulation 1.0";
+	mvprintw(1, (COLS-strlen(title))/2, title);
 	attron(COLOR_PAIR(5));
 	mvprintw(1, 1, "TURN: %d", server->turn);
 	attroff(COLOR_PAIR(5));
