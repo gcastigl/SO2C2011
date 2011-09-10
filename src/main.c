@@ -37,7 +37,6 @@ void initEnvironment() {
     signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
     view_start();
-    view_renderMap(&server, &map);
     log_debug(10, "[Main] Cities & companies parsed correctly");
 }
 
