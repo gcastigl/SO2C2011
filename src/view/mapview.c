@@ -26,7 +26,7 @@ void printCities(Server *server, Map *map) {
 		mvprintw(x++, y, "City: %s\n", city->name);
 		attroff(COLOR_PAIR(1));
 		for (int j = 0; j < city->itemCount; ++j) {
-			mvprintw(x++, y+4, "%s: %d", server->itemName[j], city->itemStock[j]);
+			mvprintw(x++, y+4, "%15s: %3d", server->itemName[j], city->itemStock[j]);
 		}
 	}
 }
@@ -41,7 +41,7 @@ void printCompanies(Server *server, Map *map) {
 		for (int j = 0; j < company->planeCount; ++j) {
 			Plane *plane = company->plane[j];
 			char* target = (plane->cityIdTo != NO_TARGET) ? map->city[plane->cityIdTo]->name : "\"No Target\"";
-			mvprintw(x++, y+4, "Plane: %3d @ %15s -> %15s [Distance: %3d]",
+			mvprintw(x++, y+4, "Plane: %5d @ %15s -> %-15s [Distance: %3d]",
 				plane->id,
 				map->city[plane->cityIdFrom]->name,
 				target,
