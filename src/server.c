@@ -25,6 +25,7 @@ void server_start(Server* server, Map* initialMap) {
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
 		log_debug(LOG_JP, "------------------------TURN %d--------------------------", server->turn);
+		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 			if (activeCompanies & (1 << j)) { // if company i is active
 				log_debug(7, "[Server] Company %d plays turn %i", j, server->turn);
