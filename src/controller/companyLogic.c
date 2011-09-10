@@ -5,6 +5,7 @@ void updateMap();
 void wakeUpPlanes(int semId);
 void waitUntilPlanesReady(int semId);
 void updateDestinations();
+void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
@@ -31,10 +32,11 @@ void companyStart(Map* initialMap, Company* cmp) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug(10, "[Company %d] Playing one turn", company->id);
 		log_debug(10, "[Company %d] Active planes: %d", company->id, activePlanes);
-		//updateMap();
+		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
         updateDestinations();
+        updateServer();
 		sleep(1);
 		log_debug(8, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
@@ -64,11 +66,11 @@ int initializeCompany() {
 }
 
 /*
+ * Reads all the updates bnroadcasted by the server and updates the company's map
  * 1 - for each message in the queue => apply update to map;
  */
 void updateMap(int serverSemId) {
-    //CityUpdatePackage *cup = malloc(sizeof(CityUpdatePackage));
-    serializer_write_company(company, company->id + 1, SERVER_IPC_KEY);
+
 }
 
 void wakeUpPlanes(int semId) {
@@ -96,6 +98,13 @@ void updateDestinations() {
 	}
 }
 
+/*
+ * Write to the server the changes on this company.
+ * In this case we serialize the whole company.
+ */
+void updateServer() {
+	serializer_write_company(company, company->id + 1, SERVER_IPC_KEY);
+}
 /*
  * Plane is supposed to just have arrived to its target.
  * 1 - City needs to be updated
