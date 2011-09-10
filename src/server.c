@@ -59,10 +59,12 @@ void broadcastUpdateMessages(Server* server, int fromCompanyId) {
 	void* package;
 	do {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
-		switch(packageType) {
-			case PACKAGE_TYPE_COMPANY:
-				free(server->company[fromCompanyId]);
-				server->company[fromCompanyId] = (Company*) package;
+		if (package != NULL) {
+			switch(packageType) {
+				case PACKAGE_TYPE_COMPANY:
+					free(server->company[fromCompanyId]);
+					server->company[fromCompanyId] = (Company*) package;
+			}
 		}
 	} while (package != NULL);
 }
