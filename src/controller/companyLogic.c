@@ -13,7 +13,9 @@ int getScore(Plane* plane, int cityId);
 static Company *company;
 static Map *map;
 static pthread_t* planeThreadId;
-static int activePlanes;		// each bit in high indicated an active plane
+
+static long activePlanes;	// each bit in high indicated an active plane
+// There should be no more than sizeof(activePlanes)*8 planes in this comapany.
 
 /*
  * 1 - Initialize company.
@@ -61,7 +63,7 @@ int initializeCompany() {
 		// Wait for all planes to be ready...
 		semaphore_decrement(turnsSemId, 0);
 	}
-	activePlanes = (1 << company->planeCount) - 1;		// There should be no more than 32 planes.
+	activePlanes = (1 << company->planeCount) - 1;
 	return turnsSemId;
 }
 
@@ -148,8 +150,8 @@ void setNewTarget(Map* map, Plane* plane) {
 	}
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		log_debug(10, "[Company %d] No more cities can be supplied by %d", company->id, plane->id);
-		activePlanes &= ~(1 << PLANE_INDEX(plane->id));
+		log_debug(9, "[Company %d] No more cities can be supplied by %d", company->id, plane->id);
+		activePlanes &= ~(1 << PLANE_INDEX(plane->id));	// turn off bit i
 		pthread_kill(planeThreadId[PLANE_INDEX(plane->id)], SIGKILL);
 		planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
 		plane_free(plane);
@@ -167,6 +169,12 @@ int getScore(Plane* plane, int cityId) {
 	for (int i = 0; i < plane->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && map->city[cityId]->itemStock[i] < 0) {
 			score += min(plane->itemStock[i], -map->city[cityId]->itemStock[i]);
+		}
+	}
+	// penalize score if other plane is going to that city
+	for (int i = 0; i < company->planeCount; ++i) {
+		if (company->plane[i]->cityIdTo == cityId) {
+			score *= 0.7;
 		}
 	}
 	return score;
