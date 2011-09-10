@@ -26,7 +26,7 @@ void server_start(Server* server, Map* initialMap) {
 		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
 			if (activeCompanies & (1 << j)) { // if company i is active
-				log_debug(0, "[Server] Company %d plays turn %i", j, server->turn);
+				log_debug(7, "[Server] Company %d plays turn %i", j, server->turn);
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
@@ -61,7 +61,7 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	do {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
-			log_debug(5, "A package type= %d has been read from the serializer by the server", packageType);
+			log_debug(7, "A package type= %d has been read from the serializer by the server", packageType);
 			switch(packageType) {
 				case PACKAGE_TYPE_COMPANY:
 					free(server->company[fromCompanyId]); // Memory still allocated for planes
@@ -86,7 +86,9 @@ void server_readMessages(Server* server, int fromCompanyId) {
 }
 
 void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
-    
+    log_debug(5, "City %d receiving update on item %d of %d", cityUpdate->cityId, cityUpdate->itemId, cityUpdate->amount);
+    City *city = serverMap->city[cityUpdate->cityId];
+    city->itemStock[cityUpdate->itemId] += cityUpdate->amount;
 }
 
 /*
@@ -94,6 +96,7 @@ void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
  * 2 - if message = kill company => free that memory segment
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
+
 void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage* update) {
     Company* company;
     for (int i = 0; i < server->companyCount; i++) {

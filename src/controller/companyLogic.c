@@ -1,7 +1,7 @@
 #include "controller/companyLogic.h"
 
 int initializeCompany();
-void updateMap();
+void server_updateMap();
 void wakeUpPlanes(int semId);
 void waitUntilPlanesReady(int semId);
 void updateDestinations();
@@ -34,7 +34,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug(10, "[Company %d] Playing one turn", company->id);
 		log_debug(10, "[Company %d] Active planes: %d", company->id, activePlanes);
-		updateMap();
+		server_updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
         updateDestinations();
@@ -71,8 +71,20 @@ int initializeCompany() {
  * Reads all the updates bnroadcasted by the server and updates the company's map
  * 1 - for each message in the queue => apply update to map;
  */
-void updateMap(int serverSemId) {
-
+void server_updateMap() {
+    void* package;
+    int packageType;
+    CityUpdatePackage *update;
+    do
+    {
+        package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
+        if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
+            update = (CityUpdatePackage*) package;
+            log_debug(5, "City %d receiving update on item %d of %d", update->cityId, update->itemId, update->amount);
+            City *city = map->city[update->cityId];
+            city->itemStock[update->itemId] += update->amount;
+        }
+    } while(package != NULL);
 }
 
 void wakeUpPlanes(int semId) {
