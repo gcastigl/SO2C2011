@@ -25,6 +25,9 @@ extern int errno;
 #define FALSE 	0
 #define TRUE 	1
 
+#define ON 1
+#define OFF 0
+
 #define BLOCK_SIZE	10
 #define MAX_NAME_LENGTH 100
 
