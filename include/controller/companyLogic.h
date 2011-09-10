@@ -19,9 +19,4 @@
 
 void companyStart(Map* initialMap, Company* cmp);
 
-typedef struct {
-    int amount;
-    CityUpdatePackage **update;
-} ItemChange;
-
 #endif
