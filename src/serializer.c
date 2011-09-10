@@ -1,8 +1,5 @@
 #include "serializer.h"
 
-void _serializer_serializeMessage(int param1, int param2, int param3);
-void _serializer_unserializeMessage(int *param1, int *param2, int *param3);
-
 char package[DATA_SIZE];
 
 char* _serialize_company(Company* company, int* finalDim);
@@ -12,6 +9,8 @@ int _serialize_buildTypedPackage(int type, char* data, int dataSize);
 
 Company* _unserialize_company(char* serializedMsg);
 Plane* _unserialize_plane(char* serializedMsg, int* charsRead);
+CompanyUpdatePackage* _unserialize_companyUpdatePackage(char *serializedMsg);
+CityUpdatePackage *_unserialize_cityUpdatePackage(char *serializedMsg);
 
 void* serializer_read(int myId, int from, int* packageType) {
 	int read = ipc_read(myId, from, package);
@@ -23,11 +22,15 @@ void* serializer_read(int myId, int from, int* packageType) {
 	log_debug(8, "[Serializer] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
-			*packageType = PACKAGE_TYPE_COMPANY;
+			*packageType = type;
 			return _unserialize_company(package + sizeof(int));
 		case PACKAGE_TYPE_COMPANY_UPDATE:
+		    *packageType = type;
+            return _unserialize_companyUpdatePackage(package + sizeof(int));
 			break;
 		case PACKAGE_TYPE_CITY_UPDATE:
+		    *packageType = type;
+            return _unserialize_cityUpdatePackage(package + sizeof(int));
 			break;
 		default:
 			log_error("the server read an unknown package type: %d", packageType);
@@ -36,8 +39,8 @@ void* serializer_read(int myId, int from, int* packageType) {
 }
 
 int serializer_write_company(Company* company, int from, int to) {
-	int serialLenght;
-	char* serializedCompany = _serialize_company(company, &serialLenght);
+	int serialLength;
+	char* serializedCompany = _serialize_company(company, &serialLength);
 	int packageType = PACKAGE_TYPE_COMPANY;
     int ok = _serialize_buildTypedPackage(packageType, serializedCompany, serialLength);
     if (!ok) {
@@ -48,51 +51,42 @@ int serializer_write_company(Company* company, int from, int to) {
 }
 
 int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
-    int retVal;
-    _serializer_serializeMessage(pkg->cityId, pkg->itemId, pkg->amount);
-    retVal = ipc_write(from, to, package);
-    if (retVal < 0) {
-        perror("Error writing serializer");
+    int packageSize = (sizeof(int) * 3);
+    int packageType = PACKAGE_TYPE_CITY_UPDATE;
+    char *buffer = calloc(1, packageSize);
+    int offset = 0;
+    memcpy(buffer + offset, &(pkg->cityId), sizeof(int)); offset += sizeof(int);
+    memcpy(buffer + offset, &(pkg->itemId), sizeof(int)); offset += sizeof(int);
+    memcpy(buffer + offset, &(pkg->amount), sizeof(int));
+    int ok = _serialize_buildTypedPackage(packageType, buffer, packageSize);
+    if (!ok) {
+        perror("Package is TOO big!!!");
     }
-	return retVal;
-}
-
-int serializer_read_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
-    int retVal;
-    retVal = ipc_read(to, from, package);
-    _serializer_unserializeMessage(&(pkg->cityId), &(pkg->itemId), &(pkg->amount));
-    return retVal;
+    free(buffer);
+	return ipc_write(from, to, package);
 }
 
 int serializer_write_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
-    int retVal;
-    _serializer_serializeMessage(-1, pkg->companyId, pkg->status);
-    retVal = ipc_write(from, to, package);
-	return retVal;
-}
-
-int serializer_read_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
-    int unused, retVal;
-    retVal = ipc_read(to, from, package);
-    _serializer_unserializeMessage(&unused, &(pkg->companyId), &(pkg->status));
-    return retVal;
-}
-
-// Private functions
-void _serializer_unserializeMessage(int *param1, int *param2, int *param3) {
-    sscanf(package, MSG, param1, param2, param3);
-}
-
-void _serializer_serializeMessage(int param1, int param2, int param3) {
-    sprintf(package, MSG, param1, param2, param3);
+    int packageSize = sizeof(int) * 2;
+    int packageType = PACKAGE_TYPE_COMPANY_UPDATE;
+    char *buffer = calloc(1, packageSize);
+    int offset = 0;
+    memcpy(buffer + offset, &(pkg->companyId), sizeof(int)); offset += sizeof(int);
+    memcpy(buffer + offset, &(pkg->status), sizeof(int));
+    int ok = _serialize_buildTypedPackage(packageType, buffer, packageSize);
+    if (!ok) {
+        perror("Package is TOO big!!!");
+    }
+    free(buffer);
+	return ipc_write(from, to, package);
 }
 
 // TODO: this is a little inneficient... it could be improved;
 char* _serialize_company(Company* company, int* finalDim) {
 	int lenght = sizeof(int) * 2 + MAX_NAME_LENGTH;
-	char* planesToChar = malloc(lenght);
+	char* planesToChar = calloc(1, lenght);
 	int offset = 0;
-	memcpy(planesToChar, &(company->id), sizeof(int)); offset += sizeof(int);
+	memcpy(planesToChar + offset, &(company->id), sizeof(int)); offset += sizeof(int);
 	memcpy(planesToChar + offset, company->name, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(planesToChar + offset, &(company->planeCount), sizeof(int)); offset += sizeof(int);
 	int planesToCharSize = 0;
@@ -127,7 +121,7 @@ char* _serialize_plane(Plane* plane, int* finalDim) {
 int _serialize_buildTypedPackage(int packageType, char* data, int dataSize) {
     if ((dataSize + sizeof(int)) > DATA_SIZE) {
         //The serialized company is bigger than the allowed
-        return FALSE
+        return FALSE;   
     }
     memcpy(package, &packageType, sizeof(int));
 	memcpy(package + sizeof(int), data, dataSize);
@@ -145,7 +139,7 @@ char* _serialize_intVector(int* vec, int lenght, int* finalDim) {
 }
 
 Company* _unserialize_company(char* serializedMsg) {
-	Company* company = malloc(sizeof(Company));
+	Company* company = calloc(1, sizeof(Company));
 	int offset = 0;
 	memcpy(&company->id, serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&company->name, serializedMsg + offset, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
@@ -163,7 +157,7 @@ Company* _unserialize_company(char* serializedMsg) {
 }
 
 Plane* _unserialize_plane(char* serializedMsg, int* charsRead) {
-	Plane* plane = malloc(sizeof(Plane));
+	Plane* plane = calloc(1, sizeof(Plane));
 	int offset = 0;
 	memcpy(&(plane->id), serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&(plane->cityIdTo), serializedMsg + offset, sizeof(int)); offset += sizeof(int);
@@ -177,4 +171,21 @@ Plane* _unserialize_plane(char* serializedMsg, int* charsRead) {
 	}
 	*charsRead = offset;
 	return plane;
+}
+
+CityUpdatePackage* _unserialize_cityUpdatePackage(char *serializedMsg) {
+    int offset = 0;
+    CityUpdatePackage *pkg = calloc(1, sizeof(CityUpdatePackage));
+    memcpy(&(pkg->cityId), serializedMsg + offset, sizeof(int)); offset += sizeof(int);
+    memcpy(&(pkg->itemId), serializedMsg + offset, sizeof(int)); offset += sizeof(int);
+    memcpy(&(pkg->amount), serializedMsg + offset, sizeof(int));
+    return pkg;
+}
+
+CompanyUpdatePackage *_unserialize_companyUpdatePackage(char *serializedMsg) {
+    int offset = 0;
+    CompanyUpdatePackage *pkg = calloc(1, sizeof(CompanyUpdatePackage));
+    memcpy(&(pkg->companyId), serializedMsg + offset, sizeof(int)); offset += sizeof(int);
+    memcpy(&(pkg->status), serializedMsg + offset, sizeof(int));
+    return pkg;
 }
