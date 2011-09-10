@@ -33,13 +33,13 @@ void companyStart(Map* initialMap, Company* cmp) {
 		semaphore_decrement(serverSemId, company->id + 1);
 		log_debug(10, "[Company %d] Playing one turn", company->id);
 		log_debug(10, "[Company %d] Active planes: %d", company->id, activePlanes);
-		updateMap();
+		//updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
-        updateDestinations(&ic);
+        //updateDestinations(&ic);
 		sleep(1);
 		if (ic.amount > 0) {
-		    updateServer(&ic);
+		    //updateServer(&ic);
 		}
 		log_debug(8, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
@@ -74,7 +74,6 @@ void updateServer(ItemChange *ic) {
         serializer_write_cityUpdate(cup, company->id + 1, SERVER_IPC_KEY);
     }
     log_debug(0, "Wrote %d updates to server", ic->amount);
-    
 }
 
 /*
@@ -101,13 +100,13 @@ void waitUntilPlanesReady(int semId) {
 }
 
 void updateDestinations(ItemChange *ic) {
-	for(int i = 0; i < company->planeCount; i++) {
+	/*for(int i = 0; i < company->planeCount; i++) {
 		if (company->plane[i]->distanceLeft == 0) {
 			log_debug(10, "[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
 			updateMapItems(map, company->plane[i], ic);
 			setNewTarget(map, company->plane[i]);
 		}
-	}
+	}*/
 }
 
 void  updateMapItems(Map* map, Plane* plane, ItemChange *ic) {
