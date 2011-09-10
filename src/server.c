@@ -1,8 +1,8 @@
 #include "server.h"
 
 void server_readMessages(Server* server, int companyNumber);
-void server_broadcastUpdateMessages(int fromCompanyId, CityUpdatePackage *update);
-
+void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage *update);
+void server_applyMapUpdate(CityUpdatePackage* cityUpdate);
 static int activeCompanies;
 static Map *serverMap;
 Server* newServer(int maxCompanyCount) {
@@ -26,7 +26,7 @@ void server_start(Server* server, Map* initialMap) {
 		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
 			if (activeCompanies & (1 << j)) { // if company i is active
-				log_debug(0, "[Server] Company %d plays turn %i", j, i);
+				log_debug(0, "[Server] Company %d plays turn %i", j, server->turn);
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
@@ -75,14 +75,18 @@ void server_readMessages(Server* server, int fromCompanyId) {
 					break;
 				case PACKAGE_TYPE_CITY_UPDATE:
                     cityUpdate = (CityUpdatePackage*) package;
-                    server_appluMapUpdate(cityUpdate);
-                    server_broadcastUpdateMessage(fromCompanyId, cityUpdate);
+                    server_applyMapUpdate(cityUpdate);
+                    server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
 					break;
 				default:
 					log_error("the server received an unknown package type: %d", packageType);
 			}
 		}
 	} while (package != NULL);
+}
+
+void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
+    
 }
 
 /*
