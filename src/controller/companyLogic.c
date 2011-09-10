@@ -1,6 +1,7 @@
 #include "controller/companyLogic.h"
 
 #define PLANE_IS_ACTIVE(index)	!((inactivePlanes >> (index)) & 1)
+#define HAS_ACTIVE_PLANES		(~inactivePlanes && 0xFFFF)
 
 int initializeCompany();
 void updateMap();
@@ -33,16 +34,13 @@ void companyStart(Map* initialMap, Company* cmp) {
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
 	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
-	int i = 0, hasActivePlanes = 1;
-	while (hasActivePlanes) {
+	while (HAS_ACTIVE_PLANES) {
 		semaphore_decrement(serverSemId, company->id + 1);
-		log_debug(10, "[Company %d] Playing one turn %d\n -> inactive: %d", company->id, i++, inactivePlanes);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
         updateServer();
-		hasActivePlanes = ~inactivePlanes && 0xFFFF;
 		sleep(1);
 		log_debug(10, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
