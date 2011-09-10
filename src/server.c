@@ -17,7 +17,7 @@ void server_start(Server* server, Map* initialMap) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
-	for(int i = 0; i < 10; ++i) {
+	for(int i = 0; i == i; ++i) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
@@ -71,7 +71,7 @@ void broadcastUpdateMessages(Server* server, int fromCompanyId) {
 				case PACKAGE_TYPE_CITY_UPDATE:
 					break;
 				default:
-						log_error("the server recived an unknow package type: %d", packageType);
+					log_error("the server recived an unknow package type: %d", packageType);
 			}
 		}
 	} while (package != NULL);
