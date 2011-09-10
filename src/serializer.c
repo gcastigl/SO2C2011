@@ -19,12 +19,18 @@ void* serializer_read(int myId, int from, int* packageType) {
 		*packageType = -1;
 		return NULL;
 	}
-	int type = ((int*)package)[0];
+	int type = ((int*)package)[0]; // The fist int marks the package type
+	log_debug(8, "[Serializer] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
-			log_debug(0, "ENCONTRE UN PACKETE DE TIPO COMPANIA!!");
 			*packageType = PACKAGE_TYPE_COMPANY;
 			return _unserialize_company(package + sizeof(int));
+		case PACKAGE_TYPE_COMPANY_UPDATE:
+			break;
+		case PACKAGE_TYPE_CITY_UPDATE:
+			break;
+		default:
+			log_error("the server read an unknown package type: %d", packageType);
 	}
 	return NULL;
 }
@@ -87,7 +93,7 @@ char* _serialize_company(Company* company, int* finalDim) {
 	char* planesToChar = malloc(lenght);
 	int offset = 0;
 	memcpy(planesToChar, &(company->id), sizeof(int)); offset += sizeof(int);
-	memcpy(planesToChar + offset, &(company->name), MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
+	memcpy(planesToChar + offset, company->name, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(planesToChar + offset, &(company->planeCount), sizeof(int)); offset += sizeof(int);
 	int planesToCharSize = 0;
 	for(int i = 0; i < company->planeCount; i++) {
@@ -139,11 +145,14 @@ char* _serialize_intVector(int* vec, int lenght, int* finalDim) {
 }
 
 Company* _unserialize_company(char* serializedMsg) {
-	Company* company = malloc(sizeof(company));
+	Company* company = malloc(sizeof(Company));
 	int offset = 0;
 	memcpy(&company->id, serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&company->name, serializedMsg + offset, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(&company->planeCount, serializedMsg + offset, sizeof(int)); offset += sizeof(int);
+	log_debug(10, "company id = %d", company->id);
+	log_debug(10, "compan name = %s", company->name);
+	log_debug(10, "compay Planes = %d", company->planeCount);
 	company->plane = malloc(sizeof(Plane) * company->planeCount);
 	for(int i = 0; i < company->planeCount; i++) {
 		int charsRead;

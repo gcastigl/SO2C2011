@@ -17,17 +17,19 @@ void server_start(Server* server, Map* initialMap) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
-	for(int i = 0; i < 10; ++i) {
+	for(int i = 0; i == i; ++i) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
 		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
-			log_debug(0, "[Server] Company %d plays turn %i", j, i);
-			//Give each company one turn...
-			semaphore_increment(semId, j + 1);
-			semaphore_decrement(semId, 0);
-			broadcastUpdateMessages(server, server->company[j]->id);
+			if (activeCompanies & (1 << j)) { // if company i is active
+				log_debug(0, "[Server] Company %d plays turn %i", j, i);
+				//Give each company one turn...
+				semaphore_increment(semId, j + 1);
+				semaphore_decrement(semId, 0);
+				broadcastUpdateMessages(server, server->company[j]->id);
+			}
 		}
 		currTime = time(NULL);
 		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
@@ -55,13 +57,27 @@ int server_getItemId(Server *server, char* itemName) {
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
 void broadcastUpdateMessages(Server* server, int fromCompanyId) {
+	CompanyUpdatePackage* companyUpdate;
 	int packageType;
 	void* package;
 	do {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
-		switch(packageType) {
-			case PACKAGE_TYPE_COMPANY:
-				log_debug(0, "PACKETE DE TIPO COMPANIA: %d", packageType);
+		if (package != NULL) {
+			log_debug(5, "A package type= %d has been read from the serializer by the server", packageType);
+			switch(packageType) {
+				case PACKAGE_TYPE_COMPANY:
+					free(server->company[fromCompanyId]);
+					server->company[fromCompanyId] = (Company*) package;
+					break;
+				case PACKAGE_TYPE_COMPANY_UPDATE: // Turn off bit i from activeCompanies
+					companyUpdate = (CompanyUpdatePackage*) package;
+					activeCompanies &= ~(1 << companyUpdate->companyId);
+					break;
+				case PACKAGE_TYPE_CITY_UPDATE:
+					break;
+				default:
+					log_error("the server received an unknown package type: %d", packageType);
+			}
 		}
 	} while (package != NULL);
 }

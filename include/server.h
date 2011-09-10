@@ -8,7 +8,7 @@
 #include <time.h>
 #include "view/mapview.h"
 
-#define REFRESH_TIME_SECONDS	0.2
+#define REFRESH_TIME_SECONDS	0.1
 
 void server_start(Server* server, Map* initialMap);
 

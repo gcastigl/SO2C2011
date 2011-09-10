@@ -11,9 +11,6 @@
 #define READ 0
 #define WRITE 1
 
-#define MSG "%03d_%03d_%03d\n"
-#define MSG_LEN 3+1+3+1+3+1+1
-
 int init_ipc(int myId, int size);
 
 int ipc_write(int myId, int toId, char *msg);
