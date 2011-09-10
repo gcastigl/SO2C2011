@@ -1,5 +1,7 @@
 #include "controller/companyLogic.h"
 
+#define PLANE_IS_ACTIVE(index)	!((inactivePlanes >> (index)) & 1)
+
 int initializeCompany();
 void updateMap();
 void wakeUpPlanes(int semId);
@@ -9,12 +11,13 @@ void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
+void deactivatePlane(Plane* plane);
 
 static Company *company;
 static Map *map;
 static pthread_t* planeThreadId;
 
-static long activePlanes;	// each bit in high indicated an active plane
+static long inactivePlanes;
 // There should be no more than sizeof(activePlanes)*8 planes in this comapany.
 
 /*
@@ -30,17 +33,18 @@ void companyStart(Map* initialMap, Company* cmp) {
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
 	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
-	while (activePlanes != 0) {
+	int i = 0, hasActivePlanes = 1;
+	while (hasActivePlanes) {
 		semaphore_decrement(serverSemId, company->id + 1);
-		log_debug(10, "[Company %d] Playing one turn", company->id);
-		log_debug(10, "[Company %d] Active planes: %d", company->id, activePlanes);
+		log_debug(10, "[Company %d] Playing one turn %d\n -> inactive: %d", company->id, i++, inactivePlanes);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
-        updateDestinations();
+		updateDestinations();
         updateServer();
+		hasActivePlanes = ~inactivePlanes && 0xFFFF;
 		sleep(1);
-		log_debug(8, "[Company %d] Finished turn OK", company->id);
+		log_debug(10, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
 	}
 	log_debug(10, "[Company %d] I have supplied all the medications I can!", company->id);
@@ -51,6 +55,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 }
 
 int initializeCompany() {
+	inactivePlanes = 0;
 	planeThreadId = malloc(sizeof(pthread_t) * company->planeCount);
 	int turnsSemId = semaphore_get(company->id);
 	if (turnsSemId < 0) {
@@ -63,7 +68,6 @@ int initializeCompany() {
 		// Wait for all planes to be ready...
 		semaphore_decrement(turnsSemId, 0);
 	}
-	activePlanes = (1 << company->planeCount) - 1;
 	return turnsSemId;
 }
 
@@ -78,21 +82,24 @@ void updateMap(int serverSemId) {
 void wakeUpPlanes(int semId) {
 	log_debug(10, "Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
-		log_debug(10, "waking up plane: %d", PLANE_INDEX(company->plane[i]->id) + 1);
-		semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
+		if (PLANE_IS_ACTIVE(i)) {
+			semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
+		}
 	}
 }
 
 void waitUntilPlanesReady(int semId) {
 	for(int i = 0; i < company->planeCount; i++) {
-		semaphore_decrement(semId, 0);
+		if (PLANE_IS_ACTIVE(i)) {
+			semaphore_decrement(semId, 0);
+		}
 	}
 	log_debug(10, "[Company %d] Waiting done!...", company->id);
 }
 
 void updateDestinations() {
 	for(int i = 0; i < company->planeCount; i++) {
-		if (company->plane[i]->distanceLeft == 0) {
+		if (PLANE_IS_ACTIVE(i) && company->plane[i]->distanceLeft == 0) {
 			log_debug(10, "[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
 			updateMapItems(map, company->plane[i]);
 			setNewTarget(map, company->plane[i]);
@@ -150,11 +157,7 @@ void setNewTarget(Map* map, Plane* plane) {
 	}
 	if (bestCityindex == NO_TARGET) {
 		// No more cities can be supplied
-		log_debug(9, "[Company %d] No more cities can be supplied by %d", company->id, plane->id);
-		activePlanes &= ~(1 << PLANE_INDEX(plane->id));	// turn off bit i
-		pthread_kill(planeThreadId[PLANE_INDEX(plane->id)], SIGKILL);
-		planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
-		plane_free(plane);
+		deactivatePlane(plane);
 		return;
 	}
 	// Set new distance from currentTargetId to newTaget
@@ -180,3 +183,8 @@ int getScore(Plane* plane, int cityId) {
 	return score;
 }
 
+void deactivatePlane(Plane* plane) {
+	inactivePlanes |= (1 << PLANE_INDEX(plane->id));
+	pthread_cancel(planeThreadId[PLANE_INDEX(plane->id)]);
+	planeThreadId[PLANE_INDEX(plane->id)] = (pthread_t) -1;
+}
