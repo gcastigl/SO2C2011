@@ -60,10 +60,18 @@ void broadcastUpdateMessages(Server* server, int fromCompanyId) {
 	do {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
+			log_debug(5, "A package type= %d has been read from the serializer by the server", packageType);
 			switch(packageType) {
 				case PACKAGE_TYPE_COMPANY:
 					free(server->company[fromCompanyId]);
 					server->company[fromCompanyId] = (Company*) package;
+					break;
+				case PACKAGE_TYPE_COMPANY_UPDATE:
+					break;
+				case PACKAGE_TYPE_CITY_UPDATE:
+					break;
+				default:
+						log_error("the server recived an unknow package type: %d", packageType);
 			}
 		}
 	} while (package != NULL);
