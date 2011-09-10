@@ -5,6 +5,7 @@
 #include "plane.h"
 #include "communicator.h"
 #include <string.h>
+#include <pthread.h>
 
 void* planeStart(void* param);
 

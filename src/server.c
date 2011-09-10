@@ -5,6 +5,7 @@ void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdate
 void server_applyMapUpdate(CityUpdatePackage* cityUpdate);
 static int activeCompanies;
 static Map *serverMap;
+
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
