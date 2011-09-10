@@ -26,26 +26,32 @@ int main() {
     endSimulation();
 	return 0;
 }
-
+/*
+ *	Parses the cities, initializes companies and starts the signal handler.
+ */
 void initEnvironment() {
     signal_createHandlerThread(TRUE);
     parser_parseCitiesFile("./resources/loads/", &server, &map);
-    log_debug(10, "[Main] Cities file parsed correctly");
     parser_parseCompanies("./resources/loads/companies/", &server, &map);
     processCount = server.companyCount;
     signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
     view_start();
     view_renderMap(&server, &map);
+    log_debug(10, "[Main] Cities & companies parsed correctly");
 }
 
-//This is used to setup configuration for the server
+/*
+ * Cleans all ipc's queues and initializes all semaphores.
+ */
 void initializeServer() {
 	// Initialize server semaphore.
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
+	ipc_close(SERVER_IPC_KEY);
 	log_debug(10, "[Main] Initialized semaphore for server (key = %d)", semId);
 	for (int i = 0; i < server.companyCount; ++i) {
 		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
+		ipc_close(server.company[i]->id + 1);
 		log_debug(10, "[Main] Initialized semaphore for company %d (key = %d)", server.company[i]->id, semId);
 	}
 }
