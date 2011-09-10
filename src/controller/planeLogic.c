@@ -16,7 +16,7 @@ void* planeStart(void* param) {
 		log_debug(10, "[Plane %d] end turn", plane->id);
 		semaphore_increment(companySemId, 0);
 	}
-	exit(0);
+	pthread_exit(0);
 }
 
 void updateState(Plane* plane) {
