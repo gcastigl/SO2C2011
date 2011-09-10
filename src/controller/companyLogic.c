@@ -124,9 +124,8 @@ void  updateMapItems(Map* map, Plane* plane) {
 			map->city[plane->cityIdFrom]->itemStock[i] += supplies;
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
-            update.amount = -supplies;
-            // sends the update package
-            //serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
+            update.amount = supplies;
+            serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
 		}
 	}
 }
