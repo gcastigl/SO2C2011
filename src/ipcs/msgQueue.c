@@ -45,7 +45,7 @@ int ipc_read(int myId, int fromId, char *data) {
 	if (result == -1) {
 		return -1;
 	}
-	strcpy(data, msg.data);
+	memcpy(data, msg.data, DATA_SIZE);
 	return result;
 }
 
@@ -57,6 +57,6 @@ int ipc_close(int id) {
 MsgQueuePackage *newMsgQueuePackage(int id, char* data) {
 	MsgQueuePackage* msg = malloc(sizeof(MsgQueuePackage));
 	msg->fromId = id;
-	strcpy(msg->data, data);
+	memcpy(msg->data, data, DATA_SIZE);
 	return msg;
 }
