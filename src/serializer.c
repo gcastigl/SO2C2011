@@ -19,9 +19,9 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0];
+	log_debug(8, "[Serialzier] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
-			log_debug(0, "ENCONTRE UN PACKETE DE TIPO COMPANIA!!");
 			*packageType = PACKAGE_TYPE_COMPANY;
 			return _unserialize_company(package + sizeof(int));
 	}
@@ -35,6 +35,9 @@ int serializer_write_company(Company* company, int from, int to) {
 	memcpy(package, &packageType, sizeof(int));
 	memcpy(package + sizeof(int), serializedcompany, serialLenght);
 	free(serializedcompany);
+	if (DATA_SIZE < serialLenght) {
+		log_error("DATA_SIZE IS TOO SMALL TO SAVE COMPANY!!");
+	}
 	return ipc_write(from, to, package);
 }
 
@@ -84,7 +87,7 @@ char* _serialize_company(Company* company, int* finalDim) {
 	char* planesToChar = malloc(lenght);
 	int offset = 0;
 	memcpy(planesToChar, &(company->id), sizeof(int)); offset += sizeof(int);
-	memcpy(planesToChar + offset, &(company->name), MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
+	memcpy(planesToChar + offset, company->name, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(planesToChar + offset, &(company->planeCount), sizeof(int)); offset += sizeof(int);
 	int planesToCharSize = 0;
 	for(int i = 0; i < company->planeCount; i++) {
@@ -125,11 +128,14 @@ char* _serialize_intVector(int* vec, int lenght, int* finalDim) {
 }
 
 Company* _unserialize_company(char* serializedMsg) {
-	Company* company = malloc(sizeof(company));
+	Company* company = malloc(sizeof(Company));
 	int offset = 0;
 	memcpy(&company->id, serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&company->name, serializedMsg + offset, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(&company->planeCount, serializedMsg + offset, sizeof(int)); offset += sizeof(int);
+	log_debug(10, "company id = %d", company->id);
+	log_debug(10, "compan name = %s", company->name);
+	log_debug(10, "compay Planes = %d", company->planeCount);
 	company->plane = malloc(sizeof(Plane) * company->planeCount);
 	for(int i = 0; i < company->planeCount; i++) {
 		int charsRead;
