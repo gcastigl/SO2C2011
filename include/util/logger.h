@@ -6,9 +6,13 @@
 #include <stdarg.h>
 #include <sys/sem.h>
 
+#define LOG_GON 1
+#define LOG_JP 2
+#define LOG_QCHO 3
+
 #define L_DEBUG 0
 #define L_ERROR 1
-#define VERBOSITY 9
+#define VERBOSITY LOG_JP
 
 
 void logger_end();
