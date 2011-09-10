@@ -19,7 +19,7 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug(8, "[Serialzier] package type %d was read", type);
+	log_debug(8, "[Serializer] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = PACKAGE_TYPE_COMPANY;
@@ -29,7 +29,7 @@ void* serializer_read(int myId, int from, int* packageType) {
 		case PACKAGE_TYPE_CITY_UPDATE:
 			break;
 		default:
-			log_error("the server read an unknow package type: %d", packageType);
+			log_error("the server read an unknown package type: %d", packageType);
 	}
 	return NULL;
 }

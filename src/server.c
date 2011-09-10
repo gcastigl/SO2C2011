@@ -23,11 +23,13 @@ void server_start(Server* server, Map* initialMap) {
 		server->turn++;
 		log_debug(10, "------------------------TURN %d--------------------------", server->turn);
 		for(int j = 0; j < server->companyCount; ++j) {
-			log_debug(0, "[Server] Company %d plays turn %i", j, i);
-			//Give each company one turn...
-			semaphore_increment(semId, j + 1);
-			semaphore_decrement(semId, 0);
-			broadcastUpdateMessages(server, server->company[j]->id);
+			if (activeCompanies & (1 << j)) { // if company i is active
+				log_debug(0, "[Server] Company %d plays turn %i", j, i);
+				//Give each company one turn...
+				semaphore_increment(semId, j + 1);
+				semaphore_decrement(semId, 0);
+				broadcastUpdateMessages(server, server->company[j]->id);
+			}
 		}
 		currTime = time(NULL);
 		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
@@ -55,6 +57,7 @@ int server_getItemId(Server *server, char* itemName) {
  * 3 - if message = updateCity => send that update to all OTHER companies & clear queue.
  */
 void broadcastUpdateMessages(Server* server, int fromCompanyId) {
+	CompanyUpdatePackage* companyUpdate;
 	int packageType;
 	void* package;
 	do {
@@ -66,12 +69,14 @@ void broadcastUpdateMessages(Server* server, int fromCompanyId) {
 					free(server->company[fromCompanyId]);
 					server->company[fromCompanyId] = (Company*) package;
 					break;
-				case PACKAGE_TYPE_COMPANY_UPDATE:
+				case PACKAGE_TYPE_COMPANY_UPDATE: // Turn off bit i from activeCompanies
+					companyUpdate = (CompanyUpdatePackage*) package;
+					activeCompanies &= ~(1 << companyUpdate->companyId);
 					break;
 				case PACKAGE_TYPE_CITY_UPDATE:
 					break;
 				default:
-					log_error("the server recived an unknow package type: %d", packageType);
+					log_error("the server received an unknown package type: %d", packageType);
 			}
 		}
 	} while (package != NULL);
