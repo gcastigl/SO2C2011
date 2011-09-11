@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include "view/mapview.h"
+#include <features.h>
 
 #define REFRESH_TIME_SECONDS	0.1
 
