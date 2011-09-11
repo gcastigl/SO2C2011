@@ -45,6 +45,9 @@ void initEnvironment() {
 void initializeServer() {
 	// Initialize server semaphore.
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
+	if (semId < 0) {
+		log_error("Error creating semaphore for server - %d", SERVER_SEM_KEY);
+	}
 	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
 		semId = semaphore_create(server.company[i]->id + 1, server.company[i]->planeCount + 1, SEM_FLAGS);
