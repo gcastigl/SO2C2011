@@ -5,29 +5,25 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-#define MSG "%03d_%03d_%03d\n"
-#define MSG_LEN 3+1+3+1+3+1+1
 #define IPC_FIFO_DIR "/tmp/sofifo/"
 
-int init_ipc(int myId, int size) {
+int ipc_init(int myId, int size) {
 	return mkdir(IPC_FIFO_DIR, 0777);
 }
 
 int getFd(int id1, int id2, int flags) {
 	char filename[MAX_NAME_LENGTH];
 	sprintf(filename, "%s%d_%d", IPC_FIFO_DIR, id1, id2);
-	if (mkfifo(filename, 0777) != -1) {
-		return open(filename, flags);
-	}
-	return -1;
+	mkfifo(filename, 0777);
+	return open(filename, flags);
 }
 
 int ipc_write(int myId, int toId, char *msg) {
-	return write(getFd(myId, toId, O_WRONLY | O_NONBLOCK), msg, MSG_LEN);
+	return write(getFd(myId, toId, O_WRONLY | O_NONBLOCK), msg, DATA_SIZE);
 }
 
 int ipc_read(int myId, int fromId, char *msg) {
-	return read(getFd(fromId, myId, O_RDWR), msg, MSG_LEN);
+	return read(getFd(fromId, myId, O_RDWR | O_NONBLOCK), msg, DATA_SIZE);
 }
 
 int ipc_close(int id) {
