@@ -44,10 +44,10 @@ void initEnvironment() {
 void initializeServer() {
 	// Initialize server semaphore.
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
-	ipc_close(SERVER_IPC_KEY);
+	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
 		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
-		ipc_close(server.company[i]->id + 1);
+		ipc_init(server.company[i]->id + 1, 0);
 	}
 }
 
@@ -57,7 +57,6 @@ void initializeCompanies() {
         switch((pId = fork())) {
             case 0:
                 signal_createHandlerThread(FALSE);
-                ipc_close(server.company[i]->id + 1);
                 companyStart(&map, server.company[i]);
                 exit(0);
                 break;

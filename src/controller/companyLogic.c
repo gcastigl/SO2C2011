@@ -44,7 +44,6 @@ void companyStart(Map* initialMap, Company* cmp) {
         updateServer();
 		semaphore_increment(serverSemId, 0);
     } while (HAS_ACTIVE_PLANES);
-    log_debug(LOG_JP, "Company %d died!, sending message", company->id);
 	CompanyUpdatePackage update;
 	update.companyId = company->id;
 	update.status = FALSE;
