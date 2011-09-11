@@ -37,11 +37,13 @@ void companyStart(Map* initialMap, Company* cmp) {
     createInactivePlanesBitMask();
 	do {
 		semaphore_decrement(serverSemId, company->id + 1);
+		log_debug("[Company %d] Started turn---------------->", company->id);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
         updateServer();
+        log_debug("[Company %d] Finished turn---------------->", company->id);
 		semaphore_increment(serverSemId, 0);
     } while (HAS_ACTIVE_PLANES);
 	CompanyUpdatePackage update;
@@ -124,6 +126,7 @@ void updateDestinations() {
  * In this case we serialize the whole company.
  */
 void updateServer() {
+    log_warning("Company %d writing update to server", company->id);
 	serializer_write_company(company, company->id + 1, SERVER_IPC_KEY);
 }
 /*
