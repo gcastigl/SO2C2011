@@ -6,7 +6,7 @@ IPC := fifo.c
 #IPC := socket.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude
-CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -D LOG_TO_FILE
+CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -DLOG_TO_FILE
 # Directories belonging to the project
 PROJDIRS := src include
 # All source files of the project
@@ -18,9 +18,12 @@ OBJDIRS := $(sort $(dir $(OBJS)))
 # Includes
 C_INCLUDE_PATH = include
 
-.PHONY: all clean
+.PHONY: all clean debug
 
 all: $(OBJDIRS) $(BINARY)
+
+debug: override CFLAGS += -DDEBUG_MODE
+debug: all
 
 $(OBJDIRS):
 	mkdir -p $@
