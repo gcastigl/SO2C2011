@@ -20,12 +20,12 @@ CityUpdatePackage *_unserialize_cityUpdatePackage(char *serializedMsg);
 void* serializer_read(int myId, int from, int* packageType) {
 	int read = ipc_read(myId, from, package);
 	if (read < 0) {
-        log_debug("[Serializer] Read: Nothing");
+        //log_debug("[Serializer] Read: Nothing");
 		*packageType = -1;
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug("[Serializer] Read: %d (%d -> %d)", type, from, myId);
+	//log_debug("[Serializer] Read: %d (%d -> %d)", type, from, myId);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = type;
@@ -46,7 +46,7 @@ void serializer_write_company(Company* company, int from, int to) {
 	int serialLength;
 	char* serializedCompany = _serialize_company(company, &serialLength);
 	int packageType = PACKAGE_TYPE_COMPANY;
-	log_debug("[Serializer] Write company pack from %d to %d", from, to);
+	//log_debug("[Serializer] Write company pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, serializedCompany, serialLength);
     if (!ok) {
         fatal("Package is TOO big!!!");
@@ -62,7 +62,7 @@ void serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
     memcpy(buffer + offset, &(pkg->cityId), sizeof(int)); offset += sizeof(int);
     memcpy(buffer + offset, &(pkg->itemId), sizeof(int)); offset += sizeof(int);
     memcpy(buffer + offset, &(pkg->amount), sizeof(int));
-    log_debug("[Serializer] Write city update pack from %d to %d", from, to);
+    //log_debug("[Serializer] Write city update pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, buffer, packageSize);
     if (!ok) {
         fatal("Package is TOO big!!!");

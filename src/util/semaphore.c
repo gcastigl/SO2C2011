@@ -17,37 +17,13 @@ sem_t* semaphore_create(char *name) {
     if (sem == SEM_FAILED) {
         fatal("Error creating semaphore");
     }
-    fprintf(stderr, "Created %s semaphore", name);
     return sem;
 }
 
 sem_t *sem_get(char *name) {
-    sem_t* sem = sem_open(name, 0);
+    sem_t* sem = sem_open(name, 0, S_IRUSR | S_IWUSR);
     if (sem == SEM_FAILED) {
         log_debug("error getting semaphore %s", name);
-        switch (errno) {
-            case EEXIST:
-                log_debug("EEXIST");
-            break;
-            case EINVAL:
-                log_debug("EINVAL");
-            break;
-            case EMFILE:
-                log_debug("EMFILE");
-            break;
-            case ENAMETOOLONG:
-                log_debug("ENAMETOOLONG");
-            break;
-            case ENFILE:
-                log_debug("ENFILE");
-            break;
-            case ENOENT:
-                log_debug("ENOENT");
-            break;
-            case ENOMEM:
-                log_debug("ENOMEM");
-            break;
-        }
         fatal("error getting semaphore");
     }
     return sem;

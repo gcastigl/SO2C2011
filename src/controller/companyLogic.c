@@ -40,7 +40,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 	S_POST("companyReady");// Tell the server that this company has been created.
     createInactivePlanesBitMask();
 	do {
-		S_WAIT("server");
+		S_WAIT(cmpSemName);
 		log_debug("[Company %d] Started turn---------------->", company->id);
 		updateMap();
 		wakeUpPlanes();
@@ -77,7 +77,6 @@ void initializeCompany() {
 		pthread_create(planeThreadId + i, NULL, planeStart, plane);
         S_WAIT(semName);
 	}
-    log_debug("[COMPANY] Company %d finished initialization", company->id);
 	visitedCities = malloc(sizeof(int) * map->cityCount);
 	return;
 }

@@ -18,25 +18,20 @@ Server* newServer(int maxCompanyCount) {
 }
 
 void server_start(Server* server, Map* initialMap) {
-    int val;
-    
     char semName[10];
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
-    while (val != 0) {
-        S_GETVAL("server", &val);
-    }
 	while(activeCompanies != 0) {
 		server->turn++;
 		log_debug("-----------------------Turn %d-----------------------", server->turn);
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 		    server_readMessages(server, server->company[j]->id);
+            log_debug("Bleh %d", j);
 			if (IS_ACTIVE(j)) { // if company i is active
 				//Give each company one turn...
                 S_POST(getCompanySemName(semName, j, server));
-                log_debug("Server sem value %d", val);
                 S_WAIT("server");
 			}
 			server_readMessages(server, server->company[j]->id);
@@ -73,7 +68,6 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	int packageType;
 	void* package;
 	do {
-        log_debug("[Server] Reading updates...");
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
 			switch(packageType) {
