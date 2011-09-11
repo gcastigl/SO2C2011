@@ -44,12 +44,18 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
-	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
+    char semName[10];
+    int val;
+	sem_t *sem = semaphore_create("server");
+    S_GETVAL("server", &val);
+    log_debug("server sem: ", val);
 	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
-		semId = semaphore_create(server.company[i]->id + 1, server.company[i]->planeCount + 1, SEM_FLAGS);
-		if (semId < 0) {
+        sprintf(semName, "c%d", server.company[i]->id);
+        sem = semaphore_create(semName);
+		if (sem == SEM_FAILED) {
             log_error("Error creating semaphore for company %d", server.company[i]->id);
+            fatal("");
 		}
 		ipc_init(server.company[i]->id + 1, 0);
 	}
@@ -57,6 +63,7 @@ void initializeServer() {
 
 void initializeCompanies() {
     pid_t pId;
+    sem_t* cr = semaphore_create("companyReady");
     for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {
             case 0:
@@ -72,11 +79,11 @@ void initializeCompanies() {
                 break;
         }
     }
-    int serverSemId = semaphore_get(SERVER_SEM_KEY);
     for(int i = 0; i < server.companyCount; i++) {
     	// Wait for all companies to initialize...
-    	semaphore_decrement(serverSemId, 0);
+    	sem_wait(cr);
     }
+    sem_close(cr);
 }
 
 void endSimulation() {

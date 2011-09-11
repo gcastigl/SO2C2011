@@ -49,7 +49,7 @@ void serializer_write_company(Company* company, int from, int to) {
 	log_debug("[Serializer] Write company pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, serializedCompany, serialLength);
     if (!ok) {
-        perror("Package is TOO big!!!");
+        fatal("Package is TOO big!!!");
     }
 	free(serializedCompany);
 }
@@ -65,7 +65,7 @@ void serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
     log_debug("[Serializer] Write city update pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, buffer, packageSize);
     if (!ok) {
-        perror("Package is TOO big!!!");
+        fatal("Package is TOO big!!!");
     }
     free(buffer);
 }

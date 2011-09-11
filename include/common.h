@@ -36,6 +36,9 @@ extern int errno;
 #define PLANE_INDEX(planeId)			(planeId & 0xFFFF)
 #define PLANE_COMPANY_ID(planeId)		(planeId >> 16)
 
+#define S_WAIT(X) (sem_wait(sem_get(X)))
+#define S_POST(X) (sem_post(sem_get(X)))
+#define S_GETVAL(X, Y) (sem_getvalue(sem_get(X), Y))
 int *childPid;
 
 typedef struct {

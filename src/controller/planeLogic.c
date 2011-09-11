@@ -4,15 +4,13 @@ void updateState(Plane* plane);
 
 void* planeStart(void* param) {
 	Plane* plane = (Plane*) param;
-	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id) + 1);
-	if (companySemId < 0) {
-		fatal("PlaneLogic - Error initializing semaphore");
-	}
-	semaphore_increment(companySemId, 0); // Notify company that this plane is ready.
+    char semName[10];
+    sprintf(semName, "c%d_p%d", PLANE_COMPANY_ID(plane->id), PLANE_INDEX(plane->id));
+    S_POST(semName); // Notify company that this plane is ready.
 	while (1) {
-		semaphore_decrement(companySemId, PLANE_INDEX(plane->id) + 1);
+        S_WAIT(semName);
 		updateState(plane);
-		semaphore_increment(companySemId, 0);
+        S_POST(semName);
 	}
 	pthread_exit(0);
 }
