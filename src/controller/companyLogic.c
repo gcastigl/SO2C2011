@@ -3,10 +3,10 @@
 #define PLANE_IS_ACTIVE(index)	!((inactivePlanes >> (index)) & 1)
 #define HAS_ACTIVE_PLANES		(inactivePlanes ^ inactivePlanesMask)
 
-int initializeCompany();
+void initializeCompany();
 void updateMap();
-void wakeUpPlanes(int semId);
-void waitUntilPlanesReady(int semId);
+void wakeUpPlanes();
+void waitUntilPlanesReady();
 void updateDestinations();
 void updateServer();
 void updateMapItems(Map* map, Plane* plane);
@@ -16,6 +16,7 @@ int dfsDistanceTo(int from, int to, int* nextIfNoRoute);
 int dfsDistance(int from, int to, int acumDistance, int info[2]);
 void deactivatePlane(Plane* plane);
 void createInactivePlanesBitMask();
+char* getPlaneSemName(char *buffer, int index);
 
 static Company *company;
 static Map *map;
@@ -34,20 +35,22 @@ int* visitedCities;		// Used by the DFS to find path between cities.
  */
 void companyStart(Map* initialMap, Company* cmp) {
 	company = cmp;
+    char cmpSemName[10];
+    sprintf(cmpSemName, "c%d", company->id);
 	map = initialMap;
-	int planesSemId = initializeCompany();
-	int serverSemId = semaphore_get(SERVER_SEM_KEY);
-	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
+	initializeCompany();
+	S_POST("companyReady");// Tell the server that this company has been created.
     createInactivePlanesBitMask();
 	do {
-		semaphore_decrement(serverSemId, company->id + 1);
+		S_WAIT(cmpSemName);
+		log_debug("[Company %d] Started turn---------------->", company->id);
 		updateMap();
-		wakeUpPlanes(planesSemId);
-		waitUntilPlanesReady(planesSemId);
+		wakeUpPlanes();
+		waitUntilPlanesReady();
 		updateDestinations();
         updateServer();
         log_debug("[Company %d] Finished turn---------------->", company->id);
-		semaphore_increment(serverSemId, 0);
+		S_POST("server");
     } while (HAS_ACTIVE_PLANES);
 	CompanyUpdatePackage update;
 	update.companyId = company->id;
@@ -64,22 +67,20 @@ void createInactivePlanesBitMask() {
     }
 }
 
-int initializeCompany() {
+void initializeCompany() {
 	inactivePlanes = 0;
 	planeThreadId = malloc(sizeof(pthread_t) * company->planeCount);
-	int turnsSemId = semaphore_get(company->id + 1);
-	if (turnsSemId < 0) {
-		fatal("Company - Error initializing semaphore.");
-	}
+    char semName[10];
+    Plane* plane;
+    sem_t* planeSem;
 	for(int i = 0; i < company->planeCount; i++) {
-		pthread_create(planeThreadId + i, NULL, planeStart, company->plane[i]);
-	}
-	for(int i = 0; i < company->planeCount; i++) {
-		// Wait for all planes to be ready...
-		semaphore_decrement(turnsSemId, 0);
+        plane = company->plane[i];
+	    planeSem = semaphore_create(getPlaneSemName(semName, i));
+		pthread_create(planeThreadId + i, NULL, planeStart, plane);
+        S_WAIT(semName);
 	}
 	visitedCities = malloc(sizeof(int) * map->cityCount);
-	return turnsSemId;
+	return;
 }
 
 /*
@@ -101,18 +102,25 @@ void updateMap() {
     } while(package != NULL);
 }
 
+char* getPlaneSemName(char *buffer, int index) {
+    sprintf(buffer, "c%d_p%d", company->id, PLANE_INDEX(company->plane[index]->id));
+    return buffer;
+}
+
 void wakeUpPlanes(int semId) {
+    char semName[10];
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
-			semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
+			S_POST(getPlaneSemName(semName, i));
 		}
 	}
 }
 
 void waitUntilPlanesReady(int semId) {
+    char semName[10];
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
-			semaphore_decrement(semId, 0);
+			S_WAIT(getPlaneSemName(semName, i));
 		}
 	}
 }
