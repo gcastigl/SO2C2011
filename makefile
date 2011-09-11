@@ -1,8 +1,8 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-#IPC := msgQueue.c
-IPC := fifo.c
+IPC := msgQueue.c
+#IPC := fifo.c
 #IPC := socket.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude

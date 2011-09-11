@@ -20,11 +20,12 @@ CityUpdatePackage *_unserialize_cityUpdatePackage(char *serializedMsg);
 void* serializer_read(int myId, int from, int* packageType) {
 	int read = ipc_read(myId, from, package);
 	if (read < 0) {
+        log_debug("[Serializer] Read: Nothing");
 		*packageType = -1;
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug("Serializer read: %d (%d -> %d)", type, from, myId);
+	log_debug("[Serializer] Read: %d (%d -> %d)", type, from, myId);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = type;

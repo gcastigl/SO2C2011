@@ -66,7 +66,7 @@ void createInactivePlanesBitMask() {
 int initializeCompany() {
 	inactivePlanes = 0;
 	planeThreadId = malloc(sizeof(pthread_t) * company->planeCount);
-	int turnsSemId = semaphore_get(company->id);
+	int turnsSemId = semaphore_get(company->id + 1);
 	if (turnsSemId < 0) {
 		fatal("Company - Error initializing semaphore.");
 	}
@@ -130,7 +130,6 @@ void updateDestinations() {
  * In this case we serialize the whole company.
  */
 void updateServer() {
-    log_warning("Company %d writing update to server", company->id);
 	serializer_write(company, company->id + 1, SERVER_IPC_KEY, PACKAGE_TYPE_COMPANY);
 }
 /*

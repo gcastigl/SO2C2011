@@ -4,7 +4,7 @@ void updateState(Plane* plane);
 
 void* planeStart(void* param) {
 	Plane* plane = (Plane*) param;
-	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id));
+	int companySemId = semaphore_get(PLANE_COMPANY_ID(plane->id) + 1);
 	if (companySemId < 0) {
 		fatal("PlaneLogic - Error initializing semaphore");
 	}
