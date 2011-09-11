@@ -6,6 +6,7 @@
 #include <fcntl.h>
 
 #define IPC_FIFO_DIR "/tmp/sofifo/"
+int getFd(int id1, int id2, int flags);
 
 int ipc_init(int myId, int size) {
 	return mkdir(IPC_FIFO_DIR, 0777);
