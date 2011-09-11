@@ -5,14 +5,12 @@ BINARY := bin/tp1.out
 IPC := fifo.c
 #IPC := socket.c
 
-LIBS := -lm -lncurses -pthread -lpthread
+LIBS := -lm -lncurses -pthread -lpthread -Iinclude
 CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -D LOG_TO_FILE
-INCLUDE_DIR = include
 # Directories belonging to the project
 PROJDIRS := src include
 # All source files of the project
 CSRCS := $(shell find -L $(PROJDIRS) -type f -name "*.c" | grep -v "src/ipcs/") src/ipcs/$(IPC)
-
 # All object files in the library
 OBJS := $(patsubst src/%.c,bin/%.o,$(CSRCS))
 OBJDIRS := $(sort $(dir $(OBJS)))
@@ -34,7 +32,7 @@ clean:
 	-@$(RM) -rf $(BINARY) $(OBJDIRS)
 
 $(OBJS): bin/%.o : src/%.c include/%.h
-	gcc $(CFLAGS) $(LIBS) -I $(INCLUDE_DIR) -c $< -o $@
+	gcc $(CFLAGS) $(LIBS) -c $< -o $@
 
 %.h:
-	#do nothing. just for header change check.
+	#header change checking.
