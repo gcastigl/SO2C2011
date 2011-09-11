@@ -12,6 +12,8 @@ void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
+int dfsDistanceTo(int from, int to, int* distance);
+int dfsDistance(int from, int to, int acumDistance, int *finalDistance);
 void deactivatePlane(Plane* plane);
 
 static Company *company;
@@ -20,7 +22,7 @@ static pthread_t* planeThreadId;
 
 static long inactivePlanes;
 // There should be no more than sizeof(activePlanes)*8 planes in this comapany.
-
+int* visitedCities;		// Used by the DFS to find path between cities.
 /*
  * 1 - Initialize company.
  * 2 - Update map.
@@ -65,6 +67,7 @@ int initializeCompany() {
 		// Wait for all planes to be ready...
 		semaphore_decrement(turnsSemId, 0);
 	}
+	visitedCities = malloc(sizeof(int) * map->cityCount);
 	return turnsSemId;
 }
 
@@ -190,6 +193,35 @@ int getScore(Plane* plane, int cityId) {
 		}
 	}
 	return score;
+}
+
+int dfsDistanceTo(int from, int to, int *distance) {
+	for(int i = 0; i < company->planeCount; i++) {
+		visitedCities[i] = 0;
+	}
+	return dfsDistance(from, to, 0, distance);;
+}
+
+int dfsDistance(int from, int to, int acumDistance, int *finalDistance) {
+	if (from == to) {
+		*finalDistance = acumDistance;
+		return 1;
+	}
+	//log_debug(LOG_JP, "from: %d to %d. Distance: %d", from, to, map->cityDistance[from][to]);
+	visitedCities[from] = 1;
+	for(int i = 0; i < map->cityCount; i++) {
+		if (map->cityDistance[from][i] == 0 || visitedCities[i] == 1) {
+			// Only go to unvisited neighbors!
+			continue;
+		}
+		//log_debug(LOG_JP, "going %d -> %d. Acum %d", from, i, acumDistance + map->cityDistance[from][i]);
+		int next = dfsDistance(i, to, acumDistance + map->cityDistance[from][i], finalDistance);
+		if (next == 1) {
+			return acumDistance == 0 ? i : next;
+		}
+	}
+	visitedCities[from] = 0;
+	return -1;
 }
 
 void deactivatePlane(Plane* plane) {
