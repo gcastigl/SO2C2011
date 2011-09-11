@@ -4,7 +4,7 @@ static FILE* logFile = NULL;
 static int initialized = 0;
 int semKey = 0x20605202;
 int semId;
-static char *logLevelString[] = { "DEBUG", "ERROR" };
+static char *logLevelString[] = { "DEBUG", "WARNING", "ERROR" };
 
 void logger_init() {
     if (initialized) {
