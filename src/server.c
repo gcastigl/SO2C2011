@@ -18,16 +18,13 @@ Server* newServer(int maxCompanyCount) {
 
 void server_start(Server* server, Map* initialMap) {
 	int semId = semaphore_get(SERVER_SEM_KEY);
-    log_debug(LOG_JP, "Starting server");
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
 	while(activeCompanies != 0) {
 		// FIXME: when all companies die, the server stays locked forever in the semaphore.
 		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
-        log_debug(LOG_JP, "Active companies %d", activeCompanies);
 		server->turn++;
-		log_debug(LOG_JP, "------------------------TURN %d--------------------------", server->turn);
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 		    server_readMessages(server, server->company[j]->id);

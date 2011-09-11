@@ -32,12 +32,12 @@ void logger_end() {
     }
 }
 
-void _log(int verboseLevel, int logLevel, const char *file, int line, const char *fmt, ...) {
+void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
     logger_init();
     va_list ap;
     va_start(ap, fmt);
     
-    if (verboseLevel == VERBOSITY || verboseLevel == L_ERROR) {
+    if (logLevel >= LOG_LEVEL) {
         semaphore_decrement(semKey, 0);
         fprintf(logFile, "[%s] %s:%d: ", logLevelString[logLevel], file, line);
         vfprintf(logFile, fmt, ap);

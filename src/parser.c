@@ -94,7 +94,6 @@ void parseCityDistances(FILE *stream, Map *map) {
 			map->cityDistance[c2][c1] = distance;
 		}
 	}
-	log_debug(10, "cities distances parsed OK");
 }
 
 // ======================================
@@ -129,14 +128,12 @@ int parser_parseCompanies(char *dir, Server *server, Map *map) {
 	        }
 	    }
 	}
-    log_debug(10, "Read %d companies", numberOfCompanies);
     
     server->companyCount = numberOfCompanies;
 	server->company = malloc(sizeof(Plane*) * numberOfCompanies);
 	
 	for (int i = 0; i < numberOfCompanies; ++i) {
 	    sprintf(fileName, "%s%s", dir, companies[i]);
-    	log_debug(10, "[Parser] opening file %s\n", fileName);
     	FILE *file = fopen(fileName, "r");
 		server->company[i] = parser_parseCompany(file, fileName + strlen(dir), i, server, map);
         fclose(file);
