@@ -2,9 +2,9 @@
 
 void server_readMessages(Server* server, int companyNumber);
 void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage *update);
+char *getCompanySemName(char* buffer, int index, Server* s);
 static int activeCompanies;
 static Map *serverMap;
-
 #define IS_ACTIVE(X) ((activeCompanies >> X) & 1)
 
 Server* newServer(int maxCompanyCount) {
@@ -18,7 +18,7 @@ Server* newServer(int maxCompanyCount) {
 }
 
 void server_start(Server* server, Map* initialMap) {
-	int semId = semaphore_get(SERVER_SEM_KEY);
+    char semName[10];
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
@@ -28,10 +28,11 @@ void server_start(Server* server, Map* initialMap) {
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 		    server_readMessages(server, server->company[j]->id);
+            log_debug("Bleh %d", j);
 			if (IS_ACTIVE(j)) { // if company i is active
 				//Give each company one turn...
-				semaphore_increment(semId, server->company[j]->id + 1);
-				semaphore_decrement(semId, 0);
+                S_POST(getCompanySemName(semName, j, server));
+                S_WAIT("server");
 			}
 			server_readMessages(server, server->company[j]->id);
 		}
@@ -42,6 +43,11 @@ void server_start(Server* server, Map* initialMap) {
 		}
 	}
 	view_renderMap(server, serverMap);
+}
+
+char* getCompanySemName(char* buffer, int index, Server* server) {
+    sprintf(buffer, "c%d", server->company[index]->id);
+    return buffer;
 }
 
 int server_getItemId(Server *server, char* itemName) {
@@ -62,7 +68,6 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	int packageType;
 	void* package;
 	do {
-        log_debug("[Server] Reading updates...");
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
 			switch(packageType) {

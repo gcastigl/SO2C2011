@@ -2,8 +2,8 @@
 
 static FILE* logFile = NULL;
 static int initialized = 0;
-int semKey = 0x20605202;
-int semId;
+char *loggerSem = "logger";
+static sem_t* sem;
 static char *logLevelString[] = { "DEBUG", "WARNING", "ERROR" };
 
 void logger_init() {
@@ -17,8 +17,8 @@ void logger_init() {
         logFile = stderr;
     #endif
     
-    semId = semaphore_create(semKey, 1, 0666);
-    semctl(semId, 0, SETVAL, 1);
+    sem = semaphore_create(loggerSem);
+    sem_post(sem);
     initialized = 1;
 }
 
@@ -27,8 +27,8 @@ void logger_end() {
         fclose(logFile);
     #endif
     
-    if (semId) {
-        semaphore_destroy(semId);
+    if (sem) {
+        sem_close(sem);
     }
 }
 
@@ -38,12 +38,12 @@ void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
     va_start(ap, fmt);
     
     if (logLevel >= LOG_LEVEL) {
-        semaphore_decrement(semKey, 0);
+        sem_wait(sem);
         fprintf(logFile, "[%s] %s:%d: ", logLevelString[logLevel], file, line);
         vfprintf(logFile, fmt, ap);
         fprintf(logFile, "\n");
         fflush(logFile);
 
-        semaphore_increment(semKey, 0);
+        sem_post(sem);
     }
 }
