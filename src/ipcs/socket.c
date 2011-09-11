@@ -16,6 +16,9 @@ socket_t *getSocket(int id1, int id2) {
 	sock->addr->sun_family = AF_UNIX;
 	strcpy(sock->addr->sun_path, path);
 	bind(sock->sockfd, (struct sockaddr *)sock->addr, ADDR_SIZE);
+	int flags = fcntl(sock->sockfd, F_GETFL);
+	flags |= O_NONBLOCK;
+	fcntl(sock->sockfd, F_SETFL, flags);
 	return sock;
 }
 
@@ -30,7 +33,27 @@ int ipc_write(int myId, int toId, char *msg) {
 
 int ipc_read(int myId, int fromId, char *msg) {
 	socket_t *socket = getSocket(fromId, myId);
-	return recvfrom(socket->sockfd, msg, DATA_SIZE, 0, NULL, NULL);
+	int n = recvfrom(socket->sockfd, msg, DATA_SIZE, 0, NULL, NULL);
+	if (n==-1) {
+		switch (errno) {
+		case EBADF:
+			//The socket argument is not a valid file descriptor.
+			break;
+		case ENOTSOCK:
+			//The descriptor socket is not a socket.
+			break;
+		case EWOULDBLOCK:
+			//Nonblocking mode has been set on the socket, and the read operation would block.
+		 	//(Normally, recv blocks until there is input available to be read.)
+			break;
+		case EINTR:
+			//The operation was interrupted by a signal before any data was read. .
+			break;
+		case ENOTCONN:
+			//You never connected this socket.
+			break;
+		}
+	}
 }
 
 int ipc_close(int id) {
