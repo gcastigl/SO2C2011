@@ -7,6 +7,8 @@
 #include <sys/ipc.h>
 #include <fcntl.h>
 
+#define MAGIC_NUMBER 50 // O.o
+
 //#ifdef LINUX
 typedef union {
 	int val;

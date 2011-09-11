@@ -8,7 +8,7 @@ int semaphore_operation(int id, int op, int semnum);
  */
 int semaphore_create(int key, int semSize, int flags) {
     int semid;
-
+    key += MAGIC_NUMBER;
     semid = semget(key, semSize, flags | IPC_CREAT | IPC_EXCL);
 
     if (semid == -1) {
@@ -29,6 +29,7 @@ int semaphore_create(int key, int semSize, int flags) {
 }
 
 int semaphore_get(int key) {
+    key += MAGIC_NUMBER;
     int ret = semget(key, 0, 0666 | IPC_CREAT);
     if (ret < 0) {
         switch(errno) {
