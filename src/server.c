@@ -12,6 +12,7 @@ Server* newServer(int maxCompanyCount) {
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
 	server->companyCount = 0;
 	server->itemCount = 0;
+    server->turn = 0;
 	server->itemName = NULL;
 	return server;
 }
@@ -22,9 +23,8 @@ void server_start(Server* server, Map* initialMap) {
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
 	while(activeCompanies != 0) {
-		// FIXME: when all companies die, the server stays locked forever in the semaphore.
-		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
+		log_debug("-----------------------Turn %d-----------------------", server->turn);
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 		    server_readMessages(server, server->company[j]->id);
