@@ -7,17 +7,22 @@ int semaphore_operation(int id, int op, int semnum);
  * all places with 0.
  */
 int semaphore_create(int key, int semSize, int flags) {
-	key_t semKey = ftok(TMP_FOLDER, key);
-	if (semKey == (key_t)-1) {
-		return -1;
-	}
-	int semId = semget(semKey, semSize, 0666 | IPC_CREAT);
-	if (semId == -1) {
-		return -1;
-	}
-	// Set all semaphores to 0
-	semaphore_setAll(semId, semSize, 0);
-	return semId;
+    key_t semKey = ftok(TMP_FOLDER, key);
+    if (semKey == (key_t)-1) {
+        return -1;
+    }
+    int semId;
+    /* Get semaphore ID associated with this key. */
+    if ((semId = semget(semKey, 0, 0)) == -1) {
+        /* Semaphore does not exist - Create. */
+        semId = semget(semKey, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | \
+                S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+        if (semId == -1) {
+            perror("IPC error 2: semget");
+        }
+    }
+    semaphore_setAll(semId, semSize, 0);
+    return semId;
 }
 
 int semaphore_get(int key) {
