@@ -19,7 +19,6 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug(LOG_JP, "[Serializer] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = type;

@@ -1,7 +1,7 @@
 #include "controller/companyLogic.h"
 
 #define PLANE_IS_ACTIVE(index)	!((inactivePlanes >> (index)) & 1)
-#define HAS_ACTIVE_PLANES		(~inactivePlanes && 0xFFFF)
+#define HAS_ACTIVE_PLANES		(inactivePlanes ^ inactivePlanesMask)
 
 int initializeCompany();
 void updateMap();
@@ -13,11 +13,11 @@ void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
 void deactivatePlane(Plane* plane);
-
+void createInactivePlanesBitMask();
 static Company *company;
 static Map *map;
 static pthread_t* planeThreadId;
-
+static long inactivePlanesMask;
 static long inactivePlanes;
 // There should be no more than sizeof(activePlanes)*8 planes in this comapany.
 
@@ -34,21 +34,29 @@ void companyStart(Map* initialMap, Company* cmp) {
 	int planesSemId = initializeCompany();
 	int serverSemId = semaphore_get(SERVER_SEM_KEY);
 	semaphore_increment(serverSemId, 0);// Tell the server that this company has been created.
-	while (HAS_ACTIVE_PLANES) {
+    createInactivePlanesBitMask();
+	do {
 		semaphore_decrement(serverSemId, company->id + 1);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
 		updateDestinations();
         updateServer();
-		log_debug(10, "[Company %d] Finished turn OK", company->id);
 		semaphore_increment(serverSemId, 0);
-	}
-	log_debug(10, "[Company %d] I have supplied all the medications I can!", company->id);
+    } while (HAS_ACTIVE_PLANES);
+    log_debug(LOG_JP, "Company %d died!, sending message", company->id);
 	CompanyUpdatePackage update;
 	update.companyId = company->id;
 	update.status = FALSE;
 	serializer_write_companyUpdate(&update, company->id + 1, SERVER_IPC_KEY);
+    company_free(company, TRUE);
+}
+
+void createInactivePlanesBitMask() {
+    inactivePlanesMask = 0;
+    for (int i = 0; i < company->planeCount; i++) {
+        inactivePlanesMask |= (1 << i);
+    }
 }
 
 int initializeCompany() {
@@ -81,7 +89,6 @@ void updateMap() {
         package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
         if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
             update = (CityUpdatePackage*) package;
-            log_debug(LOG_JP, "City %d receiving update on item %d of %d", update->cityId, update->itemId, update->amount);
             City *city = map->city[update->cityId];
             city->itemStock[update->itemId] += update->amount;
         }
@@ -89,7 +96,6 @@ void updateMap() {
 }
 
 void wakeUpPlanes(int semId) {
-	log_debug(10, "Planes wake up!");
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
 			semaphore_increment(semId, PLANE_INDEX(company->plane[i]->id) + 1);
@@ -103,13 +109,11 @@ void waitUntilPlanesReady(int semId) {
 			semaphore_decrement(semId, 0);
 		}
 	}
-	log_debug(10, "[Company %d] Waiting done!...", company->id);
 }
 
 void updateDestinations() {
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i) && company->plane[i]->distanceLeft == 0) {
-			log_debug(10, "[Company %d] Plane %d needs new target\n", company->id, company->plane[i]->id);
 			updateMapItems(map, company->plane[i]);
 			setNewTarget(map, company->plane[i]);
 		}
@@ -129,7 +133,6 @@ void updateServer() {
  * 2 - Sends up-date package to the server.
  */
 void  updateMapItems(Map* map, Plane* plane) {
-	log_debug(10, "[Company %d] Updating items for plane %d", company->id, plane->id);
 	CityUpdatePackage update;
 	for (int i = 0; i < plane->itemCount; ++i) {
 		int cityStock = map->city[plane->cityIdFrom]->itemStock[i];
@@ -141,7 +144,6 @@ void  updateMapItems(Map* map, Plane* plane) {
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
             update.amount = supplies;
-            log_debug(LOG_JP, "[Company %d]sending update of \ncity: %d\nitem: %d\namount: %d", company->id, update.cityId, i, supplies);
             serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
 		}
 	}
@@ -170,8 +172,6 @@ void setNewTarget(Map* map, Plane* plane) {
 		return;
 	}
 	// Set new distance from currentTargetId to newTaget
-	log_debug(10, "[Company %d] Plane %d has been redirected to city: %d --> distance: %d", company->id, \
-			plane->id, bestCityindex, map->cityDistance[plane->cityIdFrom][bestCityindex]);
 	plane->cityIdTo = bestCityindex;
 	plane->distanceLeft = map->cityDistance[plane->cityIdFrom][bestCityindex];
 }

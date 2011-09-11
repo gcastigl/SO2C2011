@@ -35,14 +35,12 @@ int ipc_get(int key) {
 int ipc_write(int myId, int toId, char *data) {
 	int toIpcId = ipc_get(toId);
 	MsgQueuePackage *msg = newMsgQueuePackage(myId, data);
-	log_debug(LOG_JP, "WRITING: type: %d | %d to %d", ((int*)data)[0], myId, toId);
 	return msgsnd(toIpcId, (void*) msg, MSG_SIZE, IPC_NOWAIT);
 }
 
 int ipc_read(int myId, int fromId, char *data) {
 	int myIpcId = ipc_get(myId);
 	MsgQueuePackage msg;
-	log_debug(LOG_JP, "READING: %d from %d", myId, fromId);
 	int result = msgrcv(myIpcId, (void *)&msg, MSG_SIZE, fromId, IPC_NOWAIT);
 	if (result == -1) {
 		return -1;
