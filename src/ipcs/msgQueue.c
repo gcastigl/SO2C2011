@@ -1,6 +1,4 @@
-#include "communicator.h"
-
-#include <sys/msg.h>
+#include "ipcs/msgQueue.h"
 
 typedef struct {
 	long fromId;

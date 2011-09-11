@@ -7,12 +7,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <math.h>
-#include "mathUtil.h"
+#include "mathUtils.h"
 #include "util/logger.h"
 
 extern int errno;
-
-//#define DEBUG_MODE 1;
 
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
