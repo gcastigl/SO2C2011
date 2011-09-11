@@ -141,7 +141,7 @@ void  updateMapItems(Map* map, Plane* plane) {
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
             update.amount = supplies;
-            log_debug(LOG_JP, "Company sending update of \ncity: %d\nitem: %d\namount: %d", update.cityId, i, supplies);
+            log_debug(LOG_JP, "[Company %d]sending update of \ncity: %d\nitem: %d\namount: %d", company->id, update.cityId, i, supplies);
             serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
 		}
 	}

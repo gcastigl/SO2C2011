@@ -78,7 +78,7 @@ void server_readMessages(Server* server, int fromCompanyId) {
 				case PACKAGE_TYPE_CITY_UPDATE:
                     cityUpdate = (CityUpdatePackage*) package;
                     server_applyMapUpdate(cityUpdate);
-                    server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
+                    //server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
 					break;
 				default:
 					log_error("the server received an unknown package type: %d", packageType);
