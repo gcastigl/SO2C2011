@@ -101,7 +101,7 @@ void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdate
     for (int i = 0; i < server->companyCount; i++) {
         company = server->company[i];
         if (company->id != fromCompanyId) {
-            serializer_write_cityUpdate(update, SERVER_IPC_KEY, company->id + 1);
+            serializer_write(update, SERVER_IPC_KEY, company->id + 1, PACKAGE_TYPE_CITY_UPDATE);
         }
     }
 }
