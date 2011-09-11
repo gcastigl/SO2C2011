@@ -7,21 +7,20 @@ typedef struct {
 	struct sockaddr_un *addr;
 } socket_t;
 
-socket_t *getSocket(int id1, int id2);
-
-int ipc_init(int myId, int size) {
-	return mkdir(IPC_SOCKET_DIR, 0777);
-}
-
 socket_t *getSocket(int id1, int id2) {
 	socket_t *sock = (socket_t*) malloc(sizeof(socket_t));
 	char path[MAX_NAME_LENGTH];
 	sprintf(path, "%s%d_%d", IPC_SOCKET_DIR, id1, id2);
 	sock->sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);
+	sock->addr = (struct sockaddr_un *)malloc(sizeof(struct sockaddr_un));
 	sock->addr->sun_family = AF_UNIX;
 	strcpy(sock->addr->sun_path, path);
 	bind(sock->sockfd, (struct sockaddr *)sock->addr, ADDR_SIZE);
 	return sock;
+}
+
+int ipc_init(int myId, int size) {
+	return mkdir(IPC_SOCKET_DIR, 0777);
 }
 
 int ipc_write(int myId, int toId, char *msg) {
@@ -31,7 +30,7 @@ int ipc_write(int myId, int toId, char *msg) {
 
 int ipc_read(int myId, int fromId, char *msg) {
 	socket_t *socket = getSocket(fromId, myId);
-	return recvfrom(socket->sockfd, *msg, DATA_SIZE, 0, NULL, NULL);
+	return recvfrom(socket->sockfd, msg, DATA_SIZE, 0, NULL, NULL);
 }
 
 int ipc_close(int id) {
