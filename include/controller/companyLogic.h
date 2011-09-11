@@ -8,6 +8,7 @@
 #include "communicator.h"
 #include "semaphore.h"
 #include "serializer.h"
+#include "company.h"
 #include <string.h>
 #include <pthread.h>
 #include <signal.h>

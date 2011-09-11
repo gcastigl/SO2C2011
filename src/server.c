@@ -2,15 +2,17 @@
 
 void server_readMessages(Server* server, int companyNumber);
 void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage *update);
-void server_applyMapUpdate(CityUpdatePackage* cityUpdate);
 static int activeCompanies;
 static Map *serverMap;
+
+#define IS_ACTIVE(X) ((activeCompanies >> X) & 1)
 
 Server* newServer(int maxCompanyCount) {
 	Server* server = malloc(sizeof(Server));
 	server->company = malloc(sizeof(Company*) * maxCompanyCount);
 	server->companyCount = 0;
 	server->itemCount = 0;
+    server->turn = 0;
 	server->itemName = NULL;
 	return server;
 }
@@ -21,18 +23,15 @@ void server_start(Server* server, Map* initialMap) {
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
 	while(activeCompanies != 0) {
-		// FIXME: when all companies die, the server stays locked forever in the semaphore.
-		// FIX: When update packages get finished, see companyLogic(bit uage for living planes) and do the same thing here.
 		server->turn++;
-		log_debug(LOG_JP, "------------------------TURN %d--------------------------", server->turn);
+		log_debug("-----------------------Turn %d-----------------------", server->turn);
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
-			if (activeCompanies & (1 << j)) { // if company i is active
-				log_debug(7, "[Server] Company %d plays turn %i", j, server->turn);
+		    server_readMessages(server, server->company[j]->id);
+			if (IS_ACTIVE(j)) { // if company i is active
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
-				server_readMessages(server, server->company[j]->id);
 			}
 		}
 		currTime = time(NULL);
@@ -41,6 +40,7 @@ void server_start(Server* server, Map* initialMap) {
 			lastUpdate = time(NULL);
 		}
 	}
+	view_renderMap(server, serverMap);
 }
 
 int server_getItemId(Server *server, char* itemName) {
@@ -63,34 +63,30 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	do {
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
-			log_debug(7, "A package type= %d has been read from the serializer by the server", packageType);
 			switch(packageType) {
 				case PACKAGE_TYPE_COMPANY:
 					free(server->company[fromCompanyId]); // Memory still allocated for planes
 					server->company[fromCompanyId] = (Company*) package;
+                    log_debug("Company %d structure update", server->company[fromCompanyId]->id);
 					break;
 				case PACKAGE_TYPE_COMPANY_UPDATE: // Turn off bit i from activeCompanies
 					companyUpdate = (CompanyUpdatePackage*) package;
+                    log_debug("Company %d update", companyUpdate->companyId);
 					if (companyUpdate->status == OFF) {
 					    activeCompanies &= ~(1 << companyUpdate->companyId);
 					}
 					break;
 				case PACKAGE_TYPE_CITY_UPDATE:
                     cityUpdate = (CityUpdatePackage*) package;
-                    server_applyMapUpdate(cityUpdate);
-                    //server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
+                    log_debug("City Update");
+                    map_update(serverMap, cityUpdate);
+                    server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
 					break;
 				default:
 					log_error("the server received an unknown package type: %d", packageType);
 			}
 		}
 	} while (package != NULL);
-}
-
-void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
-    log_debug(LOG_JP, "City %d receiving update on item %d of %d", cityUpdate->cityId, cityUpdate->itemId, cityUpdate->amount);
-    City *city = serverMap->city[cityUpdate->cityId];
-    city->itemStock[cityUpdate->itemId] += cityUpdate->amount;
 }
 
 /*
@@ -101,7 +97,6 @@ void server_applyMapUpdate(CityUpdatePackage* cityUpdate) {
 
 void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdatePackage* update) {
     Company* company;
-    log_debug(LOG_JP, "Server broadcasting update of city %d", update->cityId);
     for (int i = 0; i < server->companyCount; i++) {
         company = server->company[i];
         if (company->id != fromCompanyId) {

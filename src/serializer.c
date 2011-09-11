@@ -19,7 +19,7 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug(LOG_JP, "[Serializer] package type %d was read", type);
+	log_debug("Serializer read: %d (%d -> %d)", type, from, myId);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = type;
@@ -42,6 +42,7 @@ int serializer_write_company(Company* company, int from, int to) {
 	int serialLength;
 	char* serializedCompany = _serialize_company(company, &serialLength);
 	int packageType = PACKAGE_TYPE_COMPANY;
+	log_debug("[Serializer] Write company pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, serializedCompany, serialLength);
     if (!ok) {
         perror("Package is TOO big!!!");
@@ -58,6 +59,7 @@ int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
     memcpy(buffer + offset, &(pkg->cityId), sizeof(int)); offset += sizeof(int);
     memcpy(buffer + offset, &(pkg->itemId), sizeof(int)); offset += sizeof(int);
     memcpy(buffer + offset, &(pkg->amount), sizeof(int));
+    log_debug("[Serializer] Write city update pack from %d to %d", from, to);
     int ok = _serialize_buildTypedPackage(packageType, buffer, packageSize);
     if (!ok) {
         perror("Package is TOO big!!!");
@@ -144,9 +146,6 @@ Company* _unserialize_company(char* serializedMsg) {
 	memcpy(&company->id, serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&company->name, serializedMsg + offset, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(&company->planeCount, serializedMsg + offset, sizeof(int)); offset += sizeof(int);
-	log_debug(10, "company id = %d", company->id);
-	log_debug(10, "compan name = %s", company->name);
-	log_debug(10, "compay Planes = %d", company->planeCount);
 	company->plane = malloc(sizeof(Plane) * company->planeCount);
 	for(int i = 0; i < company->planeCount; i++) {
 		int charsRead;
