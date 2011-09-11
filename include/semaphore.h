@@ -32,4 +32,6 @@ int semaphore_operation(int id, int op, int semnum);
 
 int semaphore_destroy(int id);
 
+int semaphore_getAll(int semId, int semSize, unsigned short* values);
+
 #endif

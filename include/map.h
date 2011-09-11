@@ -14,6 +14,7 @@ typedef struct {
 typedef struct {
 	int cityCount;
 	int **cityDistance;
+	int **cityRoute;
 	City **city;
 } Map;
 

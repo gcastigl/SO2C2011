@@ -17,11 +17,14 @@ int semaphore_create(int key, int semSize, int flags) {
             semid = semget(key, semSize, flags | IPC_CREAT);
         }
         if (semid == -1) {
-            log_error("Couldn't create semaphore %d, cause %d: %s\n", key, errno, strerror(errno));
+            log_error("[Semaphore %d] Couldn't create semaphore %d\n", key);
             return -1;
         }
     }
-    semaphore_setAll(semid, semSize, 0);
+    int set = semaphore_setAll(semid, semSize, 0);
+    if (set < 0) {
+    	log_error("[Semaphore %d] Could not set up semaphore %d to default value. returned %d", key, set);
+    }
     return semid;
 }
 
@@ -49,7 +52,7 @@ int semaphore_get(int key) {
             fprintf(stderr, "ENOSPC");
             break;
         }
-        log_error("Error getting semaphore");
+        log_error("Error getting semaphore %d", key);
     }
     return ret;
 }
@@ -61,6 +64,14 @@ int semaphore_setAll(int id, int semSize, int value) {
     }
     semun sem_union = {.array = semValues};
     return semctl(id, 0, SETALL, sem_union);
+}
+
+int semaphore_getAll(int semId, int semSize, unsigned short* values) {
+    for (int i = 0; i < semSize; i++) {
+    	values[i] = 111;
+    }
+  	semun semarg = {.array = values};
+	return semctl(semId, 0, GETALL, semarg);
 }
 
 int semaphore_increment(int id, int semnum) {

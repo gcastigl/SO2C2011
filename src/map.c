@@ -4,10 +4,16 @@ Map *map_initialize(Map* map, int maxCityCount) {
 	map->city = malloc(sizeof(City*) * maxCityCount);
 	map->cityCount = maxCityCount;
 	map->cityDistance = malloc(sizeof(int*) * maxCityCount);
+	map->cityRoute = malloc(sizeof(int*) * maxCityCount);
 	for (int i = 0; i < maxCityCount; ++i) {
 		map->cityDistance[i] = malloc(sizeof(int) * maxCityCount);
+		map->cityRoute[i] = malloc(sizeof(int) * maxCityCount);
 		for (int j = 0; j < maxCityCount; ++j) {
 			map->cityDistance[i][j] = 0;
+			map->cityRoute[i][j] = 0;
+			if (i == j) {
+				map->cityRoute[i][j] = -1;
+			}
 		}
 	}
 	return map;
