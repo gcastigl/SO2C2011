@@ -17,14 +17,11 @@ int semaphore_create(int key, int semSize, int flags) {
             semid = semget(key, semSize, flags | IPC_CREAT);
         }
         if (semid == -1) {
-            log_error("Couldn't create semaphore\n");
+            log_error("Couldn't create semaphore %d\n", key);
             return -1;
         }
-    } else {
-
-        semaphore_setAll(semid, semSize, 0);
     }
-
+    semaphore_setAll(semid, semSize, 0);
     return semid;
 }
 
