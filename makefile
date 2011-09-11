@@ -2,11 +2,11 @@
 BINARY := bin/tp1.out
 
 #IPC := msgQueue.c
-#IPC := fifo.c
-IPC := socket.c
+IPC := fifo.c
+#IPC := socket.c
 
 LIBS := -lm -lncurses -pthread -lpthread
-CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE -D LOG_TO_FILE
+CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -D LOG_TO_FILE
 INCLUDE_DIR = include
 # Directories belonging to the project
 PROJDIRS := src include
@@ -31,7 +31,10 @@ $(BINARY): $(OBJS)
 	gcc $(CFLAGS) $(LIBS) $(OBJS) -o $@
 
 clean:
-	-@$(RM) -rf $(OBJDIRS)
+	-@$(RM) -rf $(BINARY) $(OBJDIRS)
 
-$(OBJS): bin/%.o : src/%.c
-	gcc $(CFLAGS) $(LIBS) -I $(INCLUDE_DIR) -MMD -MP -c $< -o $@
+$(OBJS): bin/%.o : src/%.c include/%.h
+	gcc $(CFLAGS) $(LIBS) -I $(INCLUDE_DIR) -c $< -o $@
+
+%.h:
+	#do nothing. just for header change check.

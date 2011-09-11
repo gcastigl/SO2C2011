@@ -1,5 +1,5 @@
 #include "util/signalHandling.h"
-// FIXME:
+
 static int processCount;
 
 void signal_setProcessCount(int count) {
