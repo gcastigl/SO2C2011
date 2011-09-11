@@ -1,7 +1,4 @@
-#include "communicator.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <dirent.h>
+#include "ipcs/socket.h"
 
 #define IPC_SOCKET_DIR "/tmp/sosocket/"
 #define ADDR_SIZE sizeof(struct sockaddr_un)

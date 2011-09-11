@@ -1,9 +1,4 @@
-#include "communicator.h"
-#include "util/logger.h"
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <fcntl.h>
+#include "ipc/fifo.h"
 
 #define IPC_FIFO_DIR "/tmp/sofifo/"
 int getFd(int id1, int id2, int flags);
