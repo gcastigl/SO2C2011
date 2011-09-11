@@ -29,6 +29,7 @@ int main() {
  *	Parses the cities, initializes companies and starts the signal handler.
  */
 void initEnvironment() {
+    log_debug("Initializing simulation");
     signal_createHandlerThread(TRUE);
     parser_parseCitiesFile("./resources/loads/", &server, &map);
     parser_parseCompanies("./resources/loads/companies/", &server, &map);
@@ -43,11 +44,10 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
-    log_debug("Initializing simulation");
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
 	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
-		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
+		semId = semaphore_create(server.company[i]->id + 1, server.company[i]->planeCount + 1, SEM_FLAGS);
 		if (semId < 0) {
             log_error("Error creating semaphore for company %d", server.company[i]->id);
 		}

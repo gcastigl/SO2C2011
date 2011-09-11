@@ -30,10 +30,10 @@ void server_start(Server* server, Map* initialMap) {
 		    server_readMessages(server, server->company[j]->id);
 			if (IS_ACTIVE(j)) { // if company i is active
 				//Give each company one turn...
-				semaphore_increment(semId, j + 1);
+				semaphore_increment(semId, server->company[j]->id + 1);
 				semaphore_decrement(semId, 0);
-				server_readMessages(server, server->company[j]->id);
 			}
+			server_readMessages(server, server->company[j]->id);
 		}
 		currTime = time(NULL);
 		if (lastUpdate == -1 || currTime - lastUpdate > REFRESH_TIME_SECONDS) {
@@ -62,6 +62,7 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	int packageType;
 	void* package;
 	do {
+        log_debug("[Server] Reading updates...");
 		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
 			switch(packageType) {

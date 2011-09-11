@@ -7,30 +7,53 @@ int semaphore_operation(int id, int op, int semnum);
  * all places with 0.
  */
 int semaphore_create(int key, int semSize, int flags) {
-    key_t semKey = ftok(TMP_FOLDER, key);
-    if (semKey == (key_t)-1) {
-        return -1;
-    }
-    int semId;
-    /* Get semaphore ID associated with this key. */
-    if ((semId = semget(semKey, 0, 0)) == -1) {
-        /* Semaphore does not exist - Create. */
-        semId = semget(semKey, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | \
-                S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-        if (semId == -1) {
-            perror("IPC error 2: semget");
+    int semid;
+
+    semid = semget(key, semSize, flags | IPC_CREAT | IPC_EXCL);
+
+    if (semid == -1) {
+        
+        if (errno == EEXIST) {
+            semid = semget(key, semSize, flags | IPC_CREAT);
         }
+        if (semid == -1) {
+            log_error("Couldn't create semaphore\n");
+            return -1;
+        }
+    } else {
+
+        semaphore_setAll(semid, semSize, 0);
     }
-    semaphore_setAll(semId, semSize, 0);
-    return semId;
+
+    return semid;
 }
 
 int semaphore_get(int key) {
-	key_t semKey = ftok(TMP_FOLDER, key);
-	if (semKey == (key_t)-1) {
-		return -1;
-	}
-	return semget(semKey, 1, 0);
+    int ret = semget(key, 0, 0666 | IPC_CREAT);
+    if (ret < 0) {
+        switch(errno) {
+            case EACCES:
+            fprintf(stderr, "EACCES");
+            break;
+            case EEXIST:
+            fprintf(stderr, "EEXIST");
+            break;
+            case EIDRM:
+            fprintf(stderr, "EIDRM");
+            break;
+            case ENOENT:
+            fprintf(stderr, "ENOENT");
+            break;
+            case ENOMEM:
+            fprintf(stderr, "ENOMEM");
+            break;
+            case ENOSPC:
+            fprintf(stderr, "ENOSPC");
+            break;
+        }
+        perror("Error getting semaphore");
+    }
+    return ret;
 }
 
 int semaphore_setAll(int id, int semSize, int value) {
@@ -55,6 +78,10 @@ int semaphore_operation(int id, int op, int semnum) {
 	operation.sem_num = semnum;
 	operation.sem_op = op;
 	operation.sem_flg = 0;
+	int ret = semop(id, &operation, 1);
+	if (ret < 0) {
+        perror("WTF!");
+	}
 	return semop(id, &operation, 1);
 }
 
