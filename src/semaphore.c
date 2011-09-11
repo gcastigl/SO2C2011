@@ -78,10 +78,6 @@ int semaphore_operation(int id, int op, int semnum) {
 	operation.sem_num = semnum;
 	operation.sem_op = op;
 	operation.sem_flg = 0;
-	int ret = semop(id, &operation, 1);
-	if (ret < 0) {
-        perror("WTF!");
-	}
 	return semop(id, &operation, 1);
 }
 
