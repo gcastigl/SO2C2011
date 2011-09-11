@@ -32,6 +32,7 @@ void server_start(Server* server, Map* initialMap) {
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
+				server_readMessages(server, server->company[j]->id);
 			}
 		}
 		currTime = time(NULL);

@@ -49,6 +49,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 	CompanyUpdatePackage update;
 	update.companyId = company->id;
 	update.status = FALSE;
+    log_warning("Company %d died", company->id);
 	serializer_write_companyUpdate(&update, company->id + 1, SERVER_IPC_KEY);
     company_free(company, TRUE);
 }
