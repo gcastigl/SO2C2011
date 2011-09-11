@@ -43,6 +43,7 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
+    log_debug("Initializing simulation");
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
 	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
