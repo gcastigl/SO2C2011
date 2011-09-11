@@ -78,11 +78,12 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map) {
 
 void parseCityDistances(FILE *stream, Map *map) {
 	char line[BUFSIZ];
+	rewind(stream);
 	while (fgetstr(line, sizeof(line), stream)) {
 		if (isNewLine(line)) {
 			continue;
 		}
-		
+
 		int distance;
 		char cityName1[MAX_NAME_LENGTH];
 		char cityName2[MAX_NAME_LENGTH];
