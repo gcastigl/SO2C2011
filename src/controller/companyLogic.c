@@ -12,8 +12,8 @@ void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
 int getScore(Plane* plane, int cityId);
-int dfsDistanceTo(int from, int to, int* distance);
-int dfsDistance(int from, int to, int acumDistance, int *finalDistance);
+int dfsDistanceTo(int from, int to, int* nextIfNoRoute);
+int dfsDistance(int from, int to, int acumDistance, int info[2]);
 void deactivatePlane(Plane* plane);
 void createInactivePlanesBitMask();
 static Company *company;
@@ -197,33 +197,44 @@ int getScore(Plane* plane, int cityId) {
 	return score;
 }
 
-int dfsDistanceTo(int from, int to, int *distance) {
-	for(int i = 0; i < company->planeCount; i++) {
+int dfsDistanceTo(int from, int to, int* nextIfNoRoute) {
+	for(int i = 0; i < map->cityCount; i++) {
 		visitedCities[i] = 0;
 	}
-	return dfsDistance(from, to, 0, distance);;
+	int info[2] = {0,0};
+	dfsDistance(from, to, 0, info);
+	*nextIfNoRoute = info[1];
+	return info[0];
 }
 
-int dfsDistance(int from, int to, int acumDistance, int *finalDistance) {
+int dfsDistance(int from, int to, int acumDistance, int info[2]) {
 	if (from == to) {
-		*finalDistance = acumDistance;
+		info[0] = acumDistance;
+		printf("FOUND PATH: %d\n", info[0]);
 		return 1;
 	}
 	//log_debug(LOG_JP, "from: %d to %d. Distance: %d", from, to, map->cityDistance[from][to]);
 	visitedCities[from] = 1;
+	int bestDist = -1, bestNext;
 	for(int i = 0; i < map->cityCount; i++) {
 		if (map->cityDistance[from][i] == 0 || visitedCities[i] == 1) {
+			//log_debug("visitedCities[%d] = %d", i, visitedCities[i]);
 			// Only go to unvisited neighbors!
 			continue;
 		}
-		//log_debug(LOG_JP, "going %d -> %d. Acum %d", from, i, acumDistance + map->cityDistance[from][i]);
-		int next = dfsDistance(i, to, acumDistance + map->cityDistance[from][i], finalDistance);
-		if (next == 1) {
-			return acumDistance == 0 ? i : next;
+		int currDist = acumDistance + map->cityDistance[from][i];
+		printf("going %d -> %d. Acum %d\n", from, i, currDist);
+		int solutionFound = dfsDistance(i, to, currDist, info);
+		if (solutionFound == 1 && (bestDist == -1 || info[0] < bestDist)) {
+			bestDist = info[0];
+			bestNext = (acumDistance == 0) ? i : from;
+			info[1] = bestNext;
+			printf("NUEVA SOLUCION => %d\n", bestNext);
 		}
 	}
+
 	visitedCities[from] = 0;
-	return -1;
+	return 0;
 }
 
 void deactivatePlane(Plane* plane) {
