@@ -11,11 +11,12 @@ void updateDestinations();
 void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
-int getScore(Plane* plane, int cityId);
+float getScore(Plane* plane, int cityId, int* nextIfNoRoute);
 int dfsDistanceTo(int from, int to, int* nextIfNoRoute);
 int dfsDistance(int from, int to, int acumDistance, int info[2]);
 void deactivatePlane(Plane* plane);
 void createInactivePlanesBitMask();
+
 static Company *company;
 static Map *map;
 static pthread_t* planeThreadId;
@@ -23,6 +24,7 @@ static long inactivePlanesMask;
 static long inactivePlanes;
 // There should be no more than sizeof(activePlanes)*8 planes in this comapany.
 int* visitedCities;		// Used by the DFS to find path between cities.
+
 /*
  * 1 - Initialize company.
  * 2 - Update map.
@@ -39,7 +41,6 @@ void companyStart(Map* initialMap, Company* cmp) {
     createInactivePlanesBitMask();
 	do {
 		semaphore_decrement(serverSemId, company->id + 1);
-		log_debug("[Company %d] Started turn---------------->", company->id);
 		updateMap();
 		wakeUpPlanes(planesSemId);
 		waitUntilPlanesReady(planesSemId);
@@ -89,11 +90,11 @@ void updateMap() {
     void* package;
     int packageType;
     CityUpdatePackage *update;
-    do
-    {
+    do {
         package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
         if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
             update = (CityUpdatePackage*) package;
+        	log_debug("[Company %d] update= cityId = %d - temId = %d - amoount = %d\n", company->id, update->cityId, update->itemId, update->amount);
             City *city = map->city[update->cityId];
             city->itemStock[update->itemId] += update->amount;
         }
@@ -155,20 +156,23 @@ void  updateMapItems(Map* map, Plane* plane) {
 }
 
 void setNewTarget(Map* map, Plane* plane) {
-	int i;
+	int i, nextIfNoRoute;
 	int newTargetScore;
 	int bestCityScore = 0;
 	int bestCityindex = NO_TARGET;
 	for (i = 0; i < map->cityCount; i++) {
-		int routeLength = map->cityDistance[plane->cityIdFrom][i];
-		if (i == plane->cityIdFrom || routeLength == 0) {
+		if (i == plane->cityIdFrom) {
 			// Skip if current city or route does not exists
 			continue;
 		}
-		newTargetScore = getScore(plane, i);
+		newTargetScore = getScore(plane, i, &nextIfNoRoute);
 		if (bestCityScore < newTargetScore) {
 			bestCityScore = newTargetScore;
-			bestCityindex = i;
+			if (map->cityDistance[plane->cityIdFrom][i] == 0) {
+				bestCityindex = nextIfNoRoute;
+			} else {
+				bestCityindex = i;
+			}
 		}
 	}
 	if (bestCityindex == NO_TARGET) {
@@ -181,11 +185,18 @@ void setNewTarget(Map* map, Plane* plane) {
 	plane->distanceLeft = map->cityDistance[plane->cityIdFrom][bestCityindex];
 }
 
-int getScore(Plane* plane, int cityId) {
-	int score = 0;
+float getScore(Plane* plane, int cityId, int* nextIfNoRoute) {
+	float score = 0;
+	int distance = map->cityDistance[plane->cityIdFrom][cityId];
+	if (distance == 0) {
+		log_debug("DOING A DFS!! %d -> %d", plane->cityIdFrom, cityId);
+		int distance = dfsDistanceTo(plane->cityIdFrom, cityId, nextIfNoRoute);
+		log_debug("PLANE From: %d, to: %d  - distance %d", plane->cityIdFrom, *nextIfNoRoute, distance);
+	}
 	for (int i = 0; i < plane->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && map->city[cityId]->itemStock[i] < 0) {
 			score += min(plane->itemStock[i], -map->city[cityId]->itemStock[i]);
+			score /= distance;
 		}
 	}
 	// penalize score if other plane is going to that city
