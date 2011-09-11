@@ -7,6 +7,11 @@ char* _serialize_plane(Plane* plane, int* finalDim);
 char* _serialize_intVector(int* vec, int lenght, int* finalDim);
 int _serialize_buildTypedPackage(int type, char* data, int dataSize);
 
+void serializer_write_company(Company* company, int from, int to);
+void serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
+void serializer_write_companyUpdate(CompanyUpdatePackage* msg, int from, int to);
+
+
 Company* _unserialize_company(char* serializedMsg);
 Plane* _unserialize_plane(char* serializedMsg, int* charsRead);
 CompanyUpdatePackage* _unserialize_companyUpdatePackage(char *serializedMsg);
@@ -27,18 +32,16 @@ void* serializer_read(int myId, int from, int* packageType) {
 		case PACKAGE_TYPE_COMPANY_UPDATE:
 		    *packageType = type;
             return _unserialize_companyUpdatePackage(package + sizeof(int));
-			break;
 		case PACKAGE_TYPE_CITY_UPDATE:
 		    *packageType = type;
             return _unserialize_cityUpdatePackage(package + sizeof(int));
-			break;
 		default:
 			log_error("the server read an unknown package type: %d", packageType);
 	}
 	return NULL;
 }
 
-int serializer_write_company(Company* company, int from, int to) {
+void serializer_write_company(Company* company, int from, int to) {
 	int serialLength;
 	char* serializedCompany = _serialize_company(company, &serialLength);
 	int packageType = PACKAGE_TYPE_COMPANY;
@@ -48,10 +51,9 @@ int serializer_write_company(Company* company, int from, int to) {
         perror("Package is TOO big!!!");
     }
 	free(serializedCompany);
-	return ipc_write(from, to, package);
 }
 
-int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
+void serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
     int packageSize = (sizeof(int) * 3);
     int packageType = PACKAGE_TYPE_CITY_UPDATE;
     char *buffer = calloc(1, packageSize);
@@ -65,10 +67,9 @@ int serializer_write_cityUpdate(CityUpdatePackage* pkg, int from, int to) {
         perror("Package is TOO big!!!");
     }
     free(buffer);
-	return ipc_write(from, to, package);
 }
 
-int serializer_write_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
+void serializer_write_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) {
     int packageSize = sizeof(int) * 2;
     int packageType = PACKAGE_TYPE_COMPANY_UPDATE;
     char *buffer = calloc(1, packageSize);
@@ -80,7 +81,27 @@ int serializer_write_companyUpdate(CompanyUpdatePackage* pkg, int from, int to) 
         perror("Package is TOO big!!!");
     }
     free(buffer);
-	return ipc_write(from, to, package);
+}
+
+int serializer_write(void* pkg, int from, int to, int type) {
+    switch(type) {
+		case PACKAGE_TYPE_COMPANY:
+            serializer_write_company((Company*)pkg, from, to);
+            break;
+		case PACKAGE_TYPE_COMPANY_UPDATE:
+            serializer_write_companyUpdate((CompanyUpdatePackage*)pkg, from, to);
+			break;
+		case PACKAGE_TYPE_CITY_UPDATE:
+            serializer_write_cityUpdate((CityUpdatePackage*)pkg, from, to);
+			break;
+		default:
+            break;
+	}
+	int ret = ipc_write(from, to, package);
+    if (ret < 0) {
+        log_error("Error writing to ipc");
+    }
+    return ret;
 }
 
 // TODO: this is a little inneficient... it could be improved;

@@ -32,6 +32,7 @@ void server_start(Server* server, Map* initialMap) {
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
+				server_readMessages(server, server->company[j]->id);
 			}
 		}
 		currTime = time(NULL);
@@ -100,7 +101,7 @@ void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdate
     for (int i = 0; i < server->companyCount; i++) {
         company = server->company[i];
         if (company->id != fromCompanyId) {
-            serializer_write_cityUpdate(update, SERVER_IPC_KEY, company->id + 1);
+            serializer_write(update, SERVER_IPC_KEY, company->id + 1, PACKAGE_TYPE_CITY_UPDATE);
         }
     }
 }

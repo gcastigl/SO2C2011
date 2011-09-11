@@ -51,7 +51,8 @@ void companyStart(Map* initialMap, Company* cmp) {
 	CompanyUpdatePackage update;
 	update.companyId = company->id;
 	update.status = FALSE;
-	serializer_write_companyUpdate(&update, company->id + 1, SERVER_IPC_KEY);
+    log_warning("Company %d died", company->id);
+	serializer_write(&update, company->id + 1, SERVER_IPC_KEY, PACKAGE_TYPE_COMPANY_UPDATE);
     company_free(company, TRUE);
 }
 
@@ -130,7 +131,7 @@ void updateDestinations() {
  */
 void updateServer() {
     log_warning("Company %d writing update to server", company->id);
-	serializer_write_company(company, company->id + 1, SERVER_IPC_KEY);
+	serializer_write(company, company->id + 1, SERVER_IPC_KEY, PACKAGE_TYPE_COMPANY);
 }
 /*
  * Plane is supposed to just have arrived to its target.
@@ -149,7 +150,7 @@ void  updateMapItems(Map* map, Plane* plane) {
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
             update.amount = supplies;
-            serializer_write_cityUpdate(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY);
+            serializer_write(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY, PACKAGE_TYPE_CITY_UPDATE);
 		}
 	}
 }

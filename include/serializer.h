@@ -20,9 +20,6 @@ typedef struct {
 } CompanyUpdatePackage;
 
 void* serializer_read(int myId, int from, int* packageType);
-
-int serializer_write_company(Company* company, int from, int to);
-int serializer_write_cityUpdate(CityUpdatePackage* msg, int from, int to);
-int serializer_write_companyUpdate(CompanyUpdatePackage* msg, int from, int to);
+int serializer_write(void* pkg, int from, int to, int type);
 
 #endif
