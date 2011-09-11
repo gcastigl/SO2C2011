@@ -1,34 +1,32 @@
 5
 
-Rosario
-Aspirina 100
-Ibuprofeno 50
+XXX
+A 100
+B 100
+C 100
 
-Cordoba
-Paracetamol 200
-Aspirina 50
-Ibuprofeno 100
+YYY
+A 0
+B 0
+C 0
 
-BuenosAires
-Paracetamol 100
-Aspirina 100
-Ibuprofeno 100
+ZZZ
+A 0
+B 0
+C 0
 
-Parana
-Aspirina 300
+WWW
+A 0
+B 0
+C 0
 
-SantaFe
-Ibuprofeno 250
-Paracetamol 50
+FFF
+A 100
+B 100
+B 100
 
-Rosario Cordoba 10
-Rosario BuenosAires 10
-Rosario SantaFe 15
-Rosario Parana 20
-
-Cordoba BuenosAires 15
-Cordoba SantaFe 10
-
-BuenosAires Parana 20
-
-Parana SantaFe 10
+XXX YYY 10
+XXX ZZZ 10
+YYY WWW 9
+ZZZ WWW 12
+FFF WWW 20
