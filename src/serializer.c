@@ -19,7 +19,6 @@ void* serializer_read(int myId, int from, int* packageType) {
 		return NULL;
 	}
 	int type = ((int*)package)[0]; // The fist int marks the package type
-	log_debug(LOG_JP, "[Serializer] package type %d was read", type);
 	switch(type) {
 		case PACKAGE_TYPE_COMPANY:
 			*packageType = type;
@@ -144,9 +143,6 @@ Company* _unserialize_company(char* serializedMsg) {
 	memcpy(&company->id, serializedMsg, sizeof(int)); offset += sizeof(int);
 	memcpy(&company->name, serializedMsg + offset, MAX_NAME_LENGTH); offset += MAX_NAME_LENGTH;
 	memcpy(&company->planeCount, serializedMsg + offset, sizeof(int)); offset += sizeof(int);
-	log_debug(10, "company id = %d", company->id);
-	log_debug(10, "compan name = %s", company->name);
-	log_debug(10, "compay Planes = %d", company->planeCount);
 	company->plane = malloc(sizeof(Plane) * company->planeCount);
 	for(int i = 0; i < company->planeCount; i++) {
 		int charsRead;

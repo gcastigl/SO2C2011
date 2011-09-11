@@ -5,7 +5,7 @@
 #include <sys/sem.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
-
+#include <fcntl.h>
 
 //#ifdef LINUX
 typedef union {

@@ -1,15 +1,5 @@
 #include "view/mapview.h"
 
-void view_start() {
-	initscr();
-	start_color();
-	init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(2, COLOR_GREEN, COLOR_BLACK);
-	init_pair(5, COLOR_RED, COLOR_BLACK);
-	init_pair(9, COLOR_CYAN, COLOR_BLACK);
-	refresh();
-}
-
 void printTurn(Server *server) {
 	wclear(stdscr);
 	char *title = "Pharma-Plane Simulation 1.0";
@@ -55,7 +45,25 @@ void printCompanies(Server *server, Map *map) {
 	}
 }
 
+void view_start() {
+#ifdef DEBUG_MODE
+	printf("view-start\n");
+	return;
+#endif
+	initscr();
+	start_color();
+	init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(5, COLOR_RED, COLOR_BLACK);
+	init_pair(9, COLOR_CYAN, COLOR_BLACK);
+	refresh();
+}
+
 void view_renderMap(Server *server, Map *map) {
+#ifdef DEBUG_MODE
+	printf("view-render turn: %d\n", server->turn);
+	return;
+#endif
 	printTurn(server);
 	printCities(server, map);
 	printCompanies(server, map);
@@ -67,6 +75,10 @@ void view_renderMap(Server *server, Map *map) {
 }
 
 void view_end() {
+#ifdef DEBUG_MODE
+	printf("view-end\n");
+	return;
+#endif
 	attron(COLOR_PAIR(9));
 	mvprintw(LINES-2, COLS/2, "SIMULATION DONE. Press Any Key To Exit");
 	attroff(COLOR_PAIR(9));

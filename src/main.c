@@ -18,7 +18,6 @@ static Map map;
  * 5 - EndSimulation
  */
 int main() {
-	log_debug(10, "Starting simulation...\n");
     initEnvironment();
     initializeServer();
     initializeCompanies();
@@ -37,7 +36,6 @@ void initEnvironment() {
     signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
     view_start();
-    log_debug(10, "[Main] Cities & companies parsed correctly");
 }
 
 /*
@@ -45,14 +43,15 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
+    log_debug("Initializing simulation");
 	int semId = semaphore_create(SERVER_SEM_KEY, server.companyCount + 1, SEM_FLAGS);
-	ipc_close(SERVER_IPC_KEY);
-	log_debug(10, "[Main] Initialized semaphore for server (key = %d)", semId);
+	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
-	    
 		semId = semaphore_create(server.company[i]->id, server.company[i]->planeCount + 1, SEM_FLAGS);
-		ipc_close(server.company[i]->id + 1);
-		log_debug(10, "[Main] Initialized semaphore for company %d (key = %d)", server.company[i]->id, semId);
+		if (semId < 0) {
+            log_error("Error creating semaphore for company %d", server.company[i]->id);
+		}
+		ipc_init(server.company[i]->id + 1, 0);
 	}
 }
 
@@ -62,8 +61,8 @@ void initializeCompanies() {
         switch((pId = fork())) {
             case 0:
                 signal_createHandlerThread(FALSE);
-                ipc_close(server.company[i]->id + 1);
                 companyStart(&map, server.company[i]);
+                exit(0);
                 break;
             case ERROR:
                 fatal("Fork Error");
@@ -78,14 +77,12 @@ void initializeCompanies() {
     	// Wait for all companies to initialize...
     	semaphore_decrement(serverSemId, 0);
     }
-    log_debug(10, "[Main] All companies were created correctly");
 }
 
 void endSimulation() {
     for (int i = 0; i < processCount; i++) {
         kill(childPid[i], SIGUSR1);
     }
-    log_debug(10, "Simulation Done!");
     logger_end();
     view_end();
     exit(0);

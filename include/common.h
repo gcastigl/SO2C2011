@@ -12,6 +12,8 @@
 
 extern int errno;
 
+//#define DEBUG_MODE 1;
+
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
 #define TMP_FOLDER	"/tmp/"
