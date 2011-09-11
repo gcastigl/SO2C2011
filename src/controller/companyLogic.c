@@ -210,7 +210,7 @@ int dfsDistanceTo(int from, int to, int* nextIfNoRoute) {
 int dfsDistance(int from, int to, int acumDistance, int info[2]) {
 	if (from == to) {
 		info[0] = acumDistance;
-		printf("FOUND PATH: %d\n", info[0]);
+		//printf("FOUND PATH: %d\n", info[0]);
 		return 1;
 	}
 	//log_debug(LOG_JP, "from: %d to %d. Distance: %d", from, to, map->cityDistance[from][to]);
@@ -223,13 +223,13 @@ int dfsDistance(int from, int to, int acumDistance, int info[2]) {
 			continue;
 		}
 		int currDist = acumDistance + map->cityDistance[from][i];
-		printf("going %d -> %d. Acum %d\n", from, i, currDist);
+		//printf("going %d -> %d. Acum %d\n", from, i, currDist);
 		int solutionFound = dfsDistance(i, to, currDist, info);
 		if (solutionFound == 1 && (bestDist == -1 || info[0] < bestDist)) {
 			bestDist = info[0];
 			bestNext = (acumDistance == 0) ? i : from;
 			info[1] = bestNext;
-			printf("NUEVA SOLUCION => %d\n", bestNext);
+			//printf("NUEVA SOLUCION => %d\n", bestNext);
 		}
 	}
 

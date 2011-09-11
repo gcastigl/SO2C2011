@@ -4,6 +4,8 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map);
 void parseCityDistances(FILE *stream, Map *map);
 Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int companyId);
 Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, Map* map);
+int fillRow(Map* map, int row, int col);
+void fillRoutes(Map* map);
 
 char *fgetstr(char *string, int n, FILE *stream);
 int parseInt(FILE *stream);
@@ -83,7 +85,6 @@ void parseCityDistances(FILE *stream, Map *map) {
 		if (isNewLine(line)) {
 			continue;
 		}
-
 		int distance;
 		char cityName1[MAX_NAME_LENGTH];
 		char cityName2[MAX_NAME_LENGTH];
@@ -93,8 +94,44 @@ void parseCityDistances(FILE *stream, Map *map) {
 			// Routes are always in both directions
 			map->cityDistance[c1][c2] = distance;
 			map->cityDistance[c2][c1] = distance;
+			map->cityRoute[c1][c2] = c2;
+			map->cityRoute[c2][c1] = c1;
 		}
 	}
+	//fillRoutes(map);
+}
+
+void fillRoutes(Map* map) {
+	int filled = 0;
+	do {
+		filled= 0;
+		for (int i = 0; i < map->cityCount; ++i) {
+			for (int j = 0; j < map->cityCount; ++j) {
+				if (map->cityRoute[i][j] == 0) {
+					fillRow(map, i, j);
+				} else {
+					filled++;
+				}
+			}
+		}
+		printMatrix(map->cityRoute, map->cityCount, map->cityCount);
+	} while(filled < map->cityCount * map->cityCount);
+	printMatrix(map->cityRoute, map->cityCount, map->cityCount);
+	printMatrix(map->cityDistance, map->cityCount, map->cityCount);
+}
+
+int fillRow(Map* map, int row, int col) {
+	int change = 0;
+	for (int i = 0; i < map->cityCount; ++i) {
+		int availableRoute = map->cityRoute[row][i];
+		if (availableRoute > 0) {
+			if (map->cityRoute[availableRoute][col] > 0) {
+				map->cityRoute[row][col] = availableRoute;
+				change++;
+			}
+		}
+	}
+	return change;
 }
 
 // ======================================
