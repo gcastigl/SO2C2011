@@ -8,7 +8,7 @@ int semaphore_operation(int id, int op, int semnum);
  */
 int semaphore_create(int key, int semSize, int flags) {
     int semid;
-
+    key += MAGIC_NUMBER;
     semid = semget(key, semSize, flags | IPC_CREAT | IPC_EXCL);
 
     if (semid == -1) {
@@ -17,7 +17,7 @@ int semaphore_create(int key, int semSize, int flags) {
             semid = semget(key, semSize, flags | IPC_CREAT);
         }
         if (semid == -1) {
-            log_error("Couldn't create semaphore %d\n", key);
+            log_error("Couldn't create semaphore %d, cause %d: %s\n", key, errno, strerror(errno));
             return -1;
         }
     }
@@ -26,6 +26,7 @@ int semaphore_create(int key, int semSize, int flags) {
 }
 
 int semaphore_get(int key) {
+    key += MAGIC_NUMBER;
     int ret = semget(key, 0, 0666 | IPC_CREAT);
     if (ret < 0) {
         switch(errno) {
@@ -48,7 +49,7 @@ int semaphore_get(int key) {
             fprintf(stderr, "ENOSPC");
             break;
         }
-        perror("Error getting semaphore");
+        log_error("Error getting semaphore");
     }
     return ret;
 }
