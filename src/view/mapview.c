@@ -13,6 +13,7 @@ void printTurn(Server *server) {
 }
 
 void printCities(Server *server, Map *map) {
+	wclear(city_win);
 	int x = 2, y = 2;
 	for (int i = 0; i < map->cityCount; ++i) {
 		City *city = map->city[i];
@@ -26,6 +27,7 @@ void printCities(Server *server, Map *map) {
 }
 
 void printCompanies(Server *server, Map *map) {
+	wclear(comp_win);
 	int x = 2, y = 2;
 	for (int i = 0; i < server->companyCount; ++i) {
 		Company *company = server->company[i];
