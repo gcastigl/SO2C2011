@@ -32,7 +32,6 @@ void server_start(Server* server, Map* initialMap) {
 				//Give each company one turn...
 				semaphore_increment(semId, j + 1);
 				semaphore_decrement(semId, 0);
-				server_readMessages(server, server->company[j]->id);
 			}
 		}
 		currTime = time(NULL);
@@ -68,15 +67,18 @@ void server_readMessages(Server* server, int fromCompanyId) {
 				case PACKAGE_TYPE_COMPANY:
 					free(server->company[fromCompanyId]); // Memory still allocated for planes
 					server->company[fromCompanyId] = (Company*) package;
+                    log_debug("Company %d structure update", server->company[fromCompanyId]->id);
 					break;
 				case PACKAGE_TYPE_COMPANY_UPDATE: // Turn off bit i from activeCompanies
 					companyUpdate = (CompanyUpdatePackage*) package;
+                    log_debug("Company %d update", companyUpdate->companyId);
 					if (companyUpdate->status == OFF) {
 					    activeCompanies &= ~(1 << companyUpdate->companyId);
 					}
 					break;
 				case PACKAGE_TYPE_CITY_UPDATE:
                     cityUpdate = (CityUpdatePackage*) package;
+                    log_debug("City Update");
                     map_update(serverMap, cityUpdate);
                     server_broadcastUpdateMessage(server, fromCompanyId, cityUpdate);
 					break;
