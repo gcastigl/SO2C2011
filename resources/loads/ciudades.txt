@@ -6,8 +6,8 @@ Ibuprofeno 50
 
 Cordoba
 Paracetamol 200
-Aspirina 50
-Ibuprofeno 100
+Aspirina 500
+Ibuprofeno 1000
 
 BuenosAires
 Paracetamol 100
@@ -19,7 +19,7 @@ Aspirina 300
 
 SantaFe
 Ibuprofeno 250
-Paracetamol 50
+Paracetamol 100
 
 Rosario Cordoba 10
 Rosario BuenosAires 15
