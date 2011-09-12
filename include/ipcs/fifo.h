@@ -1,6 +1,7 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
+#include "common.h"
 #include "communicator.h"
 #include "util/logger.h"
 #include <sys/stat.h>

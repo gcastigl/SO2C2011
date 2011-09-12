@@ -23,7 +23,6 @@ int ipc_read(int myId, int fromId, char *msg) {
 }
 
 int ipc_close(int id) {
-	DIR *dp;
 	char *fileName = malloc(strlen(IPC_FIFO_DIR) + 50 * sizeof(char));
 	sprintf(fileName, "%s%d_%d", IPC_FIFO_DIR, serverId, id);
 	unlink(fileName);
