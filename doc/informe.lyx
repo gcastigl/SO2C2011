@@ -60,10 +60,50 @@
 \begin_body
 
 \begin_layout Title
+Filesystems, IPCs y Servidores Concurrentes 
+\end_layout
+
+\begin_layout Section*
 TP especial SO - 1
 \end_layout
 
-\begin_layout Part
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Integrantes:
+\end_layout
+
+\begin_layout Enumerate
+Castiglione, Gonzalo - 
+\begin_inset Formula $49138$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Gomez, Horacio - 
+\begin_inset Formula $50825$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Orsay, Juan Pablo - 
+\begin_inset Formula $49373$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Resumen
 \end_layout
 
@@ -80,37 +120,58 @@ Para este trabajo se pedia la realizacion de una simulacion de empresas,
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Section
 Modelo
 \end_layout
 
 \begin_layout Standard
-Uno de los problemas mas dificiles que constantemente se presentaba durante
- el desarrollo del trabajo era sobre la dura eleccion entre tiempo vs memoria.
- Si se debia hacer cierto calculo al momento de neceitarlo o bien guardarlo
- y simplemente actualizarlo cunado se necesite.
- (listar algunos ejemplos y soluicones como ser el parseo con memoria estatica,
- pre calculo de disancias antes de la simulacion...))
+Para llegar a la estructura de la simulacion actual, primero se estudio
+ la diferencia entre procesos y threads.
+ Los threads presentaban la ventaja de ser 
+\begin_inset Formula $light$
+\end_inset
+
+ 
+\begin_inset Formula $weight$
+\end_inset
+
+ y que no necesitan comunicacion mediante un 
+\begin_inset Formula $IPC$
+\end_inset
+
+ para pasarse infromacion dado que corren en la misma zona de codigo.
+ Mientras que los procesos realizan una copia de todas sus variables cuando
+ son creados y corren indemendientes de los cambios que el proceso padre
+ haga.
+ Teniendo estos detalles en cuenta, se decidio que cada 
+\begin_inset Formula $Compania$
+\end_inset
+
+ debia ser un proceso, ya que no tiene porque compartir su informacion con
+ nadie mas.
+ Y, dado que los aviones comparten todo con su empresa, nos resulto conveniente
+ optar por 
+\begin_inset Formula $Threads$
+\end_inset
+
+ para estos.
 \end_layout
 
 \begin_layout Standard
-Otro problema que se presento era sobre que tipo de mesnajes y como debian
- comuincarse los procesos dado que la comunicacion entre procesos es mucho
- mas costosa que la comunicacion entre threads, pero al usar procesos se
- puede aprovechar de tener espacios de memorias separadas.
- Y es por esto es que nuestro dieño utiliza a las 
-\begin_inset Formula $Companias$
+Al tomar este tipo de estructura, surgio el problema sobre tipos de mensajes
+ entre estos procesos y cual era la forma optima de comunicarlos dado que
+ el pasaje de informacion es mucho mas complejo que la comunicacion entre
+ threads, ya que requiere tanto sincronizacion como una zona de memoria
+ ya preparada para la lectura y escritura.
+ 
+\begin_inset Newline newline
 \end_inset
 
- como procesos y cada una tiene 
-\begin_inset Formula $n$
-\end_inset
 
- threads (una por cada avion).
 \end_layout
 
 \begin_layout Standard
-Tomada esta decision, el problema se presentaba ahora en :
+Tomada esta decision de diseño, se debia resolver ademas el problema de:
 \end_layout
 
 \begin_layout Enumerate
@@ -118,32 +179,31 @@ Mostrar en pantalla los cambios de cada
 \begin_inset Formula $Compania$
 \end_inset
 
-
+ luego de cada turno.
 \end_layout
 
 \begin_layout Enumerate
-Reflejar en las demas companias el cambio producido por la compaia 
+Reflejar en las demas companias el cambio producidos en el mapa por la compaia
+ 
 \begin_inset Formula $X$
 \end_inset
 
- en la compania 
+ antes que la compania 
 \begin_inset Formula $Y$
 \end_inset
 
- antes que esta otra intente hacer un cambio sin haber recibido esta notificacio
-n.
+ intente hacer un cambio sin haber recibido esta notificacion.
 \begin_inset Newline newline
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-La primer solucion era la de crear un zona de memoria compartida la que
- involucraria tener en cuenta los siguientes aspectos:
+\begin_layout Standard
+La primer solucion propuesta fue la de crear un zona de memoria compartida
+ la que involucraria tener en cuenta los siguientes aspectos:
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 Todo aquel proceso que quiera modificar esta zona de memoria, tendria que
  hacerlo siempre bloqueando previamente un mutex (o semaforo en su defecto)
@@ -160,29 +220,31 @@ esperar
  El problema con esta implementacion es que si se hubiese implementado,
  no se se hubiese respetando la consigna de usar los diferentes tipos de
  ipcs para la comunicacion entre procesos.
+ Sin embargo es una solucion agradable ya que evitaba el tener que andar
+ notificando a otras companias mediante paquetes especiales sobre cambios
+ realizados.
 \end_layout
 
-\end_deeper
-\begin_layout Itemize
-La segunda solucion involucaraba un proceso 
+\begin_layout Standard
+La segunda solucion propuesta involucaraba un proceso 
 \begin_inset Formula $servidor$
 \end_inset
 
  que para la administracion de turnos y recursos para cada compania.
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 Este presentaba la ventaja de tener una implementacion muy sencilla ya que
  solamente se ocuparia de levantar semaforos y bajarlos para que las companias
- toquen el mapa sincronizadamente y ademas asegurar que ninguna valla a
- jugar dos veces seguidas (luego veremos que, como en toda buena idea, trajo
- sus buenas complicaciones).
+ toquen el mapa en forma sincronizad y ademas asegurar que ninguna valla
+ a jugar dos veces seguidas (luego veremos que, como en toda buena idea,
+ trajo sus complicaciones).
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
-A su vez se podia saber cuando todas las companias habian hecho una jugada,
- por lo que actualizar la UI por turno era muy sencilla.
+A su vez se podia saber cuando todas las companias habian terminado un turno;
+ por lo que actualizar la UI por turno resultaria muy sencillo.
 \end_layout
 
 \begin_layout Itemize
@@ -196,13 +258,14 @@ La unica contra que encontramos es que la comunicacion con las companias
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\begin_inset space \hspace{}
+\length 1cm
+\end_inset
 
-\end_layout
 
-\begin_layout Plain Layout
 \begin_inset Graphics
 	filename Tp Diseno.png
 	lyxscale 50
@@ -217,7 +280,7 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Estructura de procesos activos de la simulacion
+Estructura de procesos y threads de la simulacion
 \end_layout
 
 \end_inset
@@ -235,49 +298,112 @@ Estructura de procesos activos de la simulacion
 \end_layout
 
 \begin_layout Standard
-Uno de los primeros (y mas grandes) problemas que que se presentaron al
- aplicar este diseño era de como reflejar los cambios hechos por una compania
- en todas las demas.
+Uno de los primeros (y mas grandes) problemas que se presentaron al aplicar
+ este diseño era de como reflejar los cambios hechos por una compania en
+ todas las demas.
  Inicialmente, se decidio que el servidor tendria una (y la unica) instancia
  del mapa y que se 
-\begin_inset Formula $pasaria$
-\end_inset
-
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+pasaria
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
  al principio del turno a la compania, esta lo modificaria y luego se lo
  
-\begin_inset Formula $pasaria$
-\end_inset
-
- de vuelta al servidor con los cambios.
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+pasaria
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ nuevamente al servidor con los cambios.
  Y asi para cada compania.
- Pero esto no solucionaba el problema, ya que ademas se debia mostrar por
- pantalla (en forma ordenada) toda la informacion de la empresa; por lo
- que ademas de tener que pasar el mapa dos veces, se tendria que sumar toda
- la compania, lo cual implicaria muchisimo procesamiento y uso de memoria!.
+ 
 \end_layout
 
 \begin_layout Standard
-Lo que nos llevo a proponer una segunda solucion; esta implicaba que tanto
- el servidor como las companias tendrian una instancia del mapa (inicial)
- y este se iria actualizando mediante paquetes 
+Pero esta solucion era muy costosa, ya que ademas de tener que mandar el
+ mapa, se debia mostrar por pantalla (en forma ordenada) toda la informacion
+ de la empresa; por lo que ademas de tener que pasar el mapa dos veces,
+ se tendria que sumar toda la compania, lo cual implicaria muchisimo procesamien
+to y uso de memoria que podria ser ahorrado!.
+\end_layout
+
+\begin_layout Standard
+Lo que nos llevo a proponer una segunda solucion alternativa, la cual implicaba
+ que tanto el servidor como las companias tendrian una instancia del mapa(inicia
+l) y este se iria actualizando mediante paquetes 
 \begin_inset Formula $“updates”$
 \end_inset
 
- que se enviarian desde el servidor.
- Esto presenta la ventaja que la comunicacion entre los procesos se reduciria
+ que se enviarian desde el servidor luego de cada turno.
+ 
+\end_layout
+
+\begin_layout Standard
+Esto presenta la ventaja que la comunicacion entre los procesos se reduciria
  a unicamente sus cambios! pero la contra esta en que requeria de una clase
  
 \begin_inset Formula $serializer$
 \end_inset
 
- muchisimo mas completa.
- Sin embargo, luego de algunas pruebas y de discutirlo se llego a que se
- esta era la mejor implementacion.
- (MOSTRAR ALGUNOS RESULTADOS AQUII).
+ muchisimo mas completa que la que se tenia en mente.
+ Sin embargo, luego de discutirlo se llego a que se esta era la mejor implementa
+cion 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+No se presentan calculos de cuanto mas se mejora dado que es muy facil notar
+ la cantidad de infromacion que se ahorra por cada envio de informacion
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Por lo que con esta eleccion, la logica del 
+Teniendo en cuenta todas estas consideraciones, la logica del 
 \begin_inset Formula $servidor$
 \end_inset
 
@@ -294,7 +420,11 @@ Se le da un turno.
 \end_layout
 
 \begin_layout LyX-Code
-Se hace un broadcasting de los updates enviados por el a 
+Se espera a que finalize su turno.
+\end_layout
+
+\begin_layout LyX-Code
+Se hace un broadcasting de los updates leidos a 
 \end_layout
 
 \begin_layout LyX-Code
@@ -302,6 +432,14 @@ Se hace un broadcasting de los updates enviados por el a
 \end_layout
 
 \end_deeper
+\begin_layout LyX-Code
+Actualizar UI.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 De esta manera, resulta facil imaginar la logica de una 
 \begin_inset Formula $compania$
@@ -339,9 +477,14 @@ A continuacion de presenta un esquema de como se penso a una compania:
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\begin_inset space \hspace{}
+\length 1cm
+\end_inset
+
+
 \begin_inset Graphics
 	filename airlineModl.gif
 	lyxscale 50
@@ -370,13 +513,13 @@ Esquma de una compania
 \end_layout
 
 \begin_layout Standard
-En la figura mostrada, cada 
+Tal como se explico anteriormente, cada 
 \begin_inset Formula $Thread$
 \end_inset
 
  representa a un avion activo, en donde este tiene su memoria propia (items,
  posicion, target, ...), una memoria compartida (el mapa) y un comportamiento.
- Cuando ningun avion tiene movimientos posibles, se mata al proceso, y este
+ Cuando un avion no tiene movimientos posibles, se mata al proceso, y este
  ciclo sigue hasta que ningun avion tenga movimientos disponibles.
  En cuyo caso se envia un paquete de tipo 
 \begin_inset Formula $company$
@@ -406,7 +549,7 @@ Al principio se comenzo experimentando comunicacion entre procesos con pipes.
  Luego, a medida que el programa iba tomando forma y sentido, se comenzo
  a mejorarla y se implemento Fifos, MsgQueues, Sockets y Shared Memory
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Debido a falta de tiempo y experiencia con manejo de memoria compartida
@@ -424,8 +567,114 @@ Uno de los mayores inconvenientes al momento de implementacion de los IPCS
  era la sincronizacion, ya que, por mas que se hallan probado en test antes
  de ser montados al codigo de la simuacion, se tenia el problema que cuando
  no se leia en forma ordenada, este decia que no habia mensajes(o bien entregaba
- mensajes vacios) y cuandos se espereana que los hubiera, lo que llevaba
- a mucha perdida de tiempo en debugeo de codigo.
+ mensajes vacios) cuando se espereaba que los hubiera, lo que llevaba a
+ mucha perdida de tiempo en debugeo de codigo.
+\end_layout
+
+\begin_layout Standard
+Una de las complicaciones que tuvimos con los IPCs era el tamaño de la infromaci
+on a escribir, dado que para algunos IPCs era mas facil trabajar con tamaños
+ fijos y con otros daba igual, se opto por paquetes de tamaño fijo.
+ Esto nos facilito mucho la programacion de la interfaz de comunicacion,
+ pero tiene el problema importante que si se quiere serializar una gran
+ compania con muchos aviones e items, puede resultar que este string serializado
+ resultante sea mas largo que el tamaño default.
+ Lo que provocaria que el paquete no se mande y quede inconsistente el resultado
+ de la simulacion.
+ 
+\end_layout
+
+\begin_layout Standard
+De todas maneras, si esto llegase a suceder, un mensade de error se mostrara
+ en el 
+\begin_inset Formula $log.txt$
+\end_inset
+
+.
+ En cuyo caso lo unico que se tiene que arreglar es el 
+\begin_inset Formula $DATA$
+\end_inset
+
+_
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $SIZE$
+\end_inset
+
+ definido en 
+\begin_inset Formula $communicator.h$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Otro inconventiente que trae esta decicion que tamaño fijo para mensajes
+ es el desperdicio de memoria innecesario por ejemplo para mandar un pequeño
+ update.
+ Sin embargo, no es un gran problema, si el dia de mañana se necesitase
+ que esto no sea asi, bastara con simplemente cambiar la implementacion
+ del IPC correspondiente (no afectaria de ninguna manera a la simulacion).
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Shared Memory
+\end_layout
+
+\begin_layout Standard
+La implementacion que actualmente se tiene para shared memory, es aprovechar
+ el hecho que los tamaños de los mensajes son fijos y reservar en memoria
+ bloques con un tamaño de 
+\begin_inset Formula $M$
+\end_inset
+
+ mensajes por cada proceso que quiera escribir.
+ Es decir, dividimos un pedazo fijo de memoria en 
+\begin_inset Formula $NxN$
+\end_inset
+
+ lugares, en donde 
+\begin_inset Formula $N$
+\end_inset
+
+ esta dado por la cantidad de luagres especificados en 
+\begin_inset Formula $ipc$
+\end_inset
+
+_
+\begin_inset Formula $init$
+\end_inset
+
+.
+ Esta implementacion ofrece la ventaja de ser muy eficiente en cuando acceso
+ a un mensaje, ya que tiene una complejiad 
+\begin_inset Formula $o(1)$
+\end_inset
+
+, pero la gran contra es que es mucha la memoria que necesita tener reservada.
+\end_layout
+
+\begin_layout Standard
+Dentro de cada lugar de esta matriz, se tiene un array con los 
+\begin_inset Formula $M$
+\end_inset
+
+ luagres ya mencionados y adelante de todo un char indicando cuantos se
+ tienen en la lista.
 \end_layout
 
 \begin_layout Standard
@@ -435,13 +684,32 @@ Uno de los mayores inconvenientes al momento de implementacion de los IPCS
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Section
 Consideraciones de tiempo vs memoria
 \end_layout
 
 \begin_layout Standard
+Uno de los problemas mas dificiles que constantemente se presentaba durante
+ el desarrollo del trabajo era sobre la dura eleccion entre 
+\begin_inset Formula $tiempo$
+\end_inset
+
+ 
+\begin_inset Formula $vs$
+\end_inset
+
+ 
+\begin_inset Formula $memoria$
+\end_inset
+
+.
+ Si se debia hacer cierto calculo al momento de neceitarlo o bien guardarlo
+ previemente y simplemente actualizarlo cuando sea necsario.
+\end_layout
+
+\begin_layout Standard
 Al principio, cada vez que un avion llegaba a una ciudad, se realizaba un
- DFS por cada ciudad para encontrar el camino a las ciudad mas corta.
+ DFS para encontrar el camino a las ciudad mas corta que sea abastecible.
  El problema es que este mismo DFS se estaba realizando por cada avion,
  por cada compania en cada turno.
  Lo que nos parecia que se realizaba el mismo calculo innecesariemente muchisima
@@ -461,7 +729,19 @@ s veces.
 \end_inset
 
 ), esta fue una de las luchas mencionadas anteriormente, sobre la ultiliacion
- de memoria espacial o de tiempo.
+ de memoria espacial o de tiempo
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Esta razon de necesitar implementar un DFS surgio en casos cuando solo se
+ podia abastecer a uan ciudad que no era adyacente a la posicion actual
+ del avion.
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -503,14 +783,42 @@ Otro cambio de la misma indole que se propuso durante la realizcion del
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Section
+Otras problemas
+\end_layout
+
+\begin_layout Standard
+Un problema al que todavia no pudimos encontrar explicacion es porque los
+ semaforos de System V a veces no se inicializaban para ciertos valores
+ de claves.
+ Se intento eliminarlos, cambiar los flags, reiniciar la comutadora pero
+ sin suerte! Mas raro resultaba aun que al sumarle un magic number al key,
+ estos se creban y arrancaban correctamente.
+ Por lo que nuestra unica alternativa fue la de pasar a semaforos de Posix.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Concusiones
 \end_layout
 
 \begin_layout Standard
 Luego de realizado este trabajo practico, se aprendio sobre la potencia
- que se puede tener al realizar programas que sean capaces de dividir sus
- tareas en proecsos concretos y por sobre todo, al mantenerlos sincronizados.
+ a la que se puede llevar un programa al hacerlos que sean capaces de dividir
+ sus tareas en proecsos concretos y por sobre todo, al mantenerlos sincronizados.
  
 \end_layout
 
