@@ -68,8 +68,9 @@ Resumen
 \end_layout
 
 \begin_layout Standard
-Para este trabajo se pedia la realizacion de una simulacion de empresas
- que bleh...
+Para este trabajo se pedia la realizacion de una simulacion de empresas,
+ la cuales tienenaviones a su mando, encanrgados de distribuir sus medicamentos
+ por una seria de ciudades con conecciones entre ellas limitadas.
 \end_layout
 
 \begin_layout Standard
@@ -105,14 +106,14 @@ Otro problema que se presento era sobre que tipo de mesnajes y como debian
 \begin_inset Formula $n$
 \end_inset
 
- threads (1 por cada avion).
+ threads (una por cada avion).
 \end_layout
 
 \begin_layout Standard
 Tomada esta decision, el problema se presentaba ahora en :
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Mostrar en pantalla los cambios de cada 
 \begin_inset Formula $Compania$
 \end_inset
@@ -120,7 +121,7 @@ Mostrar en pantalla los cambios de cada
 
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Reflejar en las demas companias el cambio producido por la compaia 
 \begin_inset Formula $X$
 \end_inset
@@ -190,6 +191,49 @@ La unica contra que encontramos es que la comunicacion con las companias
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Tp Diseno.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Estructura de procesos activos de la simulacion
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Uno de los primeros (y mas grandes) problemas que que se presentaron al
  aplicar este diseño era de como reflejar los cambios hechos por una compania
@@ -408,7 +452,11 @@ s veces.
 \end_inset
 
  (para cualquier ciudad) y a que distancia se encuentra.
- Esto redciria la llamda al DFS a desrefenciar una matriz (
+ Esto reduciria la llamda al 
+\begin_inset Formula $DFS$
+\end_inset
+
+ a desrefenciar una matriz (
 \begin_inset Formula $o(1)$
 \end_inset
 
@@ -446,6 +494,13 @@ Otro cambio de la misma indole que se propuso durante la realizcion del
 .
  Sin embargo, nuvamente, agrega une extra en la cantidad de memoria necesaria
  disponible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
