@@ -51,6 +51,9 @@ void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
 }
 
 void print_trace(int logLevel) {
+	#ifndef DEBUG_MODE
+		return;
+	#endif
 	if (logLevel < L_ERROR){
 		return;
 	}
@@ -60,6 +63,7 @@ void print_trace(int logLevel) {
 	size_t i;
 	size = backtrace(array, 10);
 	strings = backtrace_symbols(array, size);
+	fprintf(logFile, "Stack: [errno %d: %s]", errno, strerror(errno));
 	for (i = 0; i < size; i++)
 		fprintf(logFile, "\t%s\n", strings[i]);
 	free(strings);
