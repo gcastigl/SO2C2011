@@ -2,12 +2,12 @@
 BINARY := bin/tp1.out
 
 #IPC := msgQueue.c
-#IPC := fifo.c
-IPC := socket.c
+IPC := fifo.c
+#IPC := socket.c
 #IPC := sharedMemory.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude
-CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -DLOG_TO_FILE
+CFLAGS := -Wall -std=c99 -D_XOPEN_SOURCE=600 -DLOG_TO_FILE
 # Directories belonging to the project
 PROJDIRS := src include
 # All source files of the project
@@ -23,7 +23,7 @@ C_INCLUDE_PATH = include
 
 all: $(OBJDIRS) $(BINARY)
 
-debug: override CFLAGS += -DDEBUG_MODE
+debug: override CFLAGS += -DDEBUG_MODE -g
 debug: all
 
 $(OBJDIRS):
