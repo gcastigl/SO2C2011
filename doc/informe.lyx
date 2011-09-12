@@ -1,0 +1,241 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+TP especial SO - 1
+\end_layout
+
+\begin_layout Part
+Resumen
+\end_layout
+
+\begin_layout Standard
+Para este trabajo se pedia la realizacion de una simulacion de empresas
+ que bleh...
+\end_layout
+
+\begin_layout Part
+Modelo
+\end_layout
+
+\begin_layout Standard
+Uno de los problemas mas dificiles que contantememte se presentaba durante
+ el desarrollo del trabajo era sobre la dura eleccion entre tiempo vs memoria.
+ Si se debia hacer cierto calculo al momento de neceitarlo o bien guardarlo
+ y simplemente actualizarlo cunado se necesite.
+ (listar algunos ejemplos y soluicones como ser el parseo con memoria estatica,
+ pre calculo de disancias antes de la simulacion...))
+\end_layout
+
+\begin_layout Standard
+Otro problema que se presento era sobre que tipo de mesnajes y como debian
+ comuincarse los procesos dado que la comunicacion entre procesos es mucho
+ mas costosa que la comunicacion entre threads, pero al usar procesos se
+ puede aprovechar de tener espacios de memorias separadas.
+ Y es por esto es que nuestro dieño utiliza a las 
+\begin_inset Formula $Companias$
+\end_inset
+
+ como procesos y cada una tiene 
+\begin_inset Formula $n$
+\end_inset
+
+ threads (1 por cada avion).
+\end_layout
+
+\begin_layout Standard
+Tomada esta decision, el problema se presentaba ahora en :
+\end_layout
+
+\begin_layout Itemize
+Mostrar en pantalla los cambios de cada 
+\begin_inset Formula $Compania$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Reflejar en las demas companias el cambio producido por la compaia 
+\begin_inset Formula $X$
+\end_inset
+
+ en la compania 
+\begin_inset Formula $Y$
+\end_inset
+
+ antes que esta otra intente hacer un cambio sin haber recibido esta notificacio
+n.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+La primer solucion era la de crear un zona de memoria compartida la que
+ involucraria tener en cuenta los siguientes aspectos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Todo aquel proceso que quiera modificar esta zona de memoria, tendria que
+ hacerlo siempre bloqueando previamente un mutex (o semaforo en su defecto)
+ y luego de realizados los cambios liberar el mutex.
+ Lo cual obligaria a los demas procesos a 
+\begin_inset Quotes eld
+\end_inset
+
+esperar
+\begin_inset Quotes erd
+\end_inset
+
+ en una cola a acceder a esta memoria.
+ El problema con esta implementacion es que si se hubiese implementado,
+ no se se hubiese respetando la consigna de usar los diferentes tipos de
+ ipcs para la comunicacion entre procesos.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+La segunda solucion involucaraba un proceso 
+\begin_inset Formula $servidor$
+\end_inset
+
+ que para la administracion de turnos y recursos para cada compania.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Este presentaba la ventaja de tener una implementacion muy sencilla ya que
+ solamente se ocuparia de levantar semaforos y bajarlos para que las companias
+ toquen el mapa sincronizadamente y ademas asegurar que ninguna valla a
+ jugar dos veces seguidas (luego veremos que como en toda buena idea, trajo
+ sus buenas complicaciones).
+\end_layout
+
+\begin_layout Itemize
+A su vez se podia saber cuando todas las companias habian hecho una jugada,
+ por lo que actualizar la UI por turno era muy sencilla.
+\end_layout
+
+\begin_layout Itemize
+La unica contra que encontramos es que la comunicacion con las companias
+ se volvia un tanto compleja.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Uno de los primeros (y mas grandes) problemas que que se presentaron al
+ aplicar este diseño era de como reflejar los cambios hechos por una compania
+ en todas las demas.
+ Inicialmente, se decidio que el servidor tendria una (y la unica) instancia
+ del mapa y que se 
+\begin_inset Formula $pasaria$
+\end_inset
+
+ al principio del turno a la compania, esta lo modificaria y luego se lo
+ 
+\begin_inset Formula $pasaria$
+\end_inset
+
+ de vuelta al servidor con los cambios.
+ Y asi para cada compania.
+ Pero esto no solucionaba el problema, ya que ademas se debia mostrar por
+ pantalla (en forma ordenada) toda la informacion de la empresa; por lo
+ que ademas de tener que pasar el mapa dos veces, se tendria que sumar toda
+ la compania, lo cual implicaria muchisimo procesamiento y uso de memoria!.
+\end_layout
+
+\begin_layout Standard
+Lo que nos llevo a proponer una segunda solucion; esta implicaba que tanto
+ el servidor como las companias tendrian una instancia del mapa y este se
+ iria actualizando mediante paquetes 
+\begin_inset Formula $“updates”$
+\end_inset
+
+ que se enviarian desde el servidor.
+ Esto presenta la ventaja que la comunicacion entre los procesos se reduciria
+ a unicamente sus cambios! pero la contra esta en que requeria de una clase
+ 
+\begin_inset Formula $serializer$
+\end_inset
+
+ muchisimo mas completa.
+ Sin embargo, luego de algunas pruebas y de discutirlo se llego a que se
+ esta era la mejor implementacion.(MOSTRAR ALGUNOS RESULTADOS AQUII)
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es asi como nace la clase 
+\begin_inset Formula $serializer$
+\end_inset
+
+, quien se encargaga de, dado una determianda estructura, convertirla a
+ bytes para poder escribirla y luego leerla por quien lo precise.
+\end_layout
+
+\end_body
+\end_document
