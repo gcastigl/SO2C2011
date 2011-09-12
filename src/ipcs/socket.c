@@ -22,8 +22,10 @@ socket_t *getSocket(int id1, int id2, int read) {
 	sock->addr->sun_family = AF_UNIX;
 	strcpy(sock->addr->sun_path, path);
 	int ret = bind(sock->sockfd, (struct sockaddr *)sock->addr, ADDR_SIZE);
-	if ((read == TRUE) && ret >= 0) {
-        mySockFd = sock->sockfd;
+	if ((read == TRUE)) {
+	    if (ret >= 0) {
+            mySockFd = sock->sockfd;   
+	    }
 	}
 	int flags = fcntl(sock->sockfd, F_GETFL);
 	flags |= O_NONBLOCK;
@@ -38,7 +40,11 @@ int ipc_init(int myId, int size) {
 
 int ipc_write(int myId, int toId, char *msg) {
 	socket_t *socket = getSocket(myId, toId, FALSE);
-	return sendto(socket->sockfd, msg, DATA_SIZE, 0 , (struct sockaddr *)socket->addr, ADDR_SIZE);
+	int ret = sendto(socket->sockfd, msg, DATA_SIZE, 0 , (struct sockaddr *)socket->addr, ADDR_SIZE);
+	if (ret < 0) {
+        log_warning("Error: %s", strerror(errno));
+	}
+    return ret;
 }
 
 int ipc_read(int myId, int fromId, char *msg) {
@@ -68,24 +74,12 @@ int ipc_read(int myId, int fromId, char *msg) {
 }
 
 int ipc_close(int id) {
-	DIR *dp;
-	char *fileName;
-	struct dirent *ep;
-	dp = opendir(IPC_SOCKET_DIR);
-	if (dp != NULL) {
-		while ((ep = readdir(dp))) {
-			fileName = (char*)malloc((strlen(IPC_SOCKET_DIR) + strlen(ep->d_name) + 1) * sizeof(char));
-			sprintf(fileName, "%s%s", IPC_SOCKET_DIR, ep->d_name);
-            log_debug("Deleting %s", fileName);
-			unlink(fileName);
-			free(fileName);
-		}
-		closedir(dp);
-	}
-    errno = 0;
-	int ret = rmdir(IPC_SOCKET_DIR);
-	if (errno != 0) {
-        log_error("Error deleting socket folder: %s", strerror(errno));
-	}
-    return ret;
+	char *fileName = malloc(strlen(IPC_SOCKET_DIR) + 50 * sizeof(char));
+    sprintf(fileName, "%s%d_%d", IPC_SOCKET_DIR, serverId, id);
+	unlink(fileName);
+	sprintf(fileName, "%s%d_%d", IPC_SOCKET_DIR, id, serverId);
+	unlink(fileName);
+	free(fileName);
+	rmdir(IPC_SOCKET_DIR);
+    return 0;
 }

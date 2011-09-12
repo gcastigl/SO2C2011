@@ -2,8 +2,8 @@
 BINARY := bin/tp1.out
 
 #IPC := msgQueue.c
-IPC := fifo.c
-#IPC := socket.c
+#IPC := fifo.c
+IPC := socket.c
 #IPC := sharedMemory.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude
