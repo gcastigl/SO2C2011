@@ -28,7 +28,6 @@ void server_start(Server* server, Map* initialMap) {
 		usleep(700 * 1000);
 		for(int j = 0; j < server->companyCount; ++j) {
 		    server_readMessages(server, server->company[j]->id);
-            log_debug("Bleh %d", j);
 			if (IS_ACTIVE(j)) { // if company i is active
 				//Give each company one turn...
                 S_POST(getCompanySemName(semName, j, server));

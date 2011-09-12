@@ -36,18 +36,23 @@ void printMatrix(int** matrix, int rows, int columns) {
 	int i, j;
 	printf("\t");
 	for (j = 0; j < columns; j++) {
-		printf("%d    ", j);
+		printf("%3d\t", j);
+	}
+	printf("\n---\t|");
+	for (j = 0; j < columns; j++) {
+		printf("---\t");
 	}
 	printf("\n");
 	for (i = 0; i < rows; i++) {
-		printf("%d\t", i);
+		printf("%3d\t|", i);
 		for (j = 0; j < columns; j++) {
 			if (matrix[i][j] < 10) 
-				printf("%d    ", matrix[i][j]);
+				printf("%3d\t", matrix[i][j]);
 			else if (matrix[i][j] < 100)
-				printf("%d   ", matrix[i][j]);
+				printf("%3d\t", matrix[i][j]);
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
