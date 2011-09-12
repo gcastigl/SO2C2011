@@ -23,19 +23,13 @@ int ipc_read(int myId, int fromId, char *msg) {
 }
 
 int ipc_close(int id) {
-	return 0;
 	DIR *dp;
-	char *fileName;
-	struct dirent *ep;
-	dp = opendir(IPC_FIFO_DIR);
-	if (dp != NULL) {
-		while ((ep = readdir(dp))) {
-			fileName = (char*)malloc((strlen(IPC_FIFO_DIR) + strlen(ep->d_name) + 1) * sizeof(char));
-			sprintf(fileName, "%s%s", IPC_FIFO_DIR, ep->d_name);
-			unlink(fileName);
-			free(fileName);
-		}
-		closedir(dp);
-	}
-	return rmdir(IPC_FIFO_DIR);
+	char *fileName = malloc(strlen(IPC_FIFO_DIR) + 50 * sizeof(char));
+	sprintf(fileName, "%s%d_%d", IPC_FIFO_DIR, serverId, id);
+	unlink(fileName);
+	free(fileName);
+	sprintf(fileName, "%s%d_%d", IPC_FIFO_DIR, id, serverId);
+	unlink(fileName);
+	free(fileName);
+	return 0;
 }
