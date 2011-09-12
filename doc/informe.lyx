@@ -72,12 +72,19 @@ Para este trabajo se pedia la realizacion de una simulacion de empresas
  que bleh...
 \end_layout
 
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
 \begin_layout Part
 Modelo
 \end_layout
 
 \begin_layout Standard
-Uno de los problemas mas dificiles que contantememte se presentaba durante
+Uno de los problemas mas dificiles que constantemente se presentaba durante
  el desarrollo del trabajo era sobre la dura eleccion entre tiempo vs memoria.
  Si se debia hacer cierto calculo al momento de neceitarlo o bien guardarlo
  y simplemente actualizarlo cunado se necesite.
@@ -168,7 +175,7 @@ La segunda solucion involucaraba un proceso
 Este presentaba la ventaja de tener una implementacion muy sencilla ya que
  solamente se ocuparia de levantar semaforos y bajarlos para que las companias
  toquen el mapa sincronizadamente y ademas asegurar que ninguna valla a
- jugar dos veces seguidas (luego veremos que como en toda buena idea, trajo
+ jugar dos veces seguidas (luego veremos que, como en toda buena idea, trajo
  sus buenas complicaciones).
 \end_layout
 
@@ -207,8 +214,8 @@ Uno de los primeros (y mas grandes) problemas que que se presentaron al
 
 \begin_layout Standard
 Lo que nos llevo a proponer una segunda solucion; esta implicaba que tanto
- el servidor como las companias tendrian una instancia del mapa y este se
- iria actualizando mediante paquetes 
+ el servidor como las companias tendrian una instancia del mapa (inicial)
+ y este se iria actualizando mediante paquetes 
 \begin_inset Formula $“updates”$
 \end_inset
 
@@ -221,20 +228,235 @@ Lo que nos llevo a proponer una segunda solucion; esta implicaba que tanto
 
  muchisimo mas completa.
  Sin embargo, luego de algunas pruebas y de discutirlo se llego a que se
- esta era la mejor implementacion.(MOSTRAR ALGUNOS RESULTADOS AQUII)
-\begin_inset Newline newline
+ esta era la mejor implementacion.
+ (MOSTRAR ALGUNOS RESULTADOS AQUII).
+\end_layout
+
+\begin_layout Standard
+Por lo que con esta eleccion, la logica del 
+\begin_inset Formula $servidor$
+\end_inset
+
+ seguiria el siguiente comportamiento:
+\end_layout
+
+\begin_layout LyX-Code
+Por cada compania:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+Se le da un turno.
+\end_layout
+
+\begin_layout LyX-Code
+Se hace un broadcasting de los updates enviados por el a 
+\end_layout
+
+\begin_layout LyX-Code
+   todas las demas companias.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+De esta manera, resulta facil imaginar la logica de una 
+\begin_inset Formula $compania$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+Despierto a todos mis aviones.
+\end_layout
+
+\begin_layout LyX-Code
+Cuando todos movieron, actualizo a un nuevo target a todos
+\end_layout
+
+\begin_layout LyX-Code
+    aquellos que llegaron a destino.
+\end_layout
+
+\begin_layout LyX-Code
+Escribo los paquetes con los cambios realizados por cada uno al servidor.
+\end_layout
+
+\begin_layout LyX-Code
+Me escribo a mi misma.
+\end_layout
+
+\begin_layout Standard
+A continuacion de presenta un esquema de como se penso a una compania:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename airlineModl.gif
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Esquma de una compania
+\end_layout
+
+\end_inset
+
+(figura tomada del sitio: http://www.chuidiang.com)
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Es asi como nace la clase 
-\begin_inset Formula $serializer$
+En la figura mostrada, cada 
+\begin_inset Formula $Thread$
 \end_inset
 
-, quien se encargaga de, dado una determianda estructura, convertirla a
- bytes para poder escribirla y luego leerla por quien lo precise.
+ representa a un avion activo, en donde este tiene su memoria propia (items,
+ posicion, target, ...), una memoria compartida (el mapa) y un comportamiento.
+ Cuando ningun avion tiene movimientos posibles, se mata al proceso, y este
+ ciclo sigue hasta que ningun avion tenga movimientos disponibles.
+ En cuyo caso se envia un paquete de tipo 
+\begin_inset Formula $company$
+\end_inset
+
+ 
+\begin_inset Formula $status$
+\end_inset
+
+ 
+\begin_inset Formula $update$
+\end_inset
+
+ al servidor y se encargara de hacer lo que sea necesario.
+\end_layout
+
+\begin_layout Subsection
+IPC
+\end_layout
+
+\begin_layout Standard
+Al principio se comenzo experimentando comunicacion entre procesos con pipes.
+ Luego de varias complicaciones de llego a una primera version de metodos
+ de IPC formada por diversos metodos.
+ Esta nos sirvio como base para ir experimentando como funcionaban los semaforos
+ y mutex en linux.
+ Luego, a medida que el programa iba tomando forma y sentido, se comenzo
+ a mejorarla y se implemento Fifos, MsgQueues, Sockets y Shared Memory
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Debido a falta de tiempo y experiencia con manejo de memoria compartida
+ en linux, no se logro implementar esta funcionalidad completamente por
+ lo que no esta funcional.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Uno de los mayores inconvenientes al momento de implementacion de los IPCS
+ era la sincronizacion, ya que, por mas que se hallan probado en test antes
+ de ser montados al codigo de la simuacion, se tenia el problema que cuando
+ no se leia en forma ordenada, este decia que no habia mensajes(o bien entregaba
+ mensajes vacios) y cuandos se espereana que los hubiera, lo que llevaba
+ a mucha perdida de tiempo en debugeo de codigo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Consideraciones de tiempo vs memoria
+\end_layout
+
+\begin_layout Standard
+Al principio, cada vez que un avion llegaba a una ciudad, se realizaba un
+ DFS por cada ciudad para encontrar el camino a las ciudad mas corta.
+ El problema es que este mismo DFS se estaba realizando por cada avion,
+ por cada compania en cada turno.
+ Lo que nos parecia que se realizaba el mismo calculo innecesariemente muchisima
+s veces.
+ Por lo que se propuso una matriz en donde, por cada compania se colocaria
+ un indice diciendo a donde hay que ir para acceder a la ciudad 
+\begin_inset Formula $X$
+\end_inset
+
+ (para cualquier ciudad) y a que distancia se encuentra.
+ Esto redciria la llamda al DFS a desrefenciar una matriz (
+\begin_inset Formula $o(1)$
+\end_inset
+
+), esta fue una de las luchas mencionadas anteriormente, sobre la ultiliacion
+ de memoria espacial o de tiempo.
+\end_layout
+
+\begin_layout Standard
+Otro cambio de la misma indole que se propuso durante la realizcion del
+ trabajo es que cada ID de un elemento representaba a la pocision en el
+ array que ocuparia.
+ Es decir, el elemento con Id 
+\begin_inset Formula $5$
+\end_inset
+
+, se lo encontraria en el array de elementos en la quinta posicion.
+ Esto trae consecuencias como tener un array de 
+\begin_inset Formula $20$
+\end_inset
+
+ elementos solo para tener un elemento con ID 
+\begin_inset Formula $20$
+\end_inset
+
+.
+ Sin embargo, para la busqueda de items (la cual se reliza constantemente)
+ reduce un algortimo de 
+\begin_inset Formula $o(n)$
+\end_inset
+
+ a uno de 
+\begin_inset Formula $o(1)$
+\end_inset
+
+.
+ Sin embargo, nuvamente, agrega une extra en la cantidad de memoria necesaria
+ disponible.
+\end_layout
+
+\begin_layout Part
+Concusiones
+\end_layout
+
+\begin_layout Standard
+Luego de realizado este trabajo practico, se aprendio sobre la potencia
+ que se puede tener al realizar programas que sean capaces de dividir sus
+ tareas en proecsos concretos y por sobre todo, al mantenerlos sincronizados.
+ 
 \end_layout
 
 \end_body
