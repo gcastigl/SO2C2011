@@ -23,6 +23,7 @@ int ipc_read(int myId, int fromId, char *msg) {
 }
 
 int ipc_close(int id) {
+	return 0;
 	DIR *dp;
 	char *fileName;
 	struct dirent *ep;
