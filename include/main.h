@@ -2,6 +2,7 @@
 #define MAIN_H_
 
 #include "company.h"
+#include "common.h"
 #include "map.h"
 #include "parser.h"
 #include "util/signalHandling.h"

@@ -27,8 +27,13 @@ void** createMatrix(int elemSize, int rows, int columns) {
 }
 
 void fatal(char* err) {
-	perror(err);
-	log_error(err);
+    log_error(err);
+    log_debug("isChild %s", isChild == TRUE ? "Yes" : "No");
+	if (isChild == TRUE) {
+        kill(getppid(), SIGINT);
+    } else {
+        kill(getpid(), SIGINT);
+    }
 	exit(1);
 }
 

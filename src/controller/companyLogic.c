@@ -211,5 +211,6 @@ void deactivatePlane(Plane* plane) {
 }
 
 void company_closeIpc() {
+    log_debug("Closing IPC");
     ipc_close(company->id + 1);
 }

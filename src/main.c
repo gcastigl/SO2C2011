@@ -44,11 +44,12 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
+    isChild = FALSE;
     char semName[10];
     int val;
 	sem_t *sem = semaphore_create("server");
     S_GETVAL("server", &val);
-	ipc_init(SERVER_IPC_KEY, 0);
+	ipc_init(SERVER_IPC_KEY, server.companyCount + 1);
 	for (int i = 0; i < server.companyCount; ++i) {
         sprintf(semName, "c%d", server.company[i]->id);
         sem = semaphore_create(semName);
@@ -56,7 +57,6 @@ void initializeServer() {
             log_error("Error creating semaphore for company %d", server.company[i]->id);
             fatal("");
 		}
-		ipc_init(server.company[i]->id + 1, 0);
 	}
 }
 
@@ -66,6 +66,7 @@ void initializeCompanies() {
     for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {
             case 0:
+                isChild = TRUE;
                 signal_createHandlerThread(FALSE);
                 companyStart(&map, server.company[i]);
                 exit(0);

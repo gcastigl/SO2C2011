@@ -26,6 +26,7 @@ void company_free(Company* company, int freePlanes) {
 			plane_free(company->plane[i]);
 		}
 	}
+    ipc_close(company->id + 1);
 	free(company->plane);
 	free(company);
 }
