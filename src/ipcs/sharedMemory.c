@@ -42,8 +42,8 @@ int msg_push(int from, int to, char *msg) {
     memcpy(&messageCount, origMessage, sizeof(char));
 	message += sizeof(char);
 	if (messageCount >= 0) {
-		if(messageCount > 30) {
-			log_error("Could not save package. messageCount is 30");
+		if(messageCount > MAX_PACKAGE_QUEUE) {
+			log_error("Could not save package. Queue is full");
 			return -1;
 		} else {
 			message += messageCount * DATA_SIZE * sizeof(char);
@@ -77,14 +77,14 @@ int msg_pop(int from, int to, char *msg) {
 }
 
 int ipc_write(int myId, int toId, char *msg) {
-	toId = toId % serverId;
-	myId = myId % serverId;
+	//toId = toId % serverId;
+	//myId = myId % serverId;
 	return msg_push(myId, toId, msg);
 }
 
 int ipc_read(int myId, int fromId, char *msg) {
-	fromId = fromId % serverId;
-	myId = myId % serverId;
+	//fromId = fromId % serverId;
+	//myId = myId % serverId;
 	return msg_pop(fromId, myId, msg);
 }
 

@@ -10,8 +10,8 @@ int ipc_init(int myId, int size) {
 int getFd(int id1, int id2, int flags) {
 	char filename[MAX_NAME_LENGTH];
 	sprintf(filename, "%s%d_%d", IPC_FIFO_DIR, id1, id2);
-	mkfifo(filename, 0777);
-	return open(filename, flags);
+	mkfifo(filename, 0777 | IPC_CREAT);
+	return open(filename, flags| IPC_CREAT);
 }
 
 int ipc_write(int myId, int toId, char *msg) {
@@ -23,6 +23,7 @@ int ipc_read(int myId, int fromId, char *msg) {
 }
 
 int ipc_close(int id) {
+	return 0;
 	DIR *dp;
 	char *fileName;
 	struct dirent *ep;
