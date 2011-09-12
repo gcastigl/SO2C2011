@@ -16,8 +16,7 @@ extern int errno;
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
 #define TMP_FOLDER	"/tmp/"
-#define SERVER_SEM_KEY	0x0EADBEEF
-#define SERVER_IPC_KEY	0x0A11AB1E
+#define SERVER_IPC_KEY	0
 
 // Status defines
 #define OP_OK	0
