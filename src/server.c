@@ -22,6 +22,10 @@ void server_start(Server* server, Map* initialMap) {
 	activeCompanies = (1 << server->companyCount) - 1;
 	time_t  currTime, lastUpdate = -1;
     serverMap = initialMap;
+    
+    for (int a = 0; a < server->companyCount; a++)
+        server_readMessages(server, server->company[a]->id);
+    
 	while(activeCompanies != 0) {
 		server->turn++;
 		log_debug("-----------------------Turn %d-----------------------", server->turn);
