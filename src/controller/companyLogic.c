@@ -105,7 +105,7 @@ char* getPlaneSemName(char *buffer, int index) {
     return buffer;
 }
 
-void wakeUpPlanes(int semId) {
+void wakeUpPlanes() {
     char semName[10];
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
@@ -114,8 +114,7 @@ void wakeUpPlanes(int semId) {
 	}
 }
 
-void waitUntilPlanesReady(int semId) {
-    char semName[10];
+void waitUntilPlanesReady() {
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
 			S_WAIT(cmpSemName);
