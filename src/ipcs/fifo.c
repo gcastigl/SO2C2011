@@ -1,6 +1,6 @@
 #include "ipcs/fifo.h"
 
-#define IPC_FIFO_DIR "/tmp/sofifo/"
+#define IPC_FIFO_DIR "./sofifo/"
 int getFd(int id1, int id2, int flags);
 
 int ipc_init(int myId, int size) {

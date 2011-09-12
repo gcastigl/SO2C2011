@@ -1,10 +1,12 @@
 #include "util/logger.h"
+#include <execinfo.h>
 
 static FILE* logFile = NULL;
 static int initialized = 0;
 char *loggerSem = "logger";
 static sem_t* sem;
 static char *logLevelString[] = { "DEBUG", "WARNING", "ERROR" };
+void print_trace(int logLevel);
 
 void logger_init() {
     if (initialized) {
@@ -42,8 +44,23 @@ void _log(int logLevel, const char *file, int line, const char *fmt, ...) {
         fprintf(logFile, "[%s] %s:%d: ", logLevelString[logLevel], file, line);
         vfprintf(logFile, fmt, ap);
         fprintf(logFile, "\n");
+        print_trace(logLevel);
         fflush(logFile);
-
         sem_post(sem);
     }
+}
+
+void print_trace(int logLevel) {
+	if (logLevel < L_ERROR){
+		return;
+	}
+	void *array[10];
+	size_t size;
+	char **strings;
+	size_t i;
+	size = backtrace(array, 10);
+	strings = backtrace_symbols(array, size);
+	for (i = 0; i < size; i++)
+		fprintf(logFile, "\t%s\n", strings[i]);
+	free(strings);
 }
