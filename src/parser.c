@@ -4,8 +4,10 @@ City *parser_parseCity(FILE *stream, Server *server, Map* map);
 void parseCityDistances(FILE *stream, Map *map);
 Plane *parser_parsePlane(FILE* stream, Server *server, Map* map, int companyId);
 Company* parser_parseCompany(FILE* stream, char* name, int id, Server* server, Map* map);
-int fillRow(Map* map, int row, int col);
 void fillRoutes(Map* map);
+int findAndFillRoute(Map* map, int from, int to);
+void fillDistances(Map* map);
+int findAndFillDistance(Map* map, int from, int to);
 
 char *fgetstr(char *string, int n, FILE *stream);
 int parseInt(FILE *stream);
@@ -98,40 +100,68 @@ void parseCityDistances(FILE *stream, Map *map) {
 			map->cityRoute[c2][c1] = c1;
 		}
 	}
-	//fillRoutes(map);
+	fillRoutes(map);
+	fillDistances(map);
 }
 
 void fillRoutes(Map* map) {
-	int filled = 0;
+	int changes = 0;
 	do {
-		filled= 0;
+		changes = 0;
 		for (int i = 0; i < map->cityCount; ++i) {
 			for (int j = 0; j < map->cityCount; ++j) {
-				if (map->cityRoute[i][j] == 0) {
-					fillRow(map, i, j);
-				} else {
-					filled++;
+				if (map->cityRoute[i][j] == -1) {
+					changes += findAndFillRoute(map, i, j);
 				}
 			}
 		}
-		printMatrix(map->cityRoute, map->cityCount, map->cityCount);
-	} while(filled < map->cityCount * map->cityCount);
-	printMatrix(map->cityRoute, map->cityCount, map->cityCount);
-	printMatrix(map->cityDistance, map->cityCount, map->cityCount);
+	} while(changes);
 }
 
-int fillRow(Map* map, int row, int col) {
-	int change = 0;
+int findAndFillRoute(Map* map, int from, int to) {
 	for (int i = 0; i < map->cityCount; ++i) {
-		int availableRoute = map->cityRoute[row][i];
-		if (availableRoute > 0) {
-			if (map->cityRoute[availableRoute][col] > 0) {
-				map->cityRoute[row][col] = availableRoute;
-				change++;
+		int possibleRoute = map->cityRoute[from][i];
+		if (possibleRoute >= 0) {
+			if (map->cityRoute[possibleRoute][to] != -1) {
+				map->cityRoute[from][to] = possibleRoute;
+				return 1;
 			}
 		}
 	}
-	return change;
+	return 0;
+}
+
+void fillDistances(Map* map) {
+	int changes = 0;
+	do {
+		changes = 0;
+		for (int i = 0; i < map->cityCount; ++i) {
+			for (int j = 0; j < map->cityCount; ++j) {
+				if (map->cityDistance[i][j] == -1) {
+					changes += findAndFillDistance(map, i, j);
+				}
+			}
+		}
+	} while(changes);
+}
+
+int findAndFillDistance(Map* map, int from, int to) {
+	int distance = 0;
+	int fromCity = from;
+	int targetCity = NO_ROUTE;
+	do {
+		targetCity = map->cityRoute[fromCity][to];
+		int targetCityDistance = map->cityDistance[fromCity][targetCity];
+		if (targetCityDistance > 0) {
+			distance += targetCityDistance;
+			fromCity = targetCity;
+		} else {
+			return 0;
+		}
+	} while (fromCity != to);
+	map->cityDistance[from][to] = distance;
+	map->cityDistance[to][from] = distance;
+	return 2;
 }
 
 // ======================================

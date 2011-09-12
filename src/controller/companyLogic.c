@@ -11,9 +11,7 @@ void updateDestinations();
 void updateServer();
 void updateMapItems(Map* map, Plane* plane);
 void setNewTarget(Map* map, Plane* plane);
-float getScore(Plane* plane, int cityId, int* nextIfNoRoute);
-int dfsDistanceTo(int from, int to, int* nextIfNoRoute);
-int dfsDistance(int from, int to, int acumDistance, int info[2]);
+float getScore(Plane* plane, int cityId);
 void deactivatePlane(Plane* plane);
 void createInactivePlanesBitMask();
 
@@ -156,7 +154,7 @@ void  updateMapItems(Map* map, Plane* plane) {
 }
 
 void setNewTarget(Map* map, Plane* plane) {
-	int i, nextIfNoRoute;
+	int i;
 	int newTargetScore;
 	int bestCityScore = 0;
 	int bestCityindex = NO_TARGET;
@@ -165,14 +163,10 @@ void setNewTarget(Map* map, Plane* plane) {
 			// Skip if current city or route does not exists
 			continue;
 		}
-		newTargetScore = getScore(plane, i, &nextIfNoRoute);
+		newTargetScore = getScore(plane, i);
 		if (bestCityScore < newTargetScore) {
 			bestCityScore = newTargetScore;
-			if (map->cityDistance[plane->cityIdFrom][i] == 0) {
-				bestCityindex = nextIfNoRoute;
-			} else {
-				bestCityindex = i;
-			}
+			bestCityindex = map->cityRoute[plane->cityIdFrom][i];
 		}
 	}
 	if (bestCityindex == NO_TARGET) {
@@ -185,14 +179,9 @@ void setNewTarget(Map* map, Plane* plane) {
 	plane->distanceLeft = map->cityDistance[plane->cityIdFrom][bestCityindex];
 }
 
-float getScore(Plane* plane, int cityId, int* nextIfNoRoute) {
+float getScore(Plane* plane, int cityId) {
 	float score = 0;
 	int distance = map->cityDistance[plane->cityIdFrom][cityId];
-	if (distance == 0) {
-		log_debug("DOING A DFS!! %d -> %d", plane->cityIdFrom, cityId);
-		int distance = dfsDistanceTo(plane->cityIdFrom, cityId, nextIfNoRoute);
-		log_debug("PLANE From: %d, to: %d  - distance %d", plane->cityIdFrom, *nextIfNoRoute, distance);
-	}
 	for (int i = 0; i < plane->itemCount; i++) {
 		if (plane->itemStock[i] > 0 && map->city[cityId]->itemStock[i] < 0) {
 			score += min(plane->itemStock[i], -map->city[cityId]->itemStock[i]);
@@ -206,46 +195,6 @@ float getScore(Plane* plane, int cityId, int* nextIfNoRoute) {
 		}
 	}
 	return score;
-}
-
-int dfsDistanceTo(int from, int to, int* nextIfNoRoute) {
-	for(int i = 0; i < map->cityCount; i++) {
-		visitedCities[i] = 0;
-	}
-	int info[2] = {0,0};
-	dfsDistance(from, to, 0, info);
-	*nextIfNoRoute = info[1];
-	return info[0];
-}
-
-int dfsDistance(int from, int to, int acumDistance, int info[2]) {
-	if (from == to) {
-		info[0] = acumDistance;
-		//printf("FOUND PATH: %d\n", info[0]);
-		return 1;
-	}
-	//log_debug(LOG_JP, "from: %d to %d. Distance: %d", from, to, map->cityDistance[from][to]);
-	visitedCities[from] = 1;
-	int bestDist = -1, bestNext;
-	for(int i = 0; i < map->cityCount; i++) {
-		if (map->cityDistance[from][i] == 0 || visitedCities[i] == 1) {
-			//log_debug("visitedCities[%d] = %d", i, visitedCities[i]);
-			// Only go to unvisited neighbors!
-			continue;
-		}
-		int currDist = acumDistance + map->cityDistance[from][i];
-		//printf("going %d -> %d. Acum %d\n", from, i, currDist);
-		int solutionFound = dfsDistance(i, to, currDist, info);
-		if (solutionFound == 1 && (bestDist == -1 || info[0] < bestDist)) {
-			bestDist = info[0];
-			bestNext = (acumDistance == 0) ? i : from;
-			info[1] = bestNext;
-			//printf("NUEVA SOLUCION => %d\n", bestNext);
-		}
-	}
-
-	visitedCities[from] = 0;
-	return 0;
 }
 
 void deactivatePlane(Plane* plane) {

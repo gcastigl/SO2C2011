@@ -9,10 +9,11 @@ Map *map_initialize(Map* map, int maxCityCount) {
 		map->cityDistance[i] = malloc(sizeof(int) * maxCityCount);
 		map->cityRoute[i] = malloc(sizeof(int) * maxCityCount);
 		for (int j = 0; j < maxCityCount; ++j) {
-			map->cityDistance[i][j] = 0;
-			map->cityRoute[i][j] = 0;
-			if (i == j) {
-				map->cityRoute[i][j] = -1;
+			map->cityDistance[i][j] = -1;
+			map->cityRoute[i][j] = -1;
+			if (i==j) {
+				map->cityDistance[i][j] = 0;
+				map->cityRoute[i][j] = NO_ROUTE;
 			}
 		}
 	}

@@ -4,6 +4,8 @@
 #include "common.h"
 #include "serializer.h"
 
+#define NO_ROUTE -2
+
 typedef struct {
 	int id;
 	char name[MAX_NAME_LENGTH];
