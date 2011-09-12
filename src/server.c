@@ -67,7 +67,7 @@ void server_readMessages(Server* server, int fromCompanyId) {
 	int packageType;
 	void* package;
 	do {
-		package = serializer_read(SERVER_IPC_KEY, fromCompanyId + 1, &packageType);
+		package = serializer_read(serverId, fromCompanyId + 1, &packageType);
 		if (package != NULL) {
 			switch(packageType) {
 				case PACKAGE_TYPE_COMPANY:
@@ -106,7 +106,7 @@ void server_broadcastUpdateMessage(Server* server, int fromCompanyId, CityUpdate
     for (int i = 0; i < server->companyCount; i++) {
         company = server->company[i];
         if (company->id != fromCompanyId) {
-            serializer_write(update, SERVER_IPC_KEY, company->id + 1, PACKAGE_TYPE_CITY_UPDATE);
+            serializer_write(update, serverId, company->id + 1, PACKAGE_TYPE_CITY_UPDATE);
         }
     }
 }

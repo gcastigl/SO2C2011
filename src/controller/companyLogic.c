@@ -54,7 +54,7 @@ void companyStart(Map* initialMap, Company* cmp) {
 	update.companyId = company->id;
 	update.status = FALSE;
     log_warning("Company %d died", company->id);
-	serializer_write(&update, company->id + 1, SERVER_IPC_KEY, PACKAGE_TYPE_COMPANY_UPDATE);
+	serializer_write(&update, company->id + 1, serverId, PACKAGE_TYPE_COMPANY_UPDATE);
     company_free(company, TRUE);
 }
 
@@ -90,7 +90,7 @@ void updateMap() {
     int packageType;
     CityUpdatePackage *update;
     do {
-        package = serializer_read(company->id + 1, SERVER_IPC_KEY, &packageType);
+        package = serializer_read(company->id + 1, serverId, &packageType);
         if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
             update = (CityUpdatePackage*) package;
         	log_debug("[Company %d] update= cityId = %d - temId = %d - amoount = %d\n", company->id, update->cityId, update->itemId, update->amount);
@@ -136,7 +136,7 @@ void updateDestinations() {
  * In this case we serialize the whole company.
  */
 void updateServer() {
-	serializer_write(company, company->id + 1, SERVER_IPC_KEY, PACKAGE_TYPE_COMPANY);
+	serializer_write(company, company->id + 1, serverId, PACKAGE_TYPE_COMPANY);
 }
 /*
  * Plane is supposed to just have arrived to its target.
@@ -155,7 +155,7 @@ void  updateMapItems(Map* map, Plane* plane) {
 			update.cityId = plane->cityIdFrom;
             update.itemId = i;
             update.amount = supplies;
-            serializer_write(&update, PLANE_COMPANY_ID(plane->id) + 1, SERVER_IPC_KEY, PACKAGE_TYPE_CITY_UPDATE);
+            serializer_write(&update, PLANE_COMPANY_ID(plane->id) + 1, serverId, PACKAGE_TYPE_CITY_UPDATE);
 		}
 	}
 }

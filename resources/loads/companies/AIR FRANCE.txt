@@ -1,11 +1,11 @@
 3
 
-Rosario
+Parana
 Paracetamol 500
 Aspirina 500
 Ibuprofeno 200
 
-Cordoba
+SantaFe
 Paracetamol 200
 Aspirina 1000
 Ibuprofeno 1000

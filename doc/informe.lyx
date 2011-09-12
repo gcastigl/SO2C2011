@@ -183,8 +183,8 @@ Mostrar en pantalla los cambios de cada
 \end_layout
 
 \begin_layout Enumerate
-Reflejar en las demas companias el cambio producidos en el mapa por la compaia
- 
+Reflejar en las demas companias los cambios producidos en el mapa por la
+ compaia 
 \begin_inset Formula $X$
 \end_inset
 
@@ -230,7 +230,7 @@ La segunda solucion propuesta involucaraba un proceso
 \begin_inset Formula $servidor$
 \end_inset
 
- que para la administracion de turnos y recursos para cada compania.
+ que se eccargaria de la administracion de turnos y recursos para cada compania.
 \end_layout
 
 \begin_layout Itemize
@@ -289,7 +289,10 @@ Estructura de procesos y threads de la simulacion
 \end_layout
 
 \begin_layout Plain Layout
-
+Al iniciar el programa, lo primero que se realiza es el parseo de la informacion
+ (de companias, mapas), inicializacion del entorno (IPCs, semaforos, handlers
+ de las señales, inicializacion de los nuevos procesos...) y luego de terminado
+ todo esto, se procede a inicializar el proceso de UI/Servidor.
 \end_layout
 
 \end_inset
@@ -536,7 +539,14 @@ Tal como se explico anteriormente, cada
  al servidor y se encargara de hacer lo que sea necesario.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 IPC
 \end_layout
 
@@ -547,37 +557,25 @@ Al principio se comenzo experimentando comunicacion entre procesos con pipes.
  Esta nos sirvio como base para ir experimentando como funcionaban los semaforos
  y mutex en linux.
  Luego, a medida que el programa iba tomando forma y sentido, se comenzo
- a mejorarla y se implemento Fifos, MsgQueues, Sockets y Shared Memory
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Debido a falta de tiempo y experiencia con manejo de memoria compartida
- en linux, no se logro implementar esta funcionalidad completamente por
- lo que no esta funcional.
-\end_layout
-
-\end_inset
-
-
+ a mejorarla y se implemento Fifos, MsgQueues, Sockets y Shared Memory.
 \end_layout
 
 \begin_layout Standard
 Uno de los mayores inconvenientes al momento de implementacion de los IPCS
- era la sincronizacion, ya que, por mas que se hallan probado en test antes
- de ser montados al codigo de la simuacion, se tenia el problema que cuando
- no se leia en forma ordenada, este decia que no habia mensajes(o bien entregaba
- mensajes vacios) cuando se espereaba que los hubiera, lo que llevaba a
- mucha perdida de tiempo en debugeo de codigo.
+ era la sincronizacion, ya que, por mas pruebas que se les halla a cada
+ antes de ser montados al codigo de la simuacion, se tenia el problema que
+ cuando no se leia en forma ordenada, este decia que no habia mensajes cuando
+ se espereaba que los hubiera, lo que llevaba a mucha perdida de tiempo
+ en debugeo de codigo.
 \end_layout
 
 \begin_layout Standard
-Una de las complicaciones que tuvimos con los IPCs era el tamaño de la infromaci
-on a escribir, dado que para algunos IPCs era mas facil trabajar con tamaños
- fijos y con otros daba igual, se opto por paquetes de tamaño fijo.
- Esto nos facilito mucho la programacion de la interfaz de comunicacion,
- pero tiene el problema importante que si se quiere serializar una gran
- compania con muchos aviones e items, puede resultar que este string serializado
+Una de las complicaciones que tuvimos con los IPCs era el tamaño de los
+ datos a escribir, dado que para algunos IPCs era mas facil trabajar con
+ tamaños fijos y con otros daba igual, se opto por paquetes de tamaño fijo.
+ Esto facilito mucho la programacion de la interfaz de comunicacion, pero
+ tiene el problema importante que si se quiere serializar una gran compania
+ con muchos aviones e items, puede resultar que este string serializado
  resultante sea mas largo que el tamaño default.
  Lo que provocaria que el paquete no se mande y quede inconsistente el resultado
  de la simulacion.
@@ -677,6 +675,68 @@ Dentro de cada lugar de esta matriz, se tiene un array con los
  tienen en la lista.
 \end_layout
 
+\begin_layout Subsection
+Tipos de paquetes
+\end_layout
+
+\begin_layout Standard
+Actualmente la comunicacion entre 
+\begin_inset Formula $servidor\Longleftrightarrow compania$
+\end_inset
+
+ se realiza mediante tres tipos de paquetes:
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+City update: Este paquete contiene informacion de que item fue modificado
+ en que ciudad y en que cantidad.
+ Si muchas ciudades fueron modificadas en un turno, uno por cada cambio
+ va a ser enviado al servidor.
+\end_layout
+
+\begin_layout Itemize
+City status update: Este paquete se envia cunado una compania detecto que
+ sus aviones no pueden abastecer a mas ciudades y quiere 
+\begin_inset Quotes eld
+\end_inset
+
+darse de baja
+\begin_inset Quotes erd
+\end_inset
+
+ en el servidor.
+ Es importante esto ya que, una vez que una compania se desactiva en el
+ servdor, automaticamante se deja de encolarle actualizaciones.
+ Lo que resulta es un ahorro importante en llamadas al serializer y de uso
+ de recursos del IPC para mantener mensajes que nunca serial leidos.
+\end_layout
+
+\begin_layout Itemize
+Company update: este es el paquete mas grande que se tiene, aqui es donde
+ se guarda la infromacion de todos los aviones que tiene una compania.
+ El problema es que crece mucho a medida que se agregan mas items y/o aviones
+ la misma.
+ Por lo que quedaria en el 
+\begin_inset Formula $"wish$
+\end_inset
+
+ 
+\begin_inset Formula $list"$
+\end_inset
+
+, partir este paquete en otros mas pequeños y en lo posible con tamaño constante
+, para de esta manera poder reducir el DATA_SIZE que se necesita tener reservado
+ para usar el IPC.
+ Que en estos momentos seria lo que mas recursos consume de la simulacion.
+ Se tenia pensando para estos, realizar lo mismo que para las ciudades,
+ solamente mandar pequelos paquetes updates en vez de repetir una y otra
+ vez la misma infromacion que no sufrio camibios.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
@@ -685,7 +745,7 @@ Dentro de cada lugar de esta matriz, se tiene un array con los
 \end_layout
 
 \begin_layout Section
-Consideraciones de tiempo vs memoria
+Otras consideraciones
 \end_layout
 
 \begin_layout Standard
@@ -771,37 +831,66 @@ Otro cambio de la misma indole que se propuso durante la realizcion del
 \begin_inset Formula $o(1)$
 \end_inset
 
-.
- Sin embargo, nuvamente, agrega une extra en la cantidad de memoria necesaria
- disponible.
+ con el precia de agregar un extra en la cantidad de memoria necesaria para
+ su funcionamiento.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
+\begin_layout Subsection
 Otras problemas
 \end_layout
 
 \begin_layout Standard
 Un problema al que todavia no pudimos encontrar explicacion es porque los
- semaforos de System V a veces no se inicializaban para ciertos valores
- de claves.
- Se intento eliminarlos, cambiar los flags, reiniciar la comutadora pero
- sin suerte! Mas raro resultaba aun que al sumarle un magic number al key,
- estos se creban y arrancaban correctamente.
+ semaforos de 
+\begin_inset Formula $System$
+\end_inset
+
+ 
+\begin_inset Formula $V$
+\end_inset
+
+ a veces no se inicializaban para ciertos valores de claves.
+ Se intento eliminarlos, cambiar los flags de creacion, reiniciar la comutadora
+ pero todo sin suerte! Mas raro resultaba aun que al sumarle un magic number
+ al key, estos se creban y sin problema.
  Por lo que nuestra unica alternativa fue la de pasar a semaforos de Posix.
+ Los cuales resultaron increiblemente mas simples.
+ Lo mismo sucede a veces con la creacion de los 
+\begin_inset Formula $IPCs$
+\end_inset
+
+, que a veces no logran cerrarse correctamente al finalizar el programa
+ o bien el recuso del SO se encuentra ocupado y se rehusa a crear los IPS
+ terminando en resultados sin sentido, por lo que se recomienda que si esto
+ sucede se utilize el comando 
+\begin_inset Formula $ipcs$
+\end_inset
+
+ para verificar que no se tenga una excesiva cantidad de estos andando (se
+ soluciona tambien reiniciando ya que para todo tipo de almacenamiento temproal,
+ se utiliza la carpeta 
+\begin_inset Formula $/tmp$
+\end_inset
+
+ del SO.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+Se queria aclarar que si se testea la simulacion de archivos que tienen
+ formatos invalidos, el programa resultara en 
+\begin_inset Formula $segmentation$
 \end_inset
 
+ 
+\begin_inset Formula $fault$
+\end_inset
 
+.
+ Esto no fue arreglado ya que supusimos que lo importante de este trabajo
+ practico no era ver quien hacia el parser mas robusto sino el de demostrar
+ el poder del uso de IPCs.
+ Por lo que se recomienda verificar bien el formato de los archivos antes
+ de iniciar el programa.
 \end_layout
 
 \begin_layout Standard
