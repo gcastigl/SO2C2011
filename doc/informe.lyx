@@ -677,6 +677,62 @@ Dentro de cada lugar de esta matriz, se tiene un array con los
  tienen en la lista.
 \end_layout
 
+\begin_layout Subsection
+Tipos de paquetes
+\end_layout
+
+\begin_layout Standard
+Actualmente la comunicacion entre 
+\begin_inset Formula $servidor\Longleftrightarrow compania$
+\end_inset
+
+ se realiza mediante tres tipos de paquetes:
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+City update: Este paquete contiene informacion de que item fue modificado
+ en que ciudad y en que cantidad.
+ Si muchas ciudades fueron modificadas en un turno, uno por cada cambio
+ va a ser enviado al servidor.
+\end_layout
+
+\begin_layout Itemize
+City status update: Este paquete se envia cunado una compania detecto que
+ sus aviones no pueden abastecer a mas ciudades y quiere 
+\begin_inset Quotes eld
+\end_inset
+
+darse de baja
+\begin_inset Quotes erd
+\end_inset
+
+ en el servidor.
+ Es importante esto ya que, una vez que una compania se desactiva en el
+ servdor, automaticamante se deja de encolarle actualizaciones.
+ Lo que resulta es un ahorro importante en llamadas al serializer y de uso
+ de recursos del IPC para mantener mensajes que nunca serial leidos.
+\end_layout
+
+\begin_layout Itemize
+Company update: este es el paquete mas grande que se tiene, queda en el
+ 
+\begin_inset Quotes eld
+\end_inset
+
+wish list
+\begin_inset Quotes erd
+\end_inset
+
+, partir este paquete en otros mas pequeños y en lo posible con tamaño constante
+, para de esta manera poder reducir el DATA_SIZE que se necesita tener reservado
+ para usar el IPC.
+ Que en estos momentos seria lo que mas recursos consume de la simulacion.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
