@@ -1,6 +1,6 @@
 #include "ipcs/socket.h"
 
-#define IPC_SOCKET_DIR "/tmp/sosocket/"
+#define IPC_SOCKET_DIR "./sosocket/"
 #define ADDR_SIZE sizeof(struct sockaddr_un)
 typedef struct {
 	int sockfd;
@@ -14,6 +14,7 @@ socket_t *getSocket(int id1, int id2) {
 	sock->sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);
 	sock->addr = (struct sockaddr_un *)malloc(sizeof(struct sockaddr_un));
 	sock->addr->sun_family = AF_UNIX;
+    log_debug("Path: %s", path);
 	strcpy(sock->addr->sun_path, path);
 	bind(sock->sockfd, (struct sockaddr *)sock->addr, ADDR_SIZE);
 	int flags = fcntl(sock->sockfd, F_GETFL);
@@ -54,6 +55,7 @@ int ipc_read(int myId, int fromId, char *msg) {
 			break;
 		}
 	}
+    return 0;
 }
 
 int ipc_close(int id) {

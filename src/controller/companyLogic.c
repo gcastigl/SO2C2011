@@ -23,6 +23,7 @@ static Map *map;
 static pthread_t* planeThreadId;
 static long inactivePlanesMask;
 static long inactivePlanes;
+static char cmpSemName[10];
 // There should be no more than sizeof(activePlanes)*8 planes in this comapany.
 int* visitedCities;		// Used by the DFS to find path between cities.
 
@@ -35,7 +36,6 @@ int* visitedCities;		// Used by the DFS to find path between cities.
  */
 void companyStart(Map* initialMap, Company* cmp) {
 	company = cmp;
-    char cmpSemName[10];
     sprintf(cmpSemName, "c%d", company->id);
 	map = initialMap;
 	initializeCompany();
@@ -120,7 +120,7 @@ void waitUntilPlanesReady(int semId) {
     char semName[10];
 	for(int i = 0; i < company->planeCount; i++) {
 		if (PLANE_IS_ACTIVE(i)) {
-			S_WAIT(getPlaneSemName(semName, i));
+			S_WAIT(cmpSemName);
 		}
 	}
 }

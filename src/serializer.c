@@ -100,7 +100,7 @@ int serializer_write(void* pkg, int from, int to, int type) {
 	}
 	int ret = ipc_write(from, to, package);
     if (ret < 0) {
-        log_error("Error writing to ipc");
+        fatal("Error writing to ipc");
     }
     return ret;
 }
