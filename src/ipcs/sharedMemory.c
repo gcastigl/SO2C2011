@@ -1,13 +1,13 @@
 #include "ipcs/sharedMemory.h"
 
-#define MEM_KEY ((key_t) 0x712011)
-
+#define MEM_KEY ((key_t) 0x111222)
+#define MAX_PACKAGE_QUEUE 50
 int shmid;
 char *memory;
 int count;
 
 
-#define SHM_LIST_SIZE (30 * DATA_SIZE * sizeof(char) + sizeof(char))
+#define SHM_LIST_SIZE (MAX_PACKAGE_QUEUE * DATA_SIZE * sizeof(char) + sizeof(char))
 #define GET(X, Y) (memory + (count * SHM_LIST_SIZE * X + Y * SHM_LIST_SIZE))
 
 int ipc_init(int myId, int size) {
