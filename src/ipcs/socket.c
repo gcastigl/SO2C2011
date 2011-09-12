@@ -80,5 +80,6 @@ int ipc_close(int id) {
 	sprintf(fileName, "%s%d_%d", IPC_SOCKET_DIR, id, serverId);
 	unlink(fileName);
 	free(fileName);
+	rmdir(IPC_SOCKET_DIR);
     return 0;
 }
