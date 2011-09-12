@@ -3,8 +3,8 @@ BINARY := bin/tp1.out
 
 #IPC := msgQueue.c
 #IPC := fifo.c
-#IPC := socket.c
-IPC := sharedMemory.c
+IPC := socket.c
+#IPC := sharedMemory.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude
 CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -DLOG_TO_FILE
