@@ -44,6 +44,7 @@ void initEnvironment() {
  */
 void initializeServer() {
 	// Initialize server semaphore.
+    isChild = FALSE;
     char semName[10];
     int val;
 	sem_t *sem = semaphore_create("server");
@@ -66,6 +67,7 @@ void initializeCompanies() {
     for (int i = 0; i < server.companyCount; i++) {
         switch((pId = fork())) {
             case 0:
+                isChild = TRUE;
                 signal_createHandlerThread(FALSE);
                 companyStart(&map, server.company[i]);
                 exit(0);

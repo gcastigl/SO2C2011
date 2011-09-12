@@ -82,5 +82,10 @@ int ipc_close(int id) {
 		}
 		closedir(dp);
 	}
-	return rmdir(IPC_SOCKET_DIR);
+    errno = 0;
+	int ret = rmdir(IPC_SOCKET_DIR);
+	if (errno != 0) {
+        log_error("Error deleting socket folder: %s", strerror(errno));
+	}
+    return ret;
 }

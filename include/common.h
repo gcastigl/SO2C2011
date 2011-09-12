@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include <math.h>
 #include "mathUtils.h"
 #include "util/logger.h"
@@ -40,6 +41,7 @@ extern int errno;
 #define S_POST(X) (sem_post(sem_get(X)))
 #define S_GETVAL(X, Y) (sem_getvalue(sem_get(X), Y))
 int *childPid;
+int isChild;
 
 typedef struct {
 	int id;

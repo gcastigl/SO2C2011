@@ -7,6 +7,7 @@ void signal_setProcessCount(int count) {
 }
 
 void signal_handler(int sigVal) {
+    log_warning("Received signal %d", sigVal);
     switch (sigVal) {
         case SIGSEGV:
             log_error("Segmentation fault"); 
@@ -68,6 +69,7 @@ void signal_childHandler(int sigVal) {
 }
 
 void signal_endChildProcess(int sigVal) {
+    log_debug("Child dying");
     company_closeIpc();
     _exit(1);
 }
