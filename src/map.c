@@ -47,7 +47,7 @@ void map_update(Map* map, CityUpdatePackage* update) {
 // ====================================
 
 City *newCity(char* name) {
-	City* city = malloc(sizeof(City));
+	City* city = (City*)malloc(sizeof(City));
 	city->id = -1;
 	int len = strlen(name);
 	memcpy(city->name, name, len);
