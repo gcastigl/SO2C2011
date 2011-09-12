@@ -75,7 +75,7 @@ void initializeCompany() {
         plane = company->plane[i];
 	    planeSem = semaphore_create(getPlaneSemName(semName, i));
 		pthread_create(planeThreadId + i, NULL, planeStart, plane);
-        S_WAIT(semName);
+        S_WAIT(cmpSemName);
 	}
 	visitedCities = malloc(sizeof(int) * map->cityCount);
 	return;

@@ -48,7 +48,6 @@ void initializeServer() {
     int val;
 	sem_t *sem = semaphore_create("server");
     S_GETVAL("server", &val);
-    log_debug("server sem: ", val);
 	ipc_init(SERVER_IPC_KEY, 0);
 	for (int i = 0; i < server.companyCount; ++i) {
         sprintf(semName, "c%d", server.company[i]->id);
