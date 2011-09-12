@@ -126,8 +126,8 @@ Modelo
 
 \begin_layout Standard
 Para llegar a la estructura de la simulacion actual, primero se estudio
- la diferencia entre hacer procesos y threads.
- Los threads presentaban la ventaja de 
+ la diferencia entre procesos y threads.
+ Los threads presentaban la ventaja de ser 
 \begin_inset Formula $light$
 \end_inset
 
@@ -135,13 +135,14 @@ Para llegar a la estructura de la simulacion actual, primero se estudio
 \begin_inset Formula $weight$
 \end_inset
 
- y que no neceitan comunicacion mediante un 
+ y que no necesitan comunicacion mediante un 
 \begin_inset Formula $IPC$
 \end_inset
 
  para pasarse infromacion dado que corren en la misma zona de codigo.
- Mientras que los procesos realizan una copia de todas sus variable sy corren
- indemendientes de los cambios que el padre haga.
+ Mientras que los procesos realizan una copia de todas sus variables cuando
+ son creados y corren indemendientes de los cambios que el proceso padre
+ haga.
  Teniendo estos detalles en cuenta, se decidio que cada 
 \begin_inset Formula $Compania$
 \end_inset
@@ -158,8 +159,8 @@ Para llegar a la estructura de la simulacion actual, primero se estudio
 
 \begin_layout Standard
 Al tomar este tipo de estructura, surgio el problema sobre tipos de mensajes
- entre estos procesos y cual era la forma optima de comuincarse dado que
- el pasaje de informacion es mucho mas complejea que la comunicacion entre
+ entre estos procesos y cual era la forma optima de comunicarlos dado que
+ el pasaje de informacion es mucho mas complejo que la comunicacion entre
  threads, ya que requiere tanto sincronizacion como una zona de memoria
  ya preparada para la lectura y escritura.
  
@@ -178,20 +179,20 @@ Mostrar en pantalla los cambios de cada
 \begin_inset Formula $Compania$
 \end_inset
 
-
+ luego de cada turno.
 \end_layout
 
 \begin_layout Enumerate
-Reflejar en las demas companias el cambio producido por la compaia 
+Reflejar en las demas companias el cambio producidos en el mapa por la compaia
+ 
 \begin_inset Formula $X$
 \end_inset
 
- en la compania 
+ antes que la compania 
 \begin_inset Formula $Y$
 \end_inset
 
- antes que esta ultima intente hacer un cambio antes de haber recibido esta
- notificacion.
+ intente hacer un cambio sin haber recibido esta notificacion.
 \begin_inset Newline newline
 \end_inset
 
@@ -279,7 +280,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Estructura de procesos activos de la simulacion
+Estructura de procesos y threads de la simulacion
 \end_layout
 
 \end_inset
@@ -297,20 +298,60 @@ Estructura de procesos activos de la simulacion
 \end_layout
 
 \begin_layout Standard
-Uno de los primeros (y mas grandes) problemas que que se presentaron al
- aplicar este diseño era de como reflejar los cambios hechos por una compania
- en todas las demas.
+Uno de los primeros (y mas grandes) problemas que se presentaron al aplicar
+ este diseño era de como reflejar los cambios hechos por una compania en
+ todas las demas.
  Inicialmente, se decidio que el servidor tendria una (y la unica) instancia
  del mapa y que se 
-\begin_inset Formula $pasaria$
-\end_inset
-
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+pasaria
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
  al principio del turno a la compania, esta lo modificaria y luego se lo
  
-\begin_inset Formula $pasaria$
-\end_inset
-
- de vuelta al servidor con los cambios.
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+pasaria
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ nuevamente al servidor con los cambios.
  Y asi para cada compania.
  
 \end_layout
@@ -532,7 +573,7 @@ Uno de los mayores inconvenientes al momento de implementacion de los IPCS
 
 \begin_layout Standard
 Una de las complicaciones que tuvimos con los IPCs era el tamaño de la infromaci
-on a escribir, dado que para algunos IPCs era mas facil trabajas con tamaños
+on a escribir, dado que para algunos IPCs era mas facil trabajar con tamaños
  fijos y con otros daba igual, se opto por paquetes de tamaño fijo.
  Esto nos facilito mucho la programacion de la interfaz de comunicacion,
  pero tiene el problema importante que si se quiere serializar una gran
@@ -584,6 +625,56 @@ Otro inconventiente que trae esta decicion que tamaño fijo para mensajes
  Sin embargo, no es un gran problema, si el dia de mañana se necesitase
  que esto no sea asi, bastara con simplemente cambiar la implementacion
  del IPC correspondiente (no afectaria de ninguna manera a la simulacion).
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Shared Memory
+\end_layout
+
+\begin_layout Standard
+La implementacion que actualmente se tiene para shared memory, es aprovechar
+ el hecho que los tamaños de los mensajes son fijos y reservar en memoria
+ bloques con un tamaño de 
+\begin_inset Formula $M$
+\end_inset
+
+ mensajes por cada proceso que quiera escribir.
+ Es decir, dividimos un pedazo fijo de memoria en 
+\begin_inset Formula $NxN$
+\end_inset
+
+ lugares, en donde 
+\begin_inset Formula $N$
+\end_inset
+
+ esta dado por la cantidad de luagres especificados en 
+\begin_inset Formula $ipc$
+\end_inset
+
+_
+\begin_inset Formula $init$
+\end_inset
+
+.
+ Esta implementacion ofrece la ventaja de ser muy eficiente en cuando acceso
+ a un mensaje, ya que tiene una complejiad 
+\begin_inset Formula $o(1)$
+\end_inset
+
+, pero la gran contra es que es mucha la memoria que necesita tener reservada.
+\end_layout
+
+\begin_layout Standard
+Dentro de cada lugar de esta matriz, se tiene un array con los 
+\begin_inset Formula $M$
+\end_inset
+
+ luagres ya mencionados y adelante de todo un char indicando cuantos se
+ tienen en la lista.
 \end_layout
 
 \begin_layout Standard
@@ -701,7 +792,7 @@ Un problema al que todavia no pudimos encontrar explicacion es porque los
  semaforos de System V a veces no se inicializaban para ciertos valores
  de claves.
  Se intento eliminarlos, cambiar los flags, reiniciar la comutadora pero
- sin suerte! Mas raro esultaba aun que al sumarle un magi number al key,
+ sin suerte! Mas raro resultaba aun que al sumarle un magic number al key,
  estos se creban y arrancaban correctamente.
  Por lo que nuestra unica alternativa fue la de pasar a semaforos de Posix.
 \end_layout
@@ -726,8 +817,8 @@ Concusiones
 
 \begin_layout Standard
 Luego de realizado este trabajo practico, se aprendio sobre la potencia
- que se puede tener al realizar programas que sean capaces de dividir sus
- tareas en proecsos concretos y por sobre todo, al mantenerlos sincronizados.
+ a la que se puede llevar un programa al hacerlos que sean capaces de dividir
+ sus tareas en proecsos concretos y por sobre todo, al mantenerlos sincronizados.
  
 \end_layout
 
