@@ -23,7 +23,7 @@ C_INCLUDE_PATH = include
 
 all: $(OBJDIRS) $(BINARY)
 
-debug: override CFLAGS += -DDEBUG_MODE -g
+debug: override CFLAGS += -DDEBUG_MODE -g -rdynamic
 debug: all
 
 $(OBJDIRS):
