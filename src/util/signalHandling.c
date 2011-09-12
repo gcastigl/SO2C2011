@@ -9,8 +9,8 @@ void signal_setProcessCount(int count) {
 void signal_handler(int sigVal) {
     log_warning("Received signal %d", sigVal);
     switch (sigVal) {
-        case SIGSEGV:
-            log_error("Segmentation fault"); 
+/*        case SIGSEGV:
+            log_error("Segmentation fault"); */
         case SIGINT:
         case SIGTERM:
             signal_abortSimulation(sigVal);
