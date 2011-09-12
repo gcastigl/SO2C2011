@@ -1,92 +1,76 @@
 #include "ipcs/sharedMemory.h"
-#include <mm.h>
 
-#define MEM_KEY ((key_t) 0x0303456)
-
-typedef struct item {
-	int from;
-	int to;
-	char data[DATA_SIZE];
-	struct item *next;
-} item_t;
+#define MEM_KEY ((key_t) 0x712011)
 
 int shmid;
-item_t **array;
+char *memory;
 int count;
 
+#define SHM_LIST_SIZE (30 * DATA_SIZE * sizeof(char) + sizeof(char))
+#define GET(X, Y) (memory + (count * SHM_LIST_SIZE * X + Y * SHM_LIST_SIZE))
+
 int ipc_init(int myId, int size) {
-	MM_create()
+	count = size;
+	int memsize = size * size * SHM_LIST_SIZE;
 	errno = 0;
-	if ((shmid = shmget(MEM_KEY, (size*sizeof(item_t*)), IPC_CREAT | IPC_EXCL | 0666)) == -1){
+	if ((shmid = shmget(MEM_KEY, memsize, IPC_CREAT | IPC_EXCL | 0666)) == -1){
 		if (errno == EEXIST) {
-			if ((shmid = shmget(MEM_KEY, (size*sizeof(item_t*)), IPC_CREAT | 0600)) == -1) {
+			if ((shmid = shmget(MEM_KEY, memsize, IPC_CREAT | 0600)) == -1) {
 				return -1;
 			}
 			errno = 0;
 		}
 	}
-	array = (item_t**)shmat(shmid, NULL, 0);
-	if (array == (item_t**)-1) {
+	memory = (char*)shmat(shmid, NULL, 0);
+	if (memory == (char*)-1) {
 		return -1;
 	}
-	count = size;
-	for (int i = 0; i < size; ++i) {
-		array[i] = NULL;
+	for (int i = 0; i < memsize; ++i) {
+		memory[i] = '\0';
 	}
 	return 1;
 }
 
-int ipc_write(int myId, int toId, char *msg) {
-	log_error("Printing %d ON: %p", myId, array);
-	item_t *item = (item_t*)malloc(sizeof(item_t));
-	item->from = myId;
-	item->to = toId;
-	memcpy(item->data, msg, DATA_SIZE);
-	int empty = -1;
-	for (int i = 0; i < count; ++i) {
-		if (array[i] != NULL) {
-			if (array[i]->from == myId) {
-				item->next = array[i];
-				array[i] = item;
-				return DATA_SIZE;
-			}
-		} else if (empty == -1) {
-			empty = i;
+int msg_push(int from, int to, char *msg) {
+	char *message = GET(from, to);
+	char *messageCount = message;
+	message += sizeof(char);
+	if (messageCount > 0) {
+		if(*messageCount > 30) {
+			log_error("Could not save package. messageCount is 30");
+			return -1;
+		} else {
+			message += ((*messageCount-1)*DATA_SIZE*sizeof(char));
+			(*messageCount)++;
 		}
 	}
-	item->next = array[empty];
-	array[empty] = item;
+	memcpy(message, msg, DATA_SIZE);
 	return DATA_SIZE;
 }
 
-int ipc_read(int myId, int fromId, char *msg) {
-	for (int i = 0; i < count; ++i) {
-		if (array[i] != NULL) {
-			if (array[i]->from == myId) {
-				item_t *parent = NULL;
-				item_t *head = array[i];
-				while (head != NULL) {
-					if (head->to == fromId) {
-						memcpy(msg, head->data, DATA_SIZE);
-						if (parent == NULL) {
-							array[i] = head->next;
-						} else {
-							parent->next = head->next;
-						}
-						return DATA_SIZE;
-					}
-					parent = head;
-					head = parent->next;
-				}
-
-			}
-		}
+int msg_pop(int from, int to, char *msg) {
+	char *message = GET(from, to);
+	char *messageCount = message;
+	message += sizeof(char);
+	if (*messageCount > 0) {
+		message += ((*messageCount-1)*DATA_SIZE*sizeof(char));
+		memcpy(msg, message, DATA_SIZE);
+		(*messageCount)--;
+		return DATA_SIZE;
 	}
 	return -1;
 }
 
+int ipc_write(int myId, int toId, char *msg) {
+	return msg_push(myId, toId, msg);
+}
+
+int ipc_read(int myId, int fromId, char *msg) {
+	return msg_pop(fromId, myId, msg);
+}
+
 int ipc_close(int id) {
-    shmdt(array);
+    shmdt(memory);
     shmctl(shmid, IPC_RMID, 0);
 	return 1;
 }
