@@ -344,11 +344,12 @@ Se tuvo un problema de ultimo momento con dos de los $IPCs$ (Sockets
 y Fifos) que dejaron de andar y se trataron de arreglar pero no se
 pudo testear si verdaderamente tienen una funcionalidad $100\%$ correcta. 
 
-El problema con sockets es que no se bindean correctamente las companias
-con el servidor ya que cuando quiere conectar a las companias tira
-un error {}``function not implemented''. Nos hubiese dado mucho
-gusto encontrar la solución de esto pero nos quedamos sin tiempo para
-la entrega. 
+El problema con sockets es que era necesario mantener una referencia al file 
+descriptor del socket de lectura y eso no lo descubrimos hasta ultimo momento.
+Nos hubiese dado mucho gusto encontrar la solución  de esto pero nos quedamos 
+sin tiempo para la entrega. Por lo que se tuvo que 
+implementar un array de tamaño fijo para almacenar estos files descriptos.
+Queda en la lista arreglar eso y hacerlo independiente de la implementacion.
 
 
 \subsection{Otras problemas}
