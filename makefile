@@ -1,9 +1,9 @@
 # Binary Name
 BINARY := bin/tp1.out
 
-IPC := msgQueue.c
+#IPC := msgQueue.c
 #IPC := fifo.c
-#IPC := socket.c
+IPC := socket.c
 
 LIBS := -lm -lncurses -pthread -lpthread -Iinclude
 CFLAGS := -Wall -g -std=c99 -D_XOPEN_SOURCE=600 -DLOG_TO_FILE
@@ -32,7 +32,7 @@ $(BINARY): $(OBJS)
 	gcc $(CFLAGS) $(LIBS) $(OBJS) -o $@
 
 clean:
-	-@$(RM) -rf $(BINARY) $(OBJDIRS)
+	-@$(RM) -rf $(BINARY) $(OBJDIRS) sosocket
 
 $(OBJS): bin/%.o : src/%.c include/%.h
 	gcc $(CFLAGS) $(LIBS) -c $< -o $@
