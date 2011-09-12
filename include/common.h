@@ -16,7 +16,7 @@ extern int errno;
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
 #define TMP_FOLDER	"/tmp/"
-#define SERVER_IPC_KEY	0
+//#define SERVER_IPC_KEY	12344
 
 // Status defines
 #define OP_OK	0
@@ -65,5 +65,7 @@ int **createIntMatrix(int rows, int columns);
 float **createFloatMatrix(int rows, int columns);
 
 void printMatrix(int** matrix, int rows, int columns);
+
+int serverId;
 
 #endif

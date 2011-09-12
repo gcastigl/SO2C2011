@@ -12,6 +12,7 @@ int count;
 
 int ipc_init(int myId, int size) {
 	count = size;
+	size++;
 	int memsize = size * size * SHM_LIST_SIZE;
 	errno = 0;
 	if ((shmid = shmget(MEM_KEY, memsize, IPC_CREAT | IPC_EXCL | 0666)) == -1){
@@ -25,7 +26,7 @@ int ipc_init(int myId, int size) {
     errno = 0;
 	memory = (char*)shmat(shmid, NULL, 0);
 	if (memory == (void*)-1) {
-        log_error("Couldn't bla bla bla memory: %s", strerror(errno));
+        log_error("Couldn't memory: %s", strerror(errno));
         fatal("");
 	}
 	for (int i = 0; i < memsize; ++i) {
@@ -45,7 +46,7 @@ int msg_push(int from, int to, char *msg) {
 			log_error("Could not save package. messageCount is 30");
 			return -1;
 		} else {
-			message += ((messageCount == 0 ? 0 : messageCount - 1) * DATA_SIZE * sizeof(char));
+			message += messageCount * DATA_SIZE * sizeof(char);
 			memcpy(message, msg, DATA_SIZE);
 
 			messageCount++;
@@ -76,10 +77,14 @@ int msg_pop(int from, int to, char *msg) {
 }
 
 int ipc_write(int myId, int toId, char *msg) {
+	toId = toId % serverId;
+	myId = myId % serverId;
 	return msg_push(myId, toId, msg);
 }
 
 int ipc_read(int myId, int fromId, char *msg) {
+	fromId = fromId % serverId;
+	myId = myId % serverId;
 	return msg_pop(fromId, myId, msg);
 }
 

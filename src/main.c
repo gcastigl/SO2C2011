@@ -34,6 +34,7 @@ void initEnvironment() {
     parser_parseCitiesFile("./resources/loads/", &server, &map);
     parser_parseCompanies("./resources/loads/companies/", &server, &map);
     processCount = server.companyCount;
+    serverId = server.companyCount + 1;
     signal_setProcessCount(processCount);
     childPid = malloc(sizeof(int) * (processCount));
     view_start();
@@ -49,7 +50,7 @@ void initializeServer() {
     int val;
 	sem_t *sem = semaphore_create("server");
     S_GETVAL("server", &val);
-	ipc_init(SERVER_IPC_KEY, server.companyCount + 1);
+	ipc_init(serverId, server.companyCount + 1);
 	for (int i = 0; i < server.companyCount; ++i) {
         sprintf(semName, "c%d", server.company[i]->id);
         sem = semaphore_create(semName);
