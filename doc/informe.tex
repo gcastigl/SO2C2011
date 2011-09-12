@@ -385,5 +385,21 @@ Luego de realizado este trabajo practico, se aprendio sobre la potencia
 a la que se puede llevar un programa al hacerlos que sean capaces
 de dividir sus tareas en proecsos concretos y por sobre todo, al mantenerlos
 sincronizados. 
+Existen diferentes formas para comunicar procesos:
+\begin{itemize}
+ \item socket: es el único que permite sincronización entre diferentes máquinas. También
+utilizan archivos especiales del tipo socket para trabajar localmente.
+ \item shared memory: es veloz y mucho más dificil de implementar, hay que manejar la
+memoria a mano y a menos que se utilzen librerias como $OSSP mm$ (Shared Memory Allocation)
+no se puede alocar memoria (malloc) dentro del segmento compartido.
+ \item fifo: crea tipos especiales de archivo en el filesystem también conocidos como
+''named pipes'', de facil utilización.
+ \item msg queue: similar a fifo, utiliza colas para almacenar mensajes con keys para
+acceder a ellas.
+\end{itemize}
+Es necesario sin embargo manejar la sincronización de los mencionados ipc para que los
+diferentes procesos que acceden a ellos no dejen inconsistencias en la comunicación.
+
+
 \end{document}
 
