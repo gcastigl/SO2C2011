@@ -6,7 +6,7 @@
 
 #define SEM_FLAGS	0666
 #define IPC_FLAGS	0666
-#define DATA_SIZE	256
+#define DATA_SIZE	512
 
 #define READ 0
 #define WRITE 1

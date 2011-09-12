@@ -23,8 +23,8 @@ sem_t* semaphore_create(char *name) {
 sem_t *sem_get(char *name) {
     sem_t* sem = sem_open(name, 0, S_IRUSR | S_IWUSR);
     if (sem == SEM_FAILED) {
-        log_debug("error getting semaphore %s", name);
-        fatal("error getting semaphore");
+        log_error("Error getting semaphore %s", name);
+        fatal("");
     }
     return sem;
 }
