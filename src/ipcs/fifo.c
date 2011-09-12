@@ -30,9 +30,11 @@ int ipc_close(int id) {
 	if (dp != NULL) {
 		while ((ep = readdir(dp))) {
 			fileName = (char*)malloc((strlen(IPC_FIFO_DIR) + strlen(ep->d_name) + 1) * sizeof(char));
-			sprintf(fileName, "%s%s", IPC_FIFO_DIR, ep->d_name);
-			unlink(fileName);
-			free(fileName);
+			    if (strcmp(ep->d_name, "..") && strcmp(ep->d_name, ".")) {
+    		    	sprintf(fileName, "%s%s", IPC_FIFO_DIR, ep->d_name);
+        			unlink(fileName);
+        			free(fileName);
+        		}
 		}
 		closedir(dp);
 	}

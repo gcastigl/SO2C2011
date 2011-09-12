@@ -37,6 +37,7 @@ void companyStart(Map* initialMap, Company* cmp) {
     sprintf(cmpSemName, "c%d", company->id);
 	map = initialMap;
 	initializeCompany();
+	updateMap();
 	S_POST("companyReady");// Tell the server that this company has been created.
     createInactivePlanesBitMask();
 	do {
@@ -89,6 +90,7 @@ void updateMap() {
     void* package;
     int packageType;
     CityUpdatePackage *update;
+    log_debug("Company %d updating map", company->id);
     do {
         package = serializer_read(company->id + 1, serverId, &packageType);
         if (packageType == PACKAGE_TYPE_CITY_UPDATE) {
