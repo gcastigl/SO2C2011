@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.5.31)  12 SEP 2011 21:30
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.5.31)  12 SEP 2011 21:47
 entering extended mode
  %&-line parsing enabled.
 **informe.tex
@@ -516,12 +516,12 @@ Package Fancyhdr Warning: \headheight is too small (15.0pt):
  This may cause the page layout to be inconsistent, however.
 
 [1]
-Underfull \hbox (badness 10000) in paragraph at lines 79--84
+Underfull \hbox (badness 10000) in paragraph at lines 94--99
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 91--94
+Underfull \hbox (badness 10000) in paragraph at lines 106--109
 
  []
 
@@ -534,19 +534,28 @@ Package Fancyhdr Warning: \headheight is too small (15.0pt):
  This may cause the page layout to be inconsistent, however.
 
 [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 121.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 136.
 
  (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 121.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 136.
 
 <imagenes/design.png, id=22, 644.4075pt x 297.36093pt>
 File: imagenes/design.png Graphic file (type png)
 
 <use imagenes/design.png>
-Underfull \hbox (badness 10000) in paragraph at lines 159--167
+File: logop.jpg Graphic file (type jpg)
+ <use logop.jpg>
+
+Package Fancyhdr Warning: \headheight is too small (15.0pt): 
+ Make it at least 17.35004pt.
+ We now make it that large for the rest of the document.
+ This may cause the page layout to be inconsistent, however.
+
+[3 <./imagenes/design.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 174--182
 
  []
 
@@ -558,8 +567,7 @@ Package Fancyhdr Warning: \headheight is too small (15.0pt):
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[3 <./imagenes/design.png (PNG copy)>]
-<imagenes/airlineModl.png, id=27, 579.16376pt x 492.84125pt>
+[4] <imagenes/airlineModl.png, id=32, 579.16376pt x 492.84125pt>
 File: imagenes/airlineModl.png Graphic file (type png)
 
 <use imagenes/airlineModl.png>
@@ -571,22 +579,13 @@ Package Fancyhdr Warning: \headheight is too small (15.0pt):
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[4]
-File: logop.jpg Graphic file (type jpg)
- <use logop.jpg>
-
-Package Fancyhdr Warning: \headheight is too small (15.0pt): 
- Make it at least 17.35004pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
 [5 <./imagenes/airlineModl.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 249--255
+Underfull \hbox (badness 10000) in paragraph at lines 264--270
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 277--279
+Underfull \hbox (badness 10000) in paragraph at lines 292--294
 
  []
 
@@ -636,10 +635,10 @@ Package Fancyhdr Warning: \headheight is too small (15.0pt):
 
 [10] (./informe.aux) ) 
 Here is how much of TeX's memory you used:
- 2982 strings out of 494999
- 36264 string characters out of 1180816
- 104516 words of memory out of 3000000
- 6110 multiletter control sequences out of 15000+50000
+ 2983 strings out of 494999
+ 36279 string characters out of 1180816
+ 103516 words of memory out of 3000000
+ 6111 multiletter control sequences out of 15000+50000
  10106 words of font info for 37 fonts, out of 3000000 for 9000
  54 hyphenation exceptions out of 8191
  35i,15n,43p,276b,450s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -651,7 +650,7 @@ ve/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/typ
 e1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
 fonts/cm/cmr8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy
 10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on informe.pdf (12 pages, 235332 bytes).
+Output written on informe.pdf (12 pages, 237692 bytes).
 PDF statistics:
  82 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
