@@ -8,10 +8,10 @@ typedef struct {
 	struct sockaddr_un *addr;
 } socket_t;
 
-static int mySockFd;
+static int mySockFd[100];
 
 socket_t *getSocket(int id1, int id2, int read) {
-    if (mySockFd != 0 && read == TRUE) {
+    if (mySockFd[id1] != 0 && read == TRUE) {
         return NULL;
     }
 	socket_t *sock = (socket_t*) malloc(sizeof(socket_t));
@@ -24,7 +24,7 @@ socket_t *getSocket(int id1, int id2, int read) {
 	int ret = bind(sock->sockfd, (struct sockaddr *)sock->addr, ADDR_SIZE);
 	if ((read == TRUE)) {
 	    if (ret >= 0) {
-            mySockFd = sock->sockfd;   
+            mySockFd[id1] = sock->sockfd;   
 	    }
 	}
 	int flags = fcntl(sock->sockfd, F_GETFL);
@@ -34,7 +34,6 @@ socket_t *getSocket(int id1, int id2, int read) {
 }
 
 int ipc_init(int myId, int size) {
-    mySockFd = 0;
 	return mkdir(IPC_SOCKET_DIR, 0777);
 }
 
@@ -49,7 +48,7 @@ int ipc_write(int myId, int toId, char *msg) {
 
 int ipc_read(int myId, int fromId, char *msg) {
 	getSocket(fromId, myId, TRUE);
-	int n = recvfrom(mySockFd, msg, DATA_SIZE, 0, NULL, NULL);
+	int n = recvfrom(mySockFd[fromId], msg, DATA_SIZE, 0, NULL, NULL);
 	if (n==-1) {
 		switch (errno) {
 		case EBADF:
