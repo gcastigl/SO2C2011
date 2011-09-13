@@ -1,0 +1,8 @@
+\select@language {spanish}
+\contentsline {section}{\numberline {1}Modelo}{2}
+\contentsline {section}{\numberline {2}IPC}{6}
+\contentsline {subsection}{\numberline {2.1}Shared Memory}{6}
+\contentsline {subsection}{\numberline {2.2}T\IeC {\'\i }pos de paquetes}{7}
+\contentsline {section}{\numberline {3}Otras consideraciones}{8}
+\contentsline {subsection}{\numberline {3.1}Otras problemas}{8}
+\contentsline {section}{\numberline {4}Concusiones}{10}

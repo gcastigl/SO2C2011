@@ -2,14 +2,12 @@
 
 %% LyX 2.0.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[a4paper,12pt,spanish]{article} %agregar twoside para impresion Doble Faz.
+\documentclass[english]{article}
 \usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
 \usepackage{float}
 \usepackage{amstext}
 \usepackage{graphicx}
-\usepackage[spanish, activeacute]{babel} %Paquetes para que funcionen bien los acentos.
-\usepackage[utf8]{inputenc} 
-
 
 \makeatletter
 
@@ -39,6 +37,7 @@
 
 \makeatother
 
+\usepackage{babel}
 \begin{document}
 
 \title{Filesystems, IPCs y Servidores Concurrentes }
@@ -157,7 +156,7 @@ muchísimo procesamiento y uso de memoria que podria ser ahorrado!.
 
 Lo que nos llevo a proponer una segunda solución alternativa, la cual
 implicaba que tanto el servidor como las companias tendrían una instancia
-del mapa(inicial) y este se iría actualizando mediante paquetes $updates$
+del mapa(inicial) y este se iría actualizando mediante paquetes $\lyxmathsym{\textquotedblleft}updates\lyxmathsym{\textquotedblright}$
 que se enviarian desde el servidor luego de cada turno. 
 
 Esto presenta la ventaja que la comunicación entre los procesos se
@@ -172,9 +171,9 @@ notar la cantidad de infromacion que se ahorra por cada envio de información%
 
 Teniendo en cuenta todas estas consideraciones, la lógica del $servidor$
 seguiría el siguiente comportamiento:
-
+\begin{lyxcode}
 Por~cada~compania:
-\begin{verbatim}
+\begin{lyxcode}
 Se~le~da~un~turno.
 
 Se~espera~a~que~finalize~su~turno.
@@ -182,12 +181,12 @@ Se~espera~a~que~finalize~su~turno.
 Se~hace~un~broadcasting~de~los~updates~leidos~a~
 
 ~~~todas~las~demás~companias.
-
+\end{lyxcode}
 Actualizar~UI.~\\
 
-\end{verbatim}
+\end{lyxcode}
 De esta manera, resulta fácil imaginar la lógica de una $compania$:
-\begin{verbatim}
+\begin{lyxcode}
 Despierto~a~todos~mis~aviones.
 
 Cuando~todos~movieron,~actualizo~a~un~nuevo~target~a~todos
@@ -197,7 +196,7 @@ Cuando~todos~movieron,~actualizo~a~un~nuevo~target~a~todos
 Escribo~los~paquetes~con~los~cámbios~realizados~por~cada~uno~al~servidor.
 
 Me~escribo~a~mi~misma.
-\end{verbatim}
+\end{lyxcode}
 A continuación de presenta un esquema de como se penso a una compania:
 
 \begin{figure}[H]
@@ -386,21 +385,5 @@ Luego de realizado este trabajo practico, se aprendio sobre la potencia
 a la que se puede llevar un programa al hacerlos que sean capaces
 de dividir sus tareas en proecsos concretos y por sobre todo, al mantenerlos
 sincronizados. 
-Existen diferentes formas para comunicar procesos:
-\begin{itemize}
- \item socket: es el único que permite sincronización entre diferentes máquinas. También
-utilizan archivos especiales del tipo socket para trabajar localmente.
- \item shared memory: es veloz y mucho más dificil de implementar, hay que manejar la
-memoria a mano y a menos que se utilzen librerias como $OSSP mm$ (Shared Memory Allocation)
-no se puede alocar memoria (malloc) dentro del segmento compartido.
- \item fifo: crea tipos especiales de archivo en el filesystem también conocidos como
-''named pipes'', de facil utilización.
- \item msg queue: similar a fifo, utiliza colas para almacenar mensajes con keys para
-acceder a ellas.
-\end{itemize}
-Es necesario sin embargo manejar la sincronización de los mencionados ipc para que los
-diferentes procesos que acceden a ellos no dejen inconsistencias en la comunicación.
-
-
 \end{document}
 
